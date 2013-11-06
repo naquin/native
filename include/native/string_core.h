@@ -39,147 +39,131 @@ struct basic_string_core {
 
     static const value_type empty_value[1];
 
-    enum class storage : unsigned char {
-        static_  = 0x00,
-        dynamic  = 0x01,
-        splice   = 0x02
+    enum class storage: unsigned char {
+        small    = 0x0,
+        static_  = 0x1,
+        dynamic  = 0x2,
     };
 
-    basic_string_core():
-        _storage(storage::static_),
-        _length()
+    basic_string_core()
     {
-        _static = static_data{empty_value};
+        _static = static_data();
     }
 
     basic_string_core(const_pointer ptr,
                       size_type length,
-                      storage type = storage::dynamic):
-        _storage(type),
-        _length(length)
+                      storage type = storage::dynamic)
     {
-        switch (_storage)
+        if (type == storage::static_)
         {
-        case storage::static_:
-            _static = static_data{ptr};
-            break;
-        case storage::dynamic:
-            _dynamic = dynamic_data::create(_length);
-            std::copy(ptr, ptr + _length, &_dynamic->head[0]);
-            null_terminate();
-            break;
-        case storage::splice:
-            assert(!"Cannot have splice in this constructor.");
-            break;
+            _static = static_data(ptr, length);
+        }
+        else if (length < max_small_size)
+        {
+            _small = small_data(length);
+            std::copy(ptr, ptr + length, &_small.head[0]);
+            _small.head[length] = '\0'; // null terminate
+        }
+        else
+        {
+            _dynamic = dynamic_data(length);
+            std::copy(ptr, ptr + length, _dynamic.head);
         }
     }
 
     basic_string_core(const_pointer ptr,
                       storage type = storage::dynamic):
-        _storage(type),
-        _length(traits_type::length(ptr))
+        basic_string_core(ptr, traits_type::length(ptr), type)
     {
-        switch (_storage)
+
+    }
+
+    basic_string_core(size_type length, value_type c)
+    {
+        if (length < max_small_size)
         {
-        case storage::static_:
-            _static = static_data{ptr};
-            break;
-        case storage::dynamic:
-            _dynamic = dynamic_data::create(_length);
-            std::copy(ptr, ptr + _length, &_dynamic->head[0]);
-            null_terminate();
-            break;
-        case storage::splice:
-            assert(!"Cannot have splice in this constructor.");
-            break;
+            _small = small_data(length);
+            for (size_type i = 0; i < length; ++i)
+            {
+                _small.head[i] = c;
+            }
+            _small.head[length] = '\0'; // null terminate
+        }
+        else
+        {
+            _dynamic = dynamic_data(length);
+            for (size_type i = 0; i < length; ++i)
+            {
+                _dynamic.head[i] = c;
+            }
         }
     }
-    
-    basic_string_core(size_type n, value_type c):
-        _storage(storage::dynamic),
-        _length(n)
+
+    template <typename InputIterator>
+    basic_string_core(InputIterator first, InputIterator last, size_type length)
     {
-        _dynamic = dynamic_data::create(_length);
-        for (size_type i = 0; i < n; ++i)
+        if (length < max_small_size)
         {
-            _dynamic->head[i] = c;
+            _small = small_data(length);
+            std::copy(first, last, &_small.head[0]);
+            _small.head[length] = '\0'; // null terminate
         }
-        null_terminate();
+        else
+        {
+            _dynamic = dynamic_data(length);
+            std::copy(first, last, _dynamic.head);
+        }
+    }
+
+    // TODO: specialize for random access iterators
+    template <typename InputIterator>
+    static size_type iterator_length(InputIterator first, InputIterator last)
+    {
+        size_type length = 0;
+        for (auto it = first; it != last; ++it)
+        {
+            ++length;
+        }
+
+        return length;
     }
 
     template <typename InputIterator>
     basic_string_core(InputIterator first, InputIterator last):
-        _storage(storage::dynamic),
-        _length(0)
+        basic_string_core(first, last, iterator_length(first, last))
     {
-        for (auto it = first; it != last; ++it)
-        {
-            ++_length;
-        }
-        // TODO: specialize for random access iterators
-//        _length = last - first; 
-        _dynamic = dynamic_data::create(_length);
-        std::copy(first, last, &_dynamic->head[0]);
-        null_terminate();
+
     }
 
-    basic_string_core(const basic_string_core& original, size_type start, size_type length):
-        _storage(storage::splice),
-        _length(length)
+    basic_string_core(const basic_string_core& rhs)
     {
-        switch (original._storage)
-        {
-        case storage::static_:
-            _storage     = storage::static_;
-            _static      = original._static;
-            _static.head = original.data() + start;
-            break;
-        case storage::dynamic:
-            _splice = splice_data{original._dynamic, original.data() + start};
-            _splice.dynamic->increment_shared_count();
-            break;
-        case storage::splice:
-            _splice = splice_data{original._splice.dynamic, original.data() + start};
-            _splice.dynamic->increment_shared_count();
-            break;
-        }
-    }
-
-    basic_string_core(const basic_string_core& rhs):
-        _storage(rhs._storage),
-        _length(rhs._length)
-    {
-        switch (_storage)
+        switch (rhs.type())
         {
         case storage::static_:
             _static = rhs._static;
             break;
+        case storage::small:
+            _small = rhs._small;
+            break;
         case storage::dynamic:
             _dynamic = rhs._dynamic;
-            _dynamic->increment_shared_count();
-            break;
-        case storage::splice:
-            _splice = rhs._splice;
-            _splice.dynamic->increment_shared_count();
+            _dynamic.increment_shared_count();
             break;
         }
     }
 
-    basic_string_core(basic_string_core&& rhs):
-        _storage(rhs._storage),
-        _length(rhs._length)
+    basic_string_core(basic_string_core&& rhs)
     {
-        switch (_storage)
+        switch (rhs.type())
         {
         case storage::static_:
             _static = rhs._static;
             break;
+        case storage::small:
+            _small = rhs._small;
+            break;
         case storage::dynamic:
             _dynamic = rhs._dynamic;
-            rhs.clear();
-            break;
-        case storage::splice:
-            _splice = rhs._splice;
             rhs.clear();
             break;
         }
@@ -187,144 +171,205 @@ struct basic_string_core {
 
     basic_string_core& operator=(const basic_string_core& rhs)
     {
-        switch (_storage)
+        switch (this->type())
         {
         case storage::static_:
+        case storage::small:
             break;
         case storage::dynamic:
-            _dynamic->decrement_shared_count();
-            break;
-        case storage::splice:
-            _splice.dynamic->decrement_shared_count();
+            _dynamic.decrement_shared_count();
             break;
         }
 
-        _storage = rhs._storage;
-        _length = rhs._length;
-        switch (_storage)
+        switch (rhs.type())
         {
         case storage::static_:
             _static = rhs._static;
             break;
+        case storage::small:
+            _small = rhs._small;
+            break;
         case storage::dynamic:
             _dynamic = rhs._dynamic;
-            _dynamic->increment_shared_count();
-            break;
-        case storage::splice:
-            _splice = rhs._splice;
-            _splice.dynamic->increment_shared_count();
+            _dynamic.increment_shared_count();
             break;
         }
         return *this;
     }
 
-
     ~basic_string_core()
     {
-        switch (_storage)
+        switch (this->type())
         {
         case storage::static_:
+        case storage::small:
             break;
         case storage::dynamic:
-            _dynamic->decrement_shared_count();
-            break;
-        case storage::splice:
-            _splice.dynamic->decrement_shared_count();
+            _dynamic.decrement_shared_count();
             break;
         }
     }
 
     size_type size() const
     {
-        return _length;
+        switch (this->type())
+        {
+        case storage::static_:
+            return _static.length;
+        case storage::small:
+            return _small.attribs.length;
+        case storage::dynamic:
+            return _dynamic.length;
+        }
     }
 
     const_pointer data() const
     {
-        switch (_storage)
+        switch (this->type())
         {
         case storage::static_:
             return _static.head;
+        case storage::small:
+            return _small.head;
         case storage::dynamic:
-            return _dynamic->head;
-        case storage::splice:
-            return _splice.head;
+            return _dynamic.head;
         }
-//        return _storage == storage::dynamic ? _dynamic->head :
-//               _storage == storage::static_ ? _static.head :
-//               _splice.head;
     }
 
-    inline void null_terminate()
+    storage type() const
     {
-//        assert(!_is_static);
-        _dynamic->head[_length] = 0;
+        const auto t = _static.type;
+        return static_cast<storage>(t);
     }
 
-private:
+public:
 
     void clear()
     {
-        _storage = storage::static_;
-        _length = 0;
-        _static = static_data{empty_value};
+        _static = static_data();
     }
 
+    enum {
+        type_bits = 2,
+        length_bits = sizeof(size_type)*8-type_bits
+    };
+
+    // smart_pointer is similar to what's found under the hood in fbstring
+    // from https://github.com/facebook/folly, available under Apache 2.0
+    // license.
+    struct smart_pointer {
+        std::atomic<std::size_t> shared_count;
+        value_type               head[1];
+    };
+
     struct dynamic_data {
-        // dynamic_data is similar to what's found under the hood in fbstring
-        // from https://github.com/facebook/folly, available under Apache 2.0 license.
+        size_type type:type_bits;
+        size_type length:length_bits;
+        pointer head;
+
+        dynamic_data(size_type length):
+            type(static_cast<unsigned char>(storage::dynamic)),
+            length(length),
+            head(create(length))
+        {
+            head[length] = '\0'; // null terminate
+        }
+
+        smart_pointer* get()
+        {
+            auto ptr =
+                reinterpret_cast<smart_pointer*>(
+                reinterpret_cast<unsigned char*>(head) - sizeof(std::atomic<std::size_t>)
+            );
+            return ptr;
+        }
+
         std::size_t reference_count()
         {
-            return shared_count.load(std::memory_order_acquire);
+            return get()->shared_count.load(std::memory_order_acquire);
         }
 
         void increment_shared_count()
         {
-            shared_count.fetch_add(1, std::memory_order_acq_rel);
+            get()->shared_count.fetch_add(1, std::memory_order_acq_rel);
         }
 
         void decrement_shared_count()
         {
+            const auto ptr = get();
             std::size_t previousCount =
-                shared_count.fetch_sub(1, std::memory_order_acq_rel);
+                ptr->shared_count.fetch_sub(1, std::memory_order_acq_rel);
             if (previousCount == 1)
             {
-                free(this);
+                free(ptr);
             }
         }
 
-        static dynamic_data* create(std::size_t size)
+        static pointer create(std::size_t size)
         {
-            const std::size_t allocSize = sizeof(dynamic_data) + (size * sizeof(value_type));
-            auto result = reinterpret_cast<dynamic_data*>(std::malloc(allocSize));
+            const std::size_t allocSize =
+                sizeof(dynamic_data) + (size * sizeof(value_type));
+            auto result = reinterpret_cast<smart_pointer*>(std::malloc(allocSize));
             result->shared_count.store(1, std::memory_order_release);
-//        std::size_t resultSize = (allocSize - sizeof(rep)) / sizeof(value_type);
-            return result;
+            return &result->head[0];
         }
-
-        std::atomic<std::size_t> shared_count;
-//        std::size_t              hash;
-        value_type               head[1];
     };
 
-    struct splice_data {
-        dynamic_data* dynamic;
-        const_pointer head;
-//        std::size_t   hash;
+    enum {
+        max_small_size = sizeof(dynamic_data) - sizeof(value_type),
+    };
+
+    struct small_data {
+        struct attrib_type {
+            unsigned char type:type_bits;
+            unsigned char length:sizeof(unsigned char)*8-type_bits;
+        };
+        union {
+            attrib_type attribs;
+            value_type  padding;
+        };
+        value_type head[max_small_size];
+        
+        small_data(size_type length)
+        {
+            attribs.type = 0;
+            attribs.length = length;
+        }
     };
 
     struct static_data {
+        size_type     type:type_bits;
+        size_type     length:length_bits;
         const_pointer head;
-//        std::size_t   hash;
+        
+        static_data():
+            type(static_cast<unsigned char>(storage::static_)),
+            length(),
+            head(empty_value)
+        {
+        
+        }
+
+        static_data(const_pointer ptr, size_type length):
+            type(static_cast<unsigned char>(storage::static_)),
+            length(length),
+            head(ptr)
+        {
+        
+        }
     };
 
-    storage   _storage;
-    size_type _length;
+    static_assert(sizeof(small_data) == sizeof(static_data),
+        "sizes should match");
+    static_assert(sizeof(small_data) == sizeof(dynamic_data),
+        "sizes should match");
+    static_assert(sizeof(static_data) == sizeof(dynamic_data),
+        "sizes should match");
 
     union {
+        small_data    _small;
         static_data   _static;
-        dynamic_data* _dynamic;
-        splice_data   _splice;
+        dynamic_data  _dynamic;
     };
 
 };

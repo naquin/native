@@ -348,6 +348,8 @@ private:
     basic_string_splice(const core_type& core, size_type pos, size_type length);
 
     core_type _core;
+    const_pointer _head;
+    size_type _length;
 };
 
 typedef basic_string_splice<char>     string_splice;
@@ -366,14 +368,24 @@ constexpr const typename basic_string_splice<Ch>::size_type basic_string_splice<
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(
     const core_type& core, size_type pos, size_type n):
-    _core(core, pos, n)
+    _core(core)
 {
-
+    if (pos >= _core.size())
+    {
+        this->throw_out_of_range();
+    }
+    else
+    {
+        _head = _core.data() + pos;
+        _length = std::min(n, _core.size());
+    }
 }
 
 // 1) Default constructor. Constructs empty string.
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice() noexcept:
+    _head(),
+    _length(),
     _core()
 {
 
@@ -382,8 +394,12 @@ basic_string_splice<Ch>::basic_string_splice() noexcept:
 // 2) Constructs the string with count copies of character ch.
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(size_type n, value_type c):
-    _core(n, c)
-{ }
+    _core(n, c),
+    _head(_core.data()),
+    _length(n)
+{
+
+}
 
 // 3) Constructs the string with a substring [pos, pos+count) of other. If the
 //    requested substring lasts past the end of the string, or if count == npos,
@@ -392,33 +408,10 @@ basic_string_splice<Ch>::basic_string_splice(size_type n, value_type c):
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(
     const basic_string_splice& str, size_type pos, size_type n):
-    _core()
-{
-    if (pos == 0 && str.size() == n)
-    {
-        this->_core = str._core;
-    }
-    else if (pos >= str.size())
-    {
-        this->throw_out_of_range();
-    }
-    else
-    {
-        n = std::min(n, str.size());
-        this->_core = std::move(core_type(str.data() + pos, n));
-    }
-}
-
-// 4) Constructs the string with the first count characters of character
-//    string pointed to by s. s can contain null characters. s must not be
-//    a NULL pointer.
-template <typename Ch>
-basic_string_splice<Ch>::basic_string_splice(const_pointer s, size_type n):
-    _core(s, n)
+    basic_string_splice(str._core, pos, n)
 {
 
 }
-
 
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(
@@ -433,30 +426,40 @@ basic_string_splice<Ch>::basic_string_splice(
     {
         n = std::min(n, str.size());
         this->_core = std::move(core_type(str.data() + pos, n));
+        _head = _core.data();
+        _length = n;
     }
 }
 
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(
-    const string_type& str, size_type pos, size_type n)
+    const string_type& str, size_type pos, size_type n):
+    basic_string_splice(str._core, pos, n)
 {
-    if (pos >= str.size())
-    {
-        this->throw_out_of_range();
-    }
-    else
-    {
-        n = std::min(n, str.size());
-        this->_core = std::move(core_type(str.data() + pos, n));
-    }
+
 }
+
+// 4) Constructs the string with the first count characters of character
+//    string pointed to by s. s can contain null characters. s must not be
+//    a NULL pointer.
+template <typename Ch>
+basic_string_splice<Ch>::basic_string_splice(const_pointer s, size_type n):
+    _core(s, n),
+    _head(_core.data()),
+    _length(n)
+{
+
+}
+
 
 // 5) Constructs the string with the contents of null-terminated character
 //    string pointed to by s. The length of the string is determined by the
 //    first null character. s must not be a NULL pointer.
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(const_pointer s):
-    _core(s)
+    _core(s),
+    _head(_core.data()),
+    _length(_core.size())
 {
 
 }
@@ -466,7 +469,9 @@ template <typename Ch>
 template<class InputIterator>
 basic_string_splice<Ch>::basic_string_splice(
     InputIterator begin, InputIterator end):
-    _core(begin, end)
+    _core(begin, end),
+    _head(_core.data()),
+    _length(_core.size())
 {
 
 }
@@ -475,21 +480,27 @@ basic_string_splice<Ch>::basic_string_splice(
 //    of other.
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(const basic_string_splice& str):
-    _core(str._core)
+    _core(str._core),
+    _head(str._head),
+    _length(str._length)
 {
 
 }
 
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(const string_type& str):
-    _core(str._core)
+    _core(str._core),
+    _head(_core.data()),
+    _length(_core.size())
 {
 
 }
 
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(const std_type& str):
-    _core(str.data(), str.size())
+    _core(str.data(), str.size()),
+    _head(_core.data()),
+    _length(_core.size())
 {
 
 }
@@ -499,7 +510,9 @@ basic_string_splice<Ch>::basic_string_splice(const std_type& str):
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(
     basic_string_splice&& str) noexcept:
-    _core(std::move(str._core))
+    _core(std::move(str._core)),
+    _head(str._head),
+    _length(str._length)
 {
 
 }
@@ -508,7 +521,9 @@ basic_string_splice<Ch>::basic_string_splice(
 template <typename Ch>
 basic_string_splice<Ch>::basic_string_splice(
     std::initializer_list<value_type> ilist):
-    _core(ilist.begin(), ilist.end())
+    _core(ilist.begin(), ilist.end()),
+    _head(_core.data()),
+    _length(_core.size())
 {
 
 }
@@ -518,20 +533,26 @@ template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(const basic_string_splice& str)
 {
     this->_core = str._core;
+    this->_head = str._head;
+    this->_length = str._length;
     return *this;
 }
 
 template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(const std_type& str)
 {
-    this->_core = core_type(str.data(), str.size());
+    this->_core   = std::move(core_type(str.data(), str.size()));
+    this->_head   = _core.data();
+    this->_length = _core.size();
     return *this;
 }
 
 template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(const string_type& str)
 {
-    this->_core = core_type(str.data(), str.size());
+    this->_core   = std::move(core_type(str.data(), str.size()));
+    this->_head   = _core.data();
+    this->_length = _core.size();
     return *this;
 }
 
@@ -541,7 +562,9 @@ basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(const string_type& s
 template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(basic_string_splice&& str)
 {
-    this->_core = str._core;
+    this->_core   = str._core;
+    this->_head   = str._head;
+    this->_length = str._length;
     return *this;
 }
 
@@ -549,7 +572,9 @@ basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(basic_string_splice&
 template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(const value_type* s)
 {
-    this->_core = std::move(core_type(s));
+    this->_core   = std::move(core_type(s));
+    this->_head   = _core.data();
+    this->_length = _core.size();
     return *this;
 }
 
@@ -558,7 +583,9 @@ template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(
     value_type ch)
 {
-    this->_core = std::move(core_type(ch, 1));
+    this->_core   = std::move(core_type(ch, 1));
+    this->_head   = _core.data();
+    this->_length = _core.size();
     return *this;
 }
 
@@ -566,7 +593,9 @@ basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(
 template <typename Ch>
 basic_string_splice<Ch>& basic_string_splice<Ch>::operator=(std::initializer_list<value_type> ilist)
 {
-    this->_core = std::move(core_type(ilist.begin(), ilist.end()));
+    this->_core   = std::move(core_type(ilist.begin(), ilist.end()));
+    this->_head   = _core.data();
+    this->_length = _core.size();
     return *this;
 }
 
@@ -719,34 +748,34 @@ template <typename Ch>
 inline typename basic_string_splice<Ch>::size_type
     basic_string_splice<Ch>::size() const noexcept
 {
-    return this->_core.size();
+    return this->_length;
 }
 
 template <typename Ch>
 inline typename basic_string_splice<Ch>::size_type
     basic_string_splice<Ch>::length() const noexcept
 {
-    return this->_core.size();
+    return this->_length;
 }
 
 template <typename Ch>
 inline typename basic_string_splice<Ch>::size_type
     basic_string_splice<Ch>::max_size() const noexcept
 {
-    return this->_core.size();
+    return this->_length;
 }
 
 template <typename Ch>
 inline typename basic_string_splice<Ch>::size_type
     basic_string_splice<Ch>::capacity() const noexcept
 {
-    return this->_core.size();
+    return this->_length;
 }
 
 template <typename Ch>
 inline bool basic_string_splice<Ch>::empty() const noexcept
 {
-    return this->_core.size() == 0;
+    return this->_length == 0;
 }
 
 template <typename Ch>
@@ -760,7 +789,7 @@ template <typename Ch>
 typename basic_string_splice<Ch>::const_reference
     basic_string_splice<Ch>::at(size_type n) const
 {
-    if (n >= this->_core.size())
+    if (n >= this->_length)
     {
         this->throw_out_of_range();
     }
@@ -794,7 +823,7 @@ typename basic_string_splice<Ch>::size_type
     n = std::min(n, size()-pos);
     for (size_type i = 0; i < n; ++i)
     {
-        s[i] = this->_core.data()[pos++];
+        s[i] = data()[pos++];
     }
 
     return n;
@@ -813,12 +842,14 @@ basic_string_splice<Ch>
     basic_string_splice<Ch>::substr(size_type pos, size_type n) const
 {
     const auto length = size();
-    if (pos > size())
+    if (pos > length)
     {
         this->throw_out_of_range();
     }
     n = std::min(n, length);
-//    return this_type(&data()[pos], n);
+    const auto offset = this->_head - this->_core.data();
+    pos += offset; // offset to original start
+    n += offset;
     return basic_string_splice(this->_core, pos, n);
 }
 
@@ -833,7 +864,7 @@ template <typename Ch>
 inline typename basic_string_splice<Ch>::const_pointer
     basic_string_splice<Ch>::data() const noexcept
 {
-    return this->_core.data();
+    return this->_head;
 }
 
 

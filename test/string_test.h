@@ -402,7 +402,6 @@ template <typename String>
 void benchmark_string_copy(String s)
 {
     String s2 = s;
-    String s3 = s2;
 }
 
 template <typename String>
@@ -418,9 +417,7 @@ void benchmark_string_index(String& s)
 template <typename String>
 void benchmark_string_substr(const String& s)
 {
-    String sub1 = s.substr(5, 30);
-    String sub2 = s.substr(15, 30);
-    String sub3 = s.substr(0, 30);
+    auto sub = s.substr(5, 30);
 }
 
 #endif

@@ -828,14 +828,7 @@ template <typename Ch>
 typename basic_string<Ch>::splice_type
     basic_string<Ch>::substr(size_type pos, size_type n) const
 {
-    const auto length = size();
-    if (pos > size())
-    {
-        this->throw_out_of_range();
-    }
-    n = std::min(n, length);
-//    return this_type(&data()[pos], n);
-    return splice_type(this->_core, pos, n);
+    return std::move(splice_type(this->_core, pos, n));
 }
 
 template <typename Ch>
