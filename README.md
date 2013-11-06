@@ -31,3 +31,32 @@ Requirements
 ------------
 
 Compiler that supports C++11.
+
+Examples
+--------
+
+```
+#include "native/nstring.h"
+
+using native::string;
+using native::string_splice;
+
+// immutable string
+string s = "some really long string";
+
+// shallow copy, immutable strings can share memory
+string copy = s;
+
+// string::literal performs no allocations!!!
+s = string::literal("this is a string literal");
+
+// substr also performs no allocations, instead returns a string_splice
+string_splice splice = s.substr(5, 4);
+
+auto lambda = [s]()
+{
+    // efficiently copied into lambda
+    // immutable and thread safe - return this lambda anywhere
+    std::cout << s << std::endl;
+};
+```
