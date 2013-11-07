@@ -39,7 +39,7 @@ Examples
 #include "native/istring.h"
 
 using native::istring;
-using native::string_splice;
+using native::string_slice;
 
 // immutable string
 istring s = "some really long string";
@@ -50,8 +50,8 @@ istring copy = s;
 // string::literal performs no allocations!!!
 s = istring::literal("this is a string literal");
 
-// substr also performs no allocations, instead returns a string_splice
-string_splice splice = s.substr(5, 4);
+// substr also performs no allocations, instead returns a string_slice
+string_slice slice = s.substr(5, 4);
 
 auto lambda = [s]()
 {

@@ -56,35 +56,35 @@ bool operator>=(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 }
 
 //
-// compare basic_istring to basic_string_splice
+// compare basic_istring to basic_string_slice
 //
 template <typename Ch>
-bool operator==(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator==(const basic_istring<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<basic_istring<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator!=(const basic_istring<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<basic_istring<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<(const basic_istring<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<basic_istring<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<=(const basic_istring<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<basic_istring<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>(const basic_istring<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<basic_istring<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>=(const basic_istring<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<basic_istring<Ch>>::ge(lhs, rhs);
 }
@@ -124,105 +124,105 @@ bool operator>=(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 }
 
 //
-// compare basic_string_splice to basic_istring
+// compare basic_string_slice to basic_istring
 //
 template <typename Ch>
-bool operator==(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
+bool operator==(const basic_string_slice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
+bool operator!=(const basic_string_slice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
+bool operator<(const basic_string_slice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
+bool operator<=(const basic_string_slice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
+bool operator>(const basic_string_slice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
+bool operator>=(const basic_string_slice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ge(lhs, rhs);
 }
 
 //
-// compare basic_string_splice to basic_string_splice
+// compare basic_string_slice to basic_string_slice
 //
 template <typename Ch>
-bool operator==(const basic_string_splice<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator==(const basic_string_slice<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string_splice<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator!=(const basic_string_slice<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string_splice<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<(const basic_string_slice<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string_splice<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<=(const basic_string_slice<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string_splice<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>(const basic_string_slice<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string_splice<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>=(const basic_string_slice<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ge(lhs, rhs);
 }
 
 //
-// compare basic_string_splice to std::basic_string
+// compare basic_string_slice to std::basic_string
 //
 template <typename Ch>
-bool operator==(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator==(const basic_string_slice<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator!=(const basic_string_slice<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator<(const basic_string_slice<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator<=(const basic_string_slice<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator>(const basic_string_slice<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator>=(const basic_string_slice<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ge(lhs, rhs);
 }
 
 //
@@ -260,35 +260,35 @@ bool operator>=(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 }
 
 //
-// compare std::basic_string to basic_string_splice
+// compare std::basic_string to basic_string_slice
 //
 template <typename Ch>
-bool operator==(const std::basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator==(const std::basic_string<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const std::basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator!=(const std::basic_string<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const std::basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<(const std::basic_string<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const std::basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<=(const std::basic_string<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const std::basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>(const std::basic_string<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const std::basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>=(const std::basic_string<Ch>& lhs, const basic_string_slice<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::ge(lhs, rhs);
 }
@@ -392,67 +392,67 @@ bool operator>=(const Ch* lhs, const basic_istring<Ch>& rhs)
 }
 
 //
-// compare basic_string_splice to Ch*
+// compare basic_string_slice to Ch*
 //
 template <typename Ch>
-bool operator==(const basic_string_splice<Ch>& lhs, const Ch* rhs)
+bool operator==(const basic_string_slice<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator==(const Ch* lhs, const basic_string_splice<Ch>& rhs)
+bool operator==(const Ch* lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string_splice<Ch>& lhs, const Ch* rhs)
+bool operator!=(const basic_string_slice<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const Ch* lhs, const basic_string_splice<Ch>& rhs)
+bool operator!=(const Ch* lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string_splice<Ch>& lhs, const Ch* rhs)
+bool operator<(const basic_string_slice<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const Ch* lhs, const basic_string_splice<Ch>& rhs)
+bool operator<(const Ch* lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string_splice<Ch>& lhs, const Ch* rhs)
+bool operator<=(const basic_string_slice<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const Ch* lhs, const basic_string_splice<Ch>& rhs)
+bool operator<=(const Ch* lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string_splice<Ch>& lhs, const Ch* rhs)
+bool operator>(const basic_string_slice<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const Ch* lhs, const basic_string_splice<Ch>& rhs)
+bool operator>(const Ch* lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string_splice<Ch>& lhs, const Ch* rhs)
+bool operator>=(const basic_string_slice<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ge(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const Ch* lhs, const basic_string_splice<Ch>& rhs)
+bool operator>=(const Ch* lhs, const basic_string_slice<Ch>& rhs)
 {
-    return detail::string_common<basic_string_splice<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_string_slice<Ch>>::ge(lhs, rhs);
 }
 
 } // namespace native

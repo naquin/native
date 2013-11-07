@@ -31,7 +31,7 @@ template <typename Ch>
 class basic_istring;
 
 template <typename Ch>
-class basic_string_splice;
+class basic_string_slice;
 
 class string_base;
 

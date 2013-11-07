@@ -25,12 +25,12 @@ using namespace native;
 
 TEST(SpliceString, Compare)
 {
-    test_string_compare<string_splice>();
+    test_string_compare<string_slice>();
 }
 
 TEST(SpliceString, Constructors)
 {
-    test_string_constructors<string_splice>();
+    test_string_constructors<string_slice>();
 
     istring ctor2(5, 'a');
     istring ctor3c(istring(ctor2), 1);
@@ -43,61 +43,61 @@ TEST(SpliceString, Constructors)
 
 TEST(SpliceString, AssignmentOperators)
 {
-    test_string_assignment_operators<string_splice>();
+    test_string_assignment_operators<string_slice>();
 
-    string_splice splice_expected("lions");
-    istring s = splice_expected;
-    EXPECT_EQ(splice_expected, s);
+    string_slice slice_expected("lions");
+    istring s = slice_expected;
+    EXPECT_EQ(slice_expected, s);
 }
 
 TEST(SpliceString, Iterators)
 {
-    test_string_iterators<string_splice>();
+    test_string_iterators<string_slice>();
 }
 
 TEST(SpliceString, Attributes)
 {
-    test_string_attributes<string_splice>();
+    test_string_attributes<string_slice>();
     istring s("foobar");
     EXPECT_EQ(0, strcmp("foobar", s.c_str()));
 }
 
 TEST(SpliceString, find)
 {
-    test_string_find<string_splice>();
+    test_string_find<string_slice>();
 }
 
 TEST(SpliceString, rfind)
 {
-    test_string_rfind<string_splice>();
+    test_string_rfind<string_slice>();
 }
 
 TEST(SpliceString, find_first_of)
 {
-    test_string_find_first_of<string_splice>();
+    test_string_find_first_of<string_slice>();
 }
 
 TEST(SpliceString, find_last_of)
 {
-    test_string_find_last_of<string_splice>();
+    test_string_find_last_of<string_slice>();
 }
 
 TEST(SpliceString, find_first_not_of)
 {
-    test_string_find_first_not_of<string_splice>();
+    test_string_find_first_not_of<string_slice>();
 }
 
 TEST(SpliceString, find_last_not_of)
 {
-    test_string_find_last_not_of<string_splice>();
+    test_string_find_last_not_of<string_slice>();
 }
 
 TEST(SpliceString, split)
 {
-    test_string_split<string_splice>();
+    test_string_split<string_slice>();
 }
 
 TEST(SpliceString, OStream)
 {
-    test_string_ostream<string_splice>();
+    test_string_ostream<string_slice>();
 }

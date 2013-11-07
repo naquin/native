@@ -21,7 +21,7 @@
 #include "native/string_core.h"
 #include "native/string_common.h"
 #include "native/string_operators.h"
-#include "native/string_splice.h"
+#include "native/string_slice.h"
 
 #include <vector>
 
@@ -59,10 +59,10 @@ public:
     typedef std::basic_string<value_type> std_type;
     typedef detail::string_common<this_type> common;
     typedef basic_string_core<Ch> core_type;
-    typedef basic_string_splice<value_type> splice_type;
+    typedef basic_string_slice<value_type> slice_type;
     typedef basic_istring<Ch> string_type;
 
-    friend splice_type;
+    friend slice_type;
 
     static const size_type npos;
 
@@ -78,7 +78,7 @@ public:
     //    pos >= other.size(), std::out_of_range is thrown.
     basic_istring(const basic_istring& str, size_type pos, size_type n = npos);
     basic_istring(const std_type& str,     size_type pos, size_type n = npos);
-    basic_istring(const splice_type& str,  size_type pos, size_type n = npos);
+    basic_istring(const slice_type& str,  size_type pos, size_type n = npos);
 
     // 4) Constructs the string with the first count characters of character
     //    string pointed to by s. s can contain null characters. s must not be
@@ -98,7 +98,7 @@ public:
     //    of other.
     basic_istring(const basic_istring& str);
     basic_istring(const std_type& str);
-    basic_istring(const splice_type& str);
+    basic_istring(const slice_type& str);
 
     // 8) Move constructor. Constructs the string with the contents of other
     //    using move semantics.
@@ -113,7 +113,7 @@ public:
     // 1) Replaces the contents with a copy of str
     basic_istring& operator=(const basic_istring& str);
     basic_istring& operator=(const std_type& str);
-    basic_istring& operator=(const splice_type& str);
+    basic_istring& operator=(const slice_type& str);
 
     // 2) Replaces the contents with those of str using move semantics. str is
     //    in undefined state after the operation.
@@ -157,23 +157,23 @@ public:
     size_type copy(pointer s, size_type n, size_type pos = 0) const;
     template <std::size_t Size>
     size_type copy(value_type (&s)[Size], size_type pos = 0) const;
-    splice_type substr(size_type pos = 0, size_type n = npos) const;
+    slice_type substr(size_type pos = 0, size_type n = npos) const;
 
     const_pointer data() const noexcept;
     const_pointer c_str() const noexcept;
     std_type      std_str() const;
 
     // 1) Split a string by ch.
-    std::vector<splice_type> split(value_type ch) const;
+    std::vector<slice_type> split(value_type ch) const;
 
     // 2) Split a string by s.
-    std::vector<splice_type> split(const_pointer s) const;
+    std::vector<slice_type> split(const_pointer s) const;
 
     // 3) Split a string by str.
     template <typename String>
     typename std::enable_if<
         is_string_class<String>::value,
-        std::vector<splice_type>
+        std::vector<slice_type>
     >::type split(const String& str) const;
 
 //    basic_istring<char>     utf8() const;
@@ -456,7 +456,7 @@ basic_istring<Ch>::basic_istring(const std_type& str, size_type pos, size_type n
 }
 
 template <typename Ch>
-basic_istring<Ch>::basic_istring(const splice_type& str, size_type pos, size_type n):
+basic_istring<Ch>::basic_istring(const slice_type& str, size_type pos, size_type n):
     _core()
 {
     if (pos >= str.size())
@@ -507,7 +507,7 @@ basic_istring<Ch>::basic_istring(const std_type& str):
 { }
 
 template <typename Ch>
-basic_istring<Ch>::basic_istring(const splice_type& str):
+basic_istring<Ch>::basic_istring(const slice_type& str):
     _core(str.data(), str.size())
 { }
 
@@ -545,7 +545,7 @@ basic_istring<Ch>& basic_istring<Ch>::operator=(const std_type& str)
 }
 
 template <typename Ch>
-basic_istring<Ch>& basic_istring<Ch>::operator=(const splice_type& str)
+basic_istring<Ch>& basic_istring<Ch>::operator=(const slice_type& str)
 {
     this->_core = core_type(str.data(), str.size());
     return *this;
@@ -589,20 +589,20 @@ basic_istring<Ch>& basic_istring<Ch>::operator=(std::initializer_list<value_type
 
 // 1) Split a string by ch.
 template <typename Ch>
-std::vector<typename basic_istring<Ch>::splice_type>
+std::vector<typename basic_istring<Ch>::slice_type>
     basic_istring<Ch>::split(value_type ch) const
 {
-    std::vector<splice_type> result;
+    std::vector<slice_type> result;
     size_type start = 0, end = find(ch);
     for(;;)
     {
         if (end == npos)
         {
-            result.push_back(splice_type(_core, start, size() - start));
+            result.push_back(slice_type(_core, start, size() - start));
             break;
         }
 
-        result.push_back(splice_type(_core, start, end - start));
+        result.push_back(slice_type(_core, start, end - start));
         start = end + 1;
         end = find(ch, start);
     }
@@ -612,14 +612,14 @@ std::vector<typename basic_istring<Ch>::splice_type>
 
 // 2) Split a string by s.
 template <typename Ch>
-std::vector<typename basic_istring<Ch>::splice_type>
+std::vector<typename basic_istring<Ch>::slice_type>
     basic_istring<Ch>::split(const_pointer s) const
 {
     const size_type n = traits_type::length(s);
-    std::vector<splice_type> result;
+    std::vector<slice_type> result;
     if (n == 0)
     {
-        result.push_back(splice_type(_core));
+        result.push_back(slice_type(_core));
     }
     else
     {
@@ -628,11 +628,11 @@ std::vector<typename basic_istring<Ch>::splice_type>
         {
             if (end == npos)
             {
-                result.push_back(splice_type(_core, start, size() - start));
+                result.push_back(slice_type(_core, start, size() - start));
                 break;
             }
 
-            result.push_back(splice_type(_core, start, end - start));
+            result.push_back(slice_type(_core, start, end - start));
             start = end + n;
             end = find(s, start, n);
         }
@@ -646,13 +646,13 @@ template <typename Ch>
 template <typename String>
 typename std::enable_if<
     is_string_class<String>::value,
-    std::vector<typename basic_istring<Ch>::splice_type>
+    std::vector<typename basic_istring<Ch>::slice_type>
 >::type basic_istring<Ch>::split(const String& str) const
 {
-    std::vector<splice_type> result;
+    std::vector<slice_type> result;
     if (str.empty())
     {
-        result.push_back(splice_type(_core));
+        result.push_back(slice_type(_core));
     }
     else
     {
@@ -661,11 +661,11 @@ typename std::enable_if<
         {
             if (end == npos)
             {
-                result.push_back(splice_type(_core, start, size() - start));
+                result.push_back(slice_type(_core, start, size() - start));
                 break;
             }
 
-            result.push_back(splice_type(_core, start, end - start));
+            result.push_back(slice_type(_core, start, end - start));
             start = end + str.size();
             end = find(str, start);
         }
@@ -825,10 +825,10 @@ inline typename basic_istring<Ch>::size_type
 }
 
 template <typename Ch>
-typename basic_istring<Ch>::splice_type
+typename basic_istring<Ch>::slice_type
     basic_istring<Ch>::substr(size_type pos, size_type n) const
 {
-    return std::move(splice_type(this->_core, pos, n));
+    return std::move(slice_type(this->_core, pos, n));
 }
 
 template <typename Ch>

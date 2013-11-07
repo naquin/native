@@ -38,8 +38,8 @@ TEST(String, Constructors)
     test_string_constructors<istring>();
 
     istring ctor2(5, 'a');
-    istring ctor3c(string_splice(ctor2), 1);
-    istring ctor7c((string_splice(ctor2)));
+    istring ctor3c(string_slice(ctor2), 1);
+    istring ctor7c((string_slice(ctor2)));
 
     EXPECT_EQ("aaaaa", ctor2);
     EXPECT_EQ("aaaa", ctor3c);
@@ -50,9 +50,9 @@ TEST(String, AssignmentOperators)
 {
     test_string_assignment_operators<istring>();
 
-    string_splice splice_expected("lions");
-    istring s = splice_expected;
-    EXPECT_EQ(splice_expected, s);
+    string_slice slice_expected("lions");
+    istring s = slice_expected;
+    EXPECT_EQ(slice_expected, s);
 }
 
 TEST(String, Iterators)
