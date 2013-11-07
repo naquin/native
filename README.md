@@ -36,7 +36,7 @@ Examples
 --------
 
 ```
-#include "native/nstring.h"
+#include "native/istring.h"
 
 using native::string;
 using native::string_splice;

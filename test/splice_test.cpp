@@ -17,7 +17,7 @@
 #include "test.h"
 #include "string_test.h"
 
-#include "native/nstring.h"
+#include "native/istring.h"
 
 #include <sstream>
 

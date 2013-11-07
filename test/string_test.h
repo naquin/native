@@ -18,7 +18,7 @@
 #define NATIVE_STRING_TEST_H__
 
 #include "test.h"
-#include "native/nstring.h"
+#include "native/istring.h"
 
 template <typename String>
 void test_string_compare()

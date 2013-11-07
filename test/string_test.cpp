@@ -19,7 +19,7 @@
 
 #include "benchmark.h"
 
-#include "native/nstring.h"
+#include "native/istring.h"
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
