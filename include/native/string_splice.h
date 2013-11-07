@@ -57,7 +57,7 @@ public:
     typedef detail::string_common<this_type> common;
     typedef basic_string_core<Ch> core_type;
     typedef basic_string_splice<value_type> splice_type;
-    typedef basic_string<Ch> string_type;
+    typedef basic_istring<Ch> string_type;
 
     friend string_type;
 
@@ -307,7 +307,7 @@ public:
     >::type compare(const String& str) const noexcept;
 
     // 2) Compares a [pos1, pos1+count1) substring of this string to str as if
-    //    by basic_string(*this, pos1, count1).compare(str)
+    //    by this_type(*this, pos1, count1).compare(str)
     template <typename String>
     typename std::enable_if<
         is_string_class<String>::value,
@@ -316,7 +316,7 @@ public:
 
     // 3) Compares a [pos1, pos1+count1) substring of this string to a substring
     //    [pos2, pas2+count2) of str as if by
-    //    basic_string(*this, pos1, count1).compare(basic_string(str, pos2, count2))
+    //    this_type(*this, pos1, count1).compare(this_type(str, pos2, count2))
     template <typename String>
     typename std::enable_if<
         is_string_class<String>::value,
@@ -326,19 +326,19 @@ public:
 
     // 4) Compares this string to the null-terminated character sequence
     //    beginning at the character pointed to by s, as if by
-    //    compare(basic_string(s))
+    //    compare(this_type(s))
     int compare(const_pointer s) const noexcept;
 
     // 5) Compares a [pos1, pos1+count1) substring of this string to the
     //    null-terminated character sequence beginning at the character pointed
     //    to by s, as if by
-    //    basic_string(*this, pos, count1).compare(basic_string(s))
+    //    this_type(*this, pos, count1).compare(this_type(s))
     int compare(size_type pos1, size_type n1, const_pointer s) const;
 
     // 6) Compares a [pos1, pos1+count1) substring of this string to the first
     //    count2 characters of the character array whose first character is
     //    pointed to by s, as if by
-    //    basic_string(*this, pos, count1).compare(basic_string(s, count2)).
+    //    this_type(*this, pos, count1).compare(this_type(s, count2)).
     //    (Note: the characters from s to s+count2 may include null characters))
     int compare(size_type pos1, size_type n1, const_pointer s, size_type n2) const;
 

@@ -28,7 +28,7 @@ template <typename Ch>
 struct basic_string_core;
 
 template <typename Ch>
-class basic_string;
+class basic_istring;
 
 template <typename Ch>
 class basic_string_splice;
@@ -53,7 +53,7 @@ public:
 
 inline void string_base::throw_out_of_range() const
 {
-    throw std::out_of_range("native::basic_string");
+    throw std::out_of_range("native::basic_istring");
 }
 
 

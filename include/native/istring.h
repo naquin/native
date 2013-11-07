@@ -40,10 +40,10 @@ namespace native {
 // and classes.
 //
 template <typename Ch>
-class basic_string:
+class basic_istring:
     public string_base {
 public:
-    typedef basic_string<Ch> this_type;
+    typedef basic_istring<Ch> this_type;
     typedef std::char_traits<Ch> traits_type;
     typedef typename traits_type::char_type value_type;
     typedef std::allocator<Ch> allocator_type;
@@ -60,74 +60,74 @@ public:
     typedef detail::string_common<this_type> common;
     typedef basic_string_core<Ch> core_type;
     typedef basic_string_splice<value_type> splice_type;
-    typedef basic_string<Ch> string_type;
+    typedef basic_istring<Ch> string_type;
 
     friend splice_type;
 
     static const size_type npos;
 
     // 1) Default constructor. Constructs empty string.
-    basic_string() noexcept;
+    basic_istring() noexcept;
 
     // 2) Constructs the string with count copies of character ch.
-    basic_string(size_type n, value_type c);
+    basic_istring(size_type n, value_type c);
 
     // 3) Constructs the string with a substring [pos, pos+count) of other. If
     //    the requested substring lasts past the end of the string, or if
     //    count == npos, the resulting substring is [pos, size()). If
     //    pos >= other.size(), std::out_of_range is thrown.
-    basic_string(const basic_string& str, size_type pos, size_type n = npos);
-    basic_string(const std_type& str,     size_type pos, size_type n = npos);
-    basic_string(const splice_type& str,  size_type pos, size_type n = npos);
+    basic_istring(const basic_istring& str, size_type pos, size_type n = npos);
+    basic_istring(const std_type& str,     size_type pos, size_type n = npos);
+    basic_istring(const splice_type& str,  size_type pos, size_type n = npos);
 
     // 4) Constructs the string with the first count characters of character
     //    string pointed to by s. s can contain null characters. s must not be
     //    a NULL pointer.
-    basic_string(const_pointer s, size_type n);
+    basic_istring(const_pointer s, size_type n);
 
     // 5) Constructs the string with the contents of null-terminated character
     //    string pointed to by s. The length of the string is determined by the
     //    first null character. s must not be a NULL pointer.
-    basic_string(const_pointer s);
+    basic_istring(const_pointer s);
 
     // 6) Constructs the string with the contents of the range [first, last).
     template<class InputIterator>
-    basic_string(InputIterator begin, InputIterator end);
+    basic_istring(InputIterator begin, InputIterator end);
 
     // 7) Copy constructor. Constructs the string with the copy of the contents
     //    of other.
-    basic_string(const basic_string& str);
-    basic_string(const std_type& str);
-    basic_string(const splice_type& str);
+    basic_istring(const basic_istring& str);
+    basic_istring(const std_type& str);
+    basic_istring(const splice_type& str);
 
     // 8) Move constructor. Constructs the string with the contents of other
     //    using move semantics.
-    basic_string(basic_string&& str) noexcept;
+    basic_istring(basic_istring&& str) noexcept;
 
     // 9) Constructs the string with the contents of the initializer list init.
-    explicit basic_string(std::initializer_list<value_type>);
+    explicit basic_istring(std::initializer_list<value_type>);
 
     // Destructor
-    ~basic_string();
+    ~basic_istring();
 
     // 1) Replaces the contents with a copy of str
-    basic_string& operator=(const basic_string& str);
-    basic_string& operator=(const std_type& str);
-    basic_string& operator=(const splice_type& str);
+    basic_istring& operator=(const basic_istring& str);
+    basic_istring& operator=(const std_type& str);
+    basic_istring& operator=(const splice_type& str);
 
     // 2) Replaces the contents with those of str using move semantics. str is
     //    in undefined state after the operation.
-    basic_string& operator=(basic_string&& str);
+    basic_istring& operator=(basic_istring&& str);
     
     // 3) Replaces the contents with those of null-terminated character string
     //    pointed to by s.
-    basic_string& operator=(const value_type* s);
+    basic_istring& operator=(const value_type* s);
 
     // 4) Replaces the contents with character ch
-    basic_string& operator=(value_type ch);
+    basic_istring& operator=(value_type ch);
 
     // 5) Replaces the contents with those of the initializer list ilist.
-    basic_string& operator=(std::initializer_list<value_type> ilist);
+    basic_istring& operator=(std::initializer_list<value_type> ilist);
 
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
@@ -176,9 +176,9 @@ public:
         std::vector<splice_type>
     >::type split(const String& str) const;
 
-//    basic_string<char>     utf8() const;
-//    basic_string<char16_t> utf16() const;
-//    basic_string<char32_t> utf32() const;
+//    basic_istring<char>     utf8() const;
+//    basic_istring<char16_t> utf16() const;
+//    basic_istring<char32_t> utf32() const;
 
     // Return a hash for this string. Hashes are computed once and then cached.
 //    std::size_t hash() const;
@@ -318,7 +318,7 @@ public:
     >::type compare(const String& str) const noexcept;
 
     // 2) Compares a [pos1, pos1+count1) substring of this string to str as if
-    //    by basic_string(*this, pos1, count1).compare(str)
+    //    by basic_istring(*this, pos1, count1).compare(str)
     template <typename String>
     typename std::enable_if<
         is_string_class<String>::value,
@@ -327,7 +327,7 @@ public:
 
     // 3) Compares a [pos1, pos1+count1) substring of this string to a substring
     //    [pos2, pas2+count2) of str as if by
-    //    basic_string(*this, pos1, count1).compare(basic_string(str, pos2, count2))
+    //    basic_istring(*this, pos1, count1).compare(basic_istring(str, pos2, count2))
     template <typename String>
     typename std::enable_if<
         is_string_class<String>::value,
@@ -337,19 +337,19 @@ public:
 
     // 4) Compares this string to the null-terminated character sequence
     //    beginning at the character pointed to by s, as if by
-    //    compare(basic_string(s))
+    //    compare(basic_istring(s))
     int compare(const_pointer s) const noexcept;
 
     // 5) Compares a [pos1, pos1+count1) substring of this string to the
     //    null-terminated character sequence beginning at the character pointed
     //    to by s, as if by
-    //    basic_string(*this, pos, count1).compare(basic_string(s))
+    //    basic_istring(*this, pos, count1).compare(basic_istring(s))
     int compare(size_type pos1, size_type n1, const_pointer s) const;
 
     // 6) Compares a [pos1, pos1+count1) substring of this string to the first
     //    count2 characters of the character array whose first character is
     //    pointed to by s, as if by
-    //    basic_string(*this, pos, count1).compare(basic_string(s, count2)).
+    //    basic_istring(*this, pos, count1).compare(basic_istring(s, count2)).
     //    (Note: the characters from s to s+count2 may include null characters))
     int compare(size_type pos1, size_type n1, const_pointer s, size_type n2) const;
 
@@ -357,62 +357,62 @@ public:
     // Create a string that references a string literal. This string performs
     // no allocations and is über efficient.
     template <std::size_t size>
-    static basic_string literal(const value_type (&s)[size]);
+    static basic_istring literal(const value_type (&s)[size]);
 
 private:
     // 0)
-    basic_string(const core_type& s);
+    basic_istring(const core_type& s);
     
     core_type _core;
 };
 
 
-typedef basic_string<char>     string;
-typedef basic_string<wchar_t>  wstring;
-typedef basic_string<char16_t> u16string;
-typedef basic_string<char32_t> u32string;
+typedef basic_istring<char>     string;
+typedef basic_istring<wchar_t>  wstring;
+typedef basic_istring<char16_t> u16string;
+typedef basic_istring<char32_t> u32string;
 
 
 template <typename Ch>
-std::basic_ostream<Ch>& operator<< (std::basic_ostream<Ch>& ostr, const basic_string<Ch>& s);
+std::basic_ostream<Ch>& operator<< (std::basic_ostream<Ch>& ostr, const basic_istring<Ch>& s);
 
 template <typename Ch>
-std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_string<Ch>& s);
+std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_istring<Ch>& s);
 
 //
 // implementation
 //
 
 //
-// basic_string
+// basic_istring
 //
 template <typename Ch>
-constexpr const typename basic_string<Ch>::size_type basic_string<Ch>::npos = -1;
+constexpr const typename basic_istring<Ch>::size_type basic_istring<Ch>::npos = -1;
 
 template <typename Ch>
 template <std::size_t n>
-basic_string<Ch> basic_string<Ch>::literal(
+basic_istring<Ch> basic_istring<Ch>::literal(
     const value_type (&s)[n])
 {
     core_type core(const_cast<pointer>(s), n-1, core_type::storage::static_);
-    return std::move(basic_string<Ch>(core));
+    return std::move(basic_istring<Ch>(core));
 }
 
 // 0)
 template <typename Ch>
-basic_string<Ch>::basic_string(const core_type& core):
+basic_istring<Ch>::basic_istring(const core_type& core):
     _core(core)
 { }
 
 // 1) Default constructor. Constructs empty string.
 template <typename Ch>
-basic_string<Ch>::basic_string() noexcept:
+basic_istring<Ch>::basic_istring() noexcept:
     _core()
 { }
 
 // 2) Constructs the string with count copies of character ch.
 template <typename Ch>
-basic_string<Ch>::basic_string(size_type n, value_type c):
+basic_istring<Ch>::basic_istring(size_type n, value_type c):
     _core(n, c)
 { }
 
@@ -421,8 +421,8 @@ basic_string<Ch>::basic_string(size_type n, value_type c):
 //    the resulting substring is [pos, size()). If pos >= other.size(),
 //    std::out_of_range is thrown.
 template <typename Ch>
-basic_string<Ch>::basic_string(
-    const basic_string& str, size_type pos, size_type n):
+basic_istring<Ch>::basic_istring(
+    const basic_istring& str, size_type pos, size_type n):
     _core()
 {
     if (pos == 0 && str.size() == n)
@@ -441,7 +441,7 @@ basic_string<Ch>::basic_string(
 }
 
 template <typename Ch>
-basic_string<Ch>::basic_string(const std_type& str, size_type pos, size_type n):
+basic_istring<Ch>::basic_istring(const std_type& str, size_type pos, size_type n):
     _core()
 {
     if (pos >= str.size())
@@ -456,7 +456,7 @@ basic_string<Ch>::basic_string(const std_type& str, size_type pos, size_type n):
 }
 
 template <typename Ch>
-basic_string<Ch>::basic_string(const splice_type& str, size_type pos, size_type n):
+basic_istring<Ch>::basic_istring(const splice_type& str, size_type pos, size_type n):
     _core()
 {
     if (pos >= str.size())
@@ -475,7 +475,7 @@ basic_string<Ch>::basic_string(const splice_type& str, size_type pos, size_type 
 //    pointed to by s. s can contain null characters. s must not be a NULL
 //    pointer.
 template <typename Ch>
-basic_string<Ch>::basic_string(const_pointer s, size_type n):
+basic_istring<Ch>::basic_istring(const_pointer s, size_type n):
     _core(s, n)
 { }
 
@@ -483,69 +483,69 @@ basic_string<Ch>::basic_string(const_pointer s, size_type n):
 //    pointed to by s. The length of the string is determined by the first null
 //    character. s must not be a NULL pointer.
 template <typename Ch>
-basic_string<Ch>::basic_string(const_pointer first):
+basic_istring<Ch>::basic_istring(const_pointer first):
     _core(first)
 { }
 
 // 6) Constructs the string with the contents of the range [first, last).
 template <typename Ch>
 template<class InputIterator>
-basic_string<Ch>::basic_string(
+basic_istring<Ch>::basic_istring(
     InputIterator begin, InputIterator end):
     _core(begin, end)
 { }
 
 // 7) Copy constructor. Constructs the string with the copy of the contents of other.
 template <typename Ch>
-basic_string<Ch>::basic_string(const basic_string& str):
+basic_istring<Ch>::basic_istring(const basic_istring& str):
     _core(str._core)
 { }
 
 template <typename Ch>
-basic_string<Ch>::basic_string(const std_type& str):
+basic_istring<Ch>::basic_istring(const std_type& str):
     _core(str.data(), str.size())
 { }
 
 template <typename Ch>
-basic_string<Ch>::basic_string(const splice_type& str):
+basic_istring<Ch>::basic_istring(const splice_type& str):
     _core(str.data(), str.size())
 { }
 
 
 // 8) Move constructor. Constructs the string with the contents of other using move semantics.
 template <typename Ch>
-basic_string<Ch>::basic_string(basic_string&& str) noexcept:
+basic_istring<Ch>::basic_istring(basic_istring&& str) noexcept:
     _core(std::move(str._core))
 { }
 
 // 9) Constructs the string with the contents of the initializer list init.
 template <typename Ch>
-basic_string<Ch>::basic_string(std::initializer_list<value_type> init):
+basic_istring<Ch>::basic_istring(std::initializer_list<value_type> init):
     _core(init.begin(), init.end())
 { }
 
 // Destructor
 template <typename Ch>
-basic_string<Ch>::~basic_string()
+basic_istring<Ch>::~basic_istring()
 { }
 
 // 1) Replaces the contents with a copy of str
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(const basic_string& str)
+basic_istring<Ch>& basic_istring<Ch>::operator=(const basic_istring& str)
 {
     this->_core = str._core;
     return *this;
 }
 
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(const std_type& str)
+basic_istring<Ch>& basic_istring<Ch>::operator=(const std_type& str)
 {
     this->_core = core_type(str.data(), str.size());
     return *this;
 }
 
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(const splice_type& str)
+basic_istring<Ch>& basic_istring<Ch>::operator=(const splice_type& str)
 {
     this->_core = core_type(str.data(), str.size());
     return *this;
@@ -555,7 +555,7 @@ basic_string<Ch>& basic_string<Ch>::operator=(const splice_type& str)
 // 2) Replaces the contents with those of str using move semantics. str is
 //    in undefined state after the operation.
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(basic_string&& str)
+basic_istring<Ch>& basic_istring<Ch>::operator=(basic_istring&& str)
 {
     this->_core = str._core;
     return *this;
@@ -563,7 +563,7 @@ basic_string<Ch>& basic_string<Ch>::operator=(basic_string&& str)
 
 // 3) Replaces the contents with those of null-terminated character string pointed to by s.
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(const value_type* s)
+basic_istring<Ch>& basic_istring<Ch>::operator=(const value_type* s)
 {
     this->_core = std::move(core_type(s));
     return *this;
@@ -571,7 +571,7 @@ basic_string<Ch>& basic_string<Ch>::operator=(const value_type* s)
 
 // 4) Replaces the contents with character ch
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(
+basic_istring<Ch>& basic_istring<Ch>::operator=(
     value_type ch)
 {
     this->_core = std::move(core_type(ch, 1));
@@ -580,7 +580,7 @@ basic_string<Ch>& basic_string<Ch>::operator=(
 
 // 5) Replaces the contents with those of the initializer list ilist.
 template <typename Ch>
-basic_string<Ch>& basic_string<Ch>::operator=(std::initializer_list<value_type> ilist)
+basic_istring<Ch>& basic_istring<Ch>::operator=(std::initializer_list<value_type> ilist)
 {
     this->_core = std::move(core_type(ilist.begin(), ilist.end()));
     return *this;
@@ -589,8 +589,8 @@ basic_string<Ch>& basic_string<Ch>::operator=(std::initializer_list<value_type> 
 
 // 1) Split a string by ch.
 template <typename Ch>
-std::vector<typename basic_string<Ch>::splice_type>
-    basic_string<Ch>::split(value_type ch) const
+std::vector<typename basic_istring<Ch>::splice_type>
+    basic_istring<Ch>::split(value_type ch) const
 {
     std::vector<splice_type> result;
     size_type start = 0, end = find(ch);
@@ -612,8 +612,8 @@ std::vector<typename basic_string<Ch>::splice_type>
 
 // 2) Split a string by s.
 template <typename Ch>
-std::vector<typename basic_string<Ch>::splice_type>
-    basic_string<Ch>::split(const_pointer s) const
+std::vector<typename basic_istring<Ch>::splice_type>
+    basic_istring<Ch>::split(const_pointer s) const
 {
     const size_type n = traits_type::length(s);
     std::vector<splice_type> result;
@@ -646,8 +646,8 @@ template <typename Ch>
 template <typename String>
 typename std::enable_if<
     is_string_class<String>::value,
-    std::vector<typename basic_string<Ch>::splice_type>
->::type basic_string<Ch>::split(const String& str) const
+    std::vector<typename basic_istring<Ch>::splice_type>
+>::type basic_istring<Ch>::split(const String& str) const
 {
     std::vector<splice_type> result;
     if (str.empty())
@@ -676,105 +676,105 @@ typename std::enable_if<
 
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_iterator
-    basic_string<Ch>::begin() const noexcept
+inline typename basic_istring<Ch>::const_iterator
+    basic_istring<Ch>::begin() const noexcept
 {
     return &data()[0];
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_iterator
-    basic_string<Ch>::basic_string<Ch>::end() const noexcept
+inline typename basic_istring<Ch>::const_iterator
+    basic_istring<Ch>::basic_istring<Ch>::end() const noexcept
 {
     return &data()[0] + size();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_reverse_iterator
-    basic_string<Ch>::rbegin() const noexcept
+inline typename basic_istring<Ch>::const_reverse_iterator
+    basic_istring<Ch>::rbegin() const noexcept
 {
     return const_reverse_iterator(end());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_reverse_iterator
-    basic_string<Ch>::rend() const noexcept
+inline typename basic_istring<Ch>::const_reverse_iterator
+    basic_istring<Ch>::rend() const noexcept
 {
     return const_reverse_iterator(begin());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_iterator
-    basic_string<Ch>::cbegin() const noexcept
+inline typename basic_istring<Ch>::const_iterator
+    basic_istring<Ch>::cbegin() const noexcept
 {
     return begin();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_iterator
-    basic_string<Ch>::cend() const noexcept
+inline typename basic_istring<Ch>::const_iterator
+    basic_istring<Ch>::cend() const noexcept
 {
     return end();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_reverse_iterator
-    basic_string<Ch>::crbegin() const noexcept
+inline typename basic_istring<Ch>::const_reverse_iterator
+    basic_istring<Ch>::crbegin() const noexcept
 {
     return rbegin();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_reverse_iterator
-    basic_string<Ch>::crend() const noexcept
+inline typename basic_istring<Ch>::const_reverse_iterator
+    basic_istring<Ch>::crend() const noexcept
 {
     return rend();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::size() const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::size() const noexcept
 {
     return this->_core.size();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::length() const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::length() const noexcept
 {
     return this->_core.size();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::max_size() const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::max_size() const noexcept
 {
     return this->_core.size();
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::capacity() const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::capacity() const noexcept
 {
     return this->_core.size();
 }
 
 template <typename Ch>
-inline bool basic_string<Ch>::empty() const noexcept
+inline bool basic_istring<Ch>::empty() const noexcept
 {
     return this->_core.size() == 0;
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::const_reference
-    basic_string<Ch>::operator[](size_type pos) const
+inline typename basic_istring<Ch>::const_reference
+    basic_istring<Ch>::operator[](size_type pos) const
 {
     return data()[pos];
 }
 
 template <typename Ch>
-typename basic_string<Ch>::const_reference
-    basic_string<Ch>::at(size_type n) const
+typename basic_istring<Ch>::const_reference
+    basic_istring<Ch>::at(size_type n) const
 {
     if (n >= this->_core.size())
     {
@@ -786,22 +786,22 @@ typename basic_string<Ch>::const_reference
 
 
 template <typename Ch>
-typename basic_string<Ch>::const_reference
-    basic_string<Ch>::front() const
+typename basic_istring<Ch>::const_reference
+    basic_istring<Ch>::front() const
 {
     return data()[0];
 }
 
 template <typename Ch>
-typename basic_string<Ch>::const_reference
-    basic_string<Ch>::back() const
+typename basic_istring<Ch>::const_reference
+    basic_istring<Ch>::back() const
 {
     return data()[size()-1];
 }
 
 template <typename Ch>
-typename basic_string<Ch>::size_type
-    basic_string<Ch>::copy(pointer s, size_type n, size_type pos) const
+typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::copy(pointer s, size_type n, size_type pos) const
 {
     if (pos >= size())
     {
@@ -818,36 +818,36 @@ typename basic_string<Ch>::size_type
 
 template <typename Ch>
 template <std::size_t Size>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::copy(value_type (&s)[Size], size_type pos) const
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::copy(value_type (&s)[Size], size_type pos) const
 {
     return copy(s, Size-1, pos);
 }
 
 template <typename Ch>
-typename basic_string<Ch>::splice_type
-    basic_string<Ch>::substr(size_type pos, size_type n) const
+typename basic_istring<Ch>::splice_type
+    basic_istring<Ch>::substr(size_type pos, size_type n) const
 {
     return std::move(splice_type(this->_core, pos, n));
 }
 
 template <typename Ch>
-typename basic_string<Ch>::std_type
-    basic_string<Ch>::std_str() const
+typename basic_istring<Ch>::std_type
+    basic_istring<Ch>::std_str() const
 {
     return std::move(std_type(data(), size()));
 }
 
 template <typename Ch>
-typename basic_string<Ch>::const_pointer
-    basic_string<Ch>::c_str() const noexcept
+typename basic_istring<Ch>::const_pointer
+    basic_istring<Ch>::c_str() const noexcept
 {
     return this->_core.data();
 }
 
 template <typename Ch>
-typename basic_string<Ch>::const_pointer
-    basic_string<Ch>::data() const noexcept
+typename basic_istring<Ch>::const_pointer
+    basic_istring<Ch>::data() const noexcept
 {
     return this->_core.data();
 }
@@ -862,30 +862,30 @@ template <typename Ch>
 template <typename String>
 inline typename std::enable_if<
             is_string_class<String>::value,
-            typename basic_string<Ch>::size_type
+            typename basic_istring<Ch>::size_type
         >::type
-    basic_string<Ch>::find(const String& str, size_type pos) const noexcept
+    basic_istring<Ch>::find(const String& str, size_type pos) const noexcept
 {
     return common::find(*this, str.data(), pos, str.size());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find(const_pointer s, size_type pos, size_type n) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find(const_pointer s, size_type pos, size_type n) const noexcept
 {
     return common::find(*this, s, pos, n);
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find(const_pointer s, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find(const_pointer s, size_type pos) const noexcept
 {
     return common::find(*this, s, pos, traits_type::length(s));
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find(value_type c, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find(value_type c, size_type pos) const noexcept
 {
     return common::find(*this, c, pos);
 }
@@ -897,30 +897,30 @@ template <typename Ch>
 template <typename String>
 inline typename std::enable_if<
             is_string_class<String>::value,
-            typename basic_string<Ch>::size_type
+            typename basic_istring<Ch>::size_type
         >::type
-    basic_string<Ch>::rfind(const String& str, size_type pos) const noexcept
+    basic_istring<Ch>::rfind(const String& str, size_type pos) const noexcept
 {
     return common::rfind(*this, str.data(), pos, str.size());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::rfind(const_pointer s, size_type pos, size_type n) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::rfind(const_pointer s, size_type pos, size_type n) const noexcept
 {
     return common::rfind(*this, s, pos, n);
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::rfind(const_pointer s, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::rfind(const_pointer s, size_type pos) const noexcept
 {
     return common::rfind(*this, s, pos, traits_type::length(s));
 }
 
 template <typename Ch>
-typename basic_string<Ch>::size_type
-    basic_string<Ch>::rfind(value_type c, size_type pos) const noexcept
+typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::rfind(value_type c, size_type pos) const noexcept
 {
     return common::rfind(*this, c, pos);
 }
@@ -932,30 +932,30 @@ template <typename Ch>
 template <typename String>
 inline typename std::enable_if<
             is_string_class<String>::value,
-            typename basic_string<Ch>::size_type
+            typename basic_istring<Ch>::size_type
         >::type
-    basic_string<Ch>::find_first_of(const String& str, size_type pos) const noexcept
+    basic_istring<Ch>::find_first_of(const String& str, size_type pos) const noexcept
 {
     return common::find_first_of(*this, str.data(), pos, str.size());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_first_of(const_pointer s, size_type pos, size_type n) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_first_of(const_pointer s, size_type pos, size_type n) const noexcept
 {
     return common::find_first_of(*this, s, pos, n);
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_first_of(const_pointer s, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_first_of(const_pointer s, size_type pos) const noexcept
 {
     return common::find_first_of(*this, s, pos, traits_type::length(s));
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_first_of(value_type c, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_first_of(value_type c, size_type pos) const noexcept
 {
     return common::find(*this, c, pos);
 }
@@ -967,30 +967,30 @@ template <typename Ch>
 template <typename String>
 inline typename std::enable_if<
             is_string_class<String>::value,
-            typename basic_string<Ch>::size_type
+            typename basic_istring<Ch>::size_type
         >::type
-    basic_string<Ch>::find_last_of(const String& str, size_type pos) const noexcept
+    basic_istring<Ch>::find_last_of(const String& str, size_type pos) const noexcept
 {
     return find_last_of(str.data(), pos, str.size());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_last_of(const_pointer s, size_type pos, size_type n) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_last_of(const_pointer s, size_type pos, size_type n) const noexcept
 {
     return common::find_last_of(*this, s, pos, n);
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_last_of(const_pointer s, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_last_of(const_pointer s, size_type pos) const noexcept
 {
     return common::find_last_of(*this, s, pos, traits_type::length(s));
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_last_of(value_type c, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_last_of(value_type c, size_type pos) const noexcept
 {
     return common::rfind(*this, c, pos);
 }
@@ -1002,28 +1002,28 @@ template <typename Ch>
 template <typename String>
 inline typename std::enable_if<
             is_string_class<String>::value,
-            typename basic_string<Ch>::size_type
-        >::type basic_string<Ch>::find_first_not_of(const String& str, size_type pos) const noexcept
+            typename basic_istring<Ch>::size_type
+        >::type basic_istring<Ch>::find_first_not_of(const String& str, size_type pos) const noexcept
 {
     return find_first_not_of(str.data(), pos, str.size());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type basic_string<Ch>::find_first_not_of(const_pointer s, size_type pos, size_type n) const noexcept
+inline typename basic_istring<Ch>::size_type basic_istring<Ch>::find_first_not_of(const_pointer s, size_type pos, size_type n) const noexcept
 {
     return common::find_first_not_of(*this, s, pos, n);
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_first_not_of(const_pointer s, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_first_not_of(const_pointer s, size_type pos) const noexcept
 {
     return common::find_first_not_of(*this, s, pos, traits_type::length(s));
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_first_not_of(value_type c, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_first_not_of(value_type c, size_type pos) const noexcept
 {
     return common::find_first_not_of(*this, c, pos);
 }
@@ -1035,29 +1035,29 @@ template <typename Ch>
 template <typename String>
 inline typename std::enable_if<
             is_string_class<String>::value,
-            typename basic_string<Ch>::size_type
+            typename basic_istring<Ch>::size_type
         >::type
-    basic_string<Ch>::find_last_not_of(const String& str, size_type pos) const noexcept
+    basic_istring<Ch>::find_last_not_of(const String& str, size_type pos) const noexcept
 {
     return common::find_last_not_of(*this, str.data(), pos, str.size());
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_last_not_of(const_pointer s, size_type pos, size_type n) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_last_not_of(const_pointer s, size_type pos, size_type n) const noexcept
 {
     return common::find_last_not_of(*this, s, pos, n);
 }
 
 template <typename Ch>
-inline typename basic_string<Ch>::size_type
-    basic_string<Ch>::find_last_not_of(const_pointer s, size_type pos) const noexcept
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::find_last_not_of(const_pointer s, size_type pos) const noexcept
 {
     return common::find_last_not_of(*this, s, pos, traits_type::length(s));
 }
 
 template <typename Ch>
-typename basic_string<Ch>::size_type basic_string<Ch>::find_last_not_of(value_type c, size_type pos) const noexcept
+typename basic_istring<Ch>::size_type basic_istring<Ch>::find_last_not_of(value_type c, size_type pos) const noexcept
 {
     return common::find_last_not_of(*this, c, pos);
 }
@@ -1071,7 +1071,7 @@ inline typename std::enable_if<
     is_string_class<String>::value,
     int
 >::type
-    basic_string<Ch>::compare(const String& str) const noexcept
+    basic_istring<Ch>::compare(const String& str) const noexcept
 {
     return common::compare(*this, str);
 }
@@ -1081,7 +1081,7 @@ template <typename String>
 inline typename std::enable_if<
     is_string_class<String>::value,
     int
->::type basic_string<Ch>::compare(
+>::type basic_istring<Ch>::compare(
     size_type pos1, size_type n1, const String& str) const
 {
     return common::compare(*this, pos1, n1, str);
@@ -1092,7 +1092,7 @@ template <typename String>
 inline typename std::enable_if<
     is_string_class<String>::value,
     int
->::type basic_string<Ch>::compare(
+>::type basic_istring<Ch>::compare(
     size_type pos1, size_type n1, const String& str,
                 size_type pos2, size_type n2) const
 {
@@ -1100,20 +1100,20 @@ inline typename std::enable_if<
 }
 
 template <typename Ch>
-inline int basic_string<Ch>::compare(const_pointer s) const noexcept
+inline int basic_istring<Ch>::compare(const_pointer s) const noexcept
 {
     return common::compare(*this, s);
 }
 
 template <typename Ch>
-inline int basic_string<Ch>::compare(
+inline int basic_istring<Ch>::compare(
     size_type pos1, size_type n1, const_pointer s) const
 {
     return common::compare(*this, pos1, n1, s);
 }
 
 template <typename Ch>
-inline int basic_string<Ch>::compare(
+inline int basic_istring<Ch>::compare(
     size_type pos1, size_type n1, const_pointer s, size_type n2) const
 {
     return common::compare(*this, pos1, n1, s, n2);
@@ -1124,14 +1124,14 @@ inline int basic_string<Ch>::compare(
 // streams
 //
 template <typename Ch>
-inline std::basic_ostream<Ch>& operator<< (std::basic_ostream<Ch>& ostr, const basic_string<Ch>& s)
+inline std::basic_ostream<Ch>& operator<< (std::basic_ostream<Ch>& ostr, const basic_istring<Ch>& s)
 {
     ostr.write(s.data(), s.size());
     return ostr;
 }
 
 template <typename Ch>
-inline std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_string<Ch>& s)
+inline std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_istring<Ch>& s)
 {
     std::string tmp;
     istr >> tmp;

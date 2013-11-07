@@ -22,137 +22,137 @@
 namespace native {
 
 //
-// compare basic_string to basic_string
+// compare basic_istring to basic_istring
 //
 template <typename Ch>
-bool operator==(const basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator==(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator!=(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator<(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator<=(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator>(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator>=(const basic_istring<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ge(lhs, rhs);
 }
 
 //
-// compare basic_string to basic_string_splice
+// compare basic_istring to basic_string_splice
 //
 template <typename Ch>
-bool operator==(const basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator==(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator!=(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator<=(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string<Ch>& lhs, const basic_string_splice<Ch>& rhs)
+bool operator>=(const basic_istring<Ch>& lhs, const basic_string_splice<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ge(lhs, rhs);
 }
 
 //
-// compare basic_string to std::basic_string
+// compare basic_istring to std::basic_string
 //
 template <typename Ch>
-bool operator==(const basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator==(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator!=(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator<(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator<=(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator>(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
+bool operator>=(const basic_istring<Ch>& lhs, const std::basic_string<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ge(lhs, rhs);
 }
 
 //
-// compare basic_string_splice to basic_string
+// compare basic_string_splice to basic_istring
 //
 template <typename Ch>
-bool operator==(const basic_string_splice<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator==(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<basic_string_splice<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string_splice<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator!=(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<basic_string_splice<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string_splice<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator<(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<basic_string_splice<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string_splice<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator<=(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<basic_string_splice<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string_splice<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator>(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<basic_string_splice<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string_splice<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator>=(const basic_string_splice<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<basic_string_splice<Ch>>::ge(lhs, rhs);
 }
@@ -226,35 +226,35 @@ bool operator>=(const basic_string_splice<Ch>& lhs, const std::basic_string<Ch>&
 }
 
 //
-// compare std::basic_string to basic_string
+// compare std::basic_string to basic_istring
 //
 template <typename Ch>
-bool operator==(const std::basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator==(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const std::basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator!=(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const std::basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator<(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const std::basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator<=(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const std::basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator>(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const std::basic_string<Ch>& lhs, const basic_string<Ch>& rhs)
+bool operator>=(const std::basic_string<Ch>& lhs, const basic_istring<Ch>& rhs)
 {
     return detail::string_common<std::basic_string<Ch>>::ge(lhs, rhs);
 }
@@ -328,67 +328,67 @@ bool operator>=(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& r
 }
 
 //
-// compare basic_string to Ch*
+// compare basic_istring to Ch*
 //
 template <typename Ch>
-bool operator==(const basic_string<Ch>& lhs, const Ch* rhs)
+bool operator==(const basic_istring<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator==(const Ch* lhs, const basic_string<Ch>& rhs)
+bool operator==(const Ch* lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::eq(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::eq(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const basic_string<Ch>& lhs, const Ch* rhs)
+bool operator!=(const basic_istring<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator!=(const Ch* lhs, const basic_string<Ch>& rhs)
+bool operator!=(const Ch* lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ne(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ne(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const basic_string<Ch>& lhs, const Ch* rhs)
+bool operator<(const basic_istring<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<(const Ch* lhs, const basic_string<Ch>& rhs)
+bool operator<(const Ch* lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::lt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::lt(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const basic_string<Ch>& lhs, const Ch* rhs)
+bool operator<=(const basic_istring<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator<=(const Ch* lhs, const basic_string<Ch>& rhs)
+bool operator<=(const Ch* lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::le(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::le(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const basic_string<Ch>& lhs, const Ch* rhs)
+bool operator>(const basic_istring<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>(const Ch* lhs, const basic_string<Ch>& rhs)
+bool operator>(const Ch* lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::gt(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::gt(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const basic_string<Ch>& lhs, const Ch* rhs)
+bool operator>=(const basic_istring<Ch>& lhs, const Ch* rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ge(lhs, rhs);
 }
 template <typename Ch>
-bool operator>=(const Ch* lhs, const basic_string<Ch>& rhs)
+bool operator>=(const Ch* lhs, const basic_istring<Ch>& rhs)
 {
-    return detail::string_common<basic_string<Ch>>::ge(lhs, rhs);
+    return detail::string_common<basic_istring<Ch>>::ge(lhs, rhs);
 }
 
 //

@@ -395,7 +395,7 @@ struct string_common {
     }
 
     //
-    // Compare two basic_string objects
+    // Compare two string objects
     //
     template <typename RightString>
     static inline bool eq(const string_type& lhs, const RightString& rhs)
@@ -435,7 +435,7 @@ struct string_common {
 
 
     //
-    // Compare a basic_string object and null-terminated array of Ch
+    // Compare a string object and null-terminated array of Ch
     //
     template <typename RightString>
     static inline bool eq(typename RightString::const_pointer lhs, const RightString& rhs)
