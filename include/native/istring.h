@@ -157,28 +157,11 @@ public:
     size_type copy(pointer s, size_type n, size_type pos = 0) const;
     template <std::size_t Size>
     size_type copy(value_type (&s)[Size], size_type pos = 0) const;
-    slice_type substr(size_type pos = 0, size_type n = npos) const;
+    basic_istring substr(size_type pos = 0, size_type n = npos) const;
 
     const_pointer data() const noexcept;
     const_pointer c_str() const noexcept;
     std_type      std_str() const;
-
-    // 1) Split a string by ch.
-    std::vector<slice_type> split(value_type ch) const;
-
-    // 2) Split a string by s.
-    std::vector<slice_type> split(const_pointer s) const;
-
-    // 3) Split a string by str.
-    template <typename String>
-    typename std::enable_if<
-        is_string_class<String>::value,
-        std::vector<slice_type>
-    >::type split(const String& str) const;
-
-//    basic_istring<char>     utf8() const;
-//    basic_istring<char16_t> utf16() const;
-//    basic_istring<char32_t> utf32() const;
 
     // Return a hash for this string. Hashes are computed once and then cached.
 //    std::size_t hash() const;
@@ -586,95 +569,6 @@ basic_istring<Ch>& basic_istring<Ch>::operator=(std::initializer_list<value_type
     return *this;
 }
 
-
-// 1) Split a string by ch.
-template <typename Ch>
-std::vector<typename basic_istring<Ch>::slice_type>
-    basic_istring<Ch>::split(value_type ch) const
-{
-    std::vector<slice_type> result;
-    size_type start = 0, end = find(ch);
-    for(;;)
-    {
-        if (end == npos)
-        {
-            result.push_back(slice_type(_core, start, size() - start));
-            break;
-        }
-
-        result.push_back(slice_type(_core, start, end - start));
-        start = end + 1;
-        end = find(ch, start);
-    }
-
-    return std::move(result);
-}
-
-// 2) Split a string by s.
-template <typename Ch>
-std::vector<typename basic_istring<Ch>::slice_type>
-    basic_istring<Ch>::split(const_pointer s) const
-{
-    const size_type n = traits_type::length(s);
-    std::vector<slice_type> result;
-    if (n == 0)
-    {
-        result.push_back(slice_type(_core));
-    }
-    else
-    {
-        size_type start = 0, end = find(s, 0, n);
-        for(;;)
-        {
-            if (end == npos)
-            {
-                result.push_back(slice_type(_core, start, size() - start));
-                break;
-            }
-
-            result.push_back(slice_type(_core, start, end - start));
-            start = end + n;
-            end = find(s, start, n);
-        }
-    }
-
-    return std::move(result);
-}
-
-// 3) Split a string by str.
-template <typename Ch>
-template <typename String>
-typename std::enable_if<
-    is_string_class<String>::value,
-    std::vector<typename basic_istring<Ch>::slice_type>
->::type basic_istring<Ch>::split(const String& str) const
-{
-    std::vector<slice_type> result;
-    if (str.empty())
-    {
-        result.push_back(slice_type(_core));
-    }
-    else
-    {
-        size_type start = 0, end = find(str);
-        for(;;)
-        {
-            if (end == npos)
-            {
-                result.push_back(slice_type(_core, start, size() - start));
-                break;
-            }
-
-            result.push_back(slice_type(_core, start, end - start));
-            start = end + str.size();
-            end = find(str, start);
-        }
-    }
-
-    return std::move(result);
-}
-
-
 template <typename Ch>
 inline typename basic_istring<Ch>::const_iterator
     basic_istring<Ch>::begin() const noexcept
@@ -825,10 +719,10 @@ inline typename basic_istring<Ch>::size_type
 }
 
 template <typename Ch>
-typename basic_istring<Ch>::slice_type
+basic_istring<Ch>
     basic_istring<Ch>::substr(size_type pos, size_type n) const
 {
-    return std::move(slice_type(this->_core, pos, n));
+    return basic_istring(*this, pos, n);
 }
 
 template <typename Ch>

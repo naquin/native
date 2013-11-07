@@ -180,7 +180,7 @@ BENCHMARK(BenchmarkTest, split_native_string)
     istring s = TEST_STRING;
 	benchmark([&s]()
     {
-        auto result = s.split('5');
+        auto result = string_slice(s).split('5');
 	});
 }
 

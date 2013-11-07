@@ -19,6 +19,7 @@
 
 #include "test.h"
 #include "native/istring.h"
+#include "native/string_slice.h"
 
 template <typename String>
 void test_string_compare()
@@ -362,25 +363,26 @@ void test_string_find_last_not_of()
 template <typename String>
 void test_string_split()
 {
+    using namespace native;
     String s("one two three four");
     
-    auto split = s.split(' ');
+    auto split = string_slice(s).split(' ');
     EXPECT_EQ(4, split.size());
     EXPECT_EQ("one",   split[0]);
     EXPECT_EQ("two",   split[1]);
     EXPECT_EQ("three", split[2]);
     EXPECT_EQ("four",  split[3]);
 
-    split = s.split("ee");
+    split = string_slice(s).split("ee");
     EXPECT_EQ(2, split.size());
     EXPECT_EQ("one two thr",   split[0]);
     EXPECT_EQ(" four",  split[1]);
 
-    split = s.split("");
+    split = string_slice(s).split("");
     EXPECT_EQ(1, split.size());
     EXPECT_EQ(s,   split[0]);
 
-    split = s.split(String("two"));
+    split = string_slice(s).split(String("two"));
     EXPECT_EQ(2, split.size());
     EXPECT_EQ("one ",   split[0]);
     EXPECT_EQ(" three four",  split[1]);
