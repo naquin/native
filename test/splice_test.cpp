@@ -32,9 +32,9 @@ TEST(SpliceString, Constructors)
 {
     test_string_constructors<string_splice>();
 
-    string ctor2(5, 'a');
-    string ctor3c(string(ctor2), 1);
-    string ctor7c((string(ctor2)));
+    istring ctor2(5, 'a');
+    istring ctor3c(istring(ctor2), 1);
+    istring ctor7c((istring(ctor2)));
 
     EXPECT_EQ("aaaaa", ctor2);
     EXPECT_EQ("aaaa", ctor3c);
@@ -46,7 +46,7 @@ TEST(SpliceString, AssignmentOperators)
     test_string_assignment_operators<string_splice>();
 
     string_splice splice_expected("lions");
-    string s = splice_expected;
+    istring s = splice_expected;
     EXPECT_EQ(splice_expected, s);
 }
 
@@ -58,7 +58,7 @@ TEST(SpliceString, Iterators)
 TEST(SpliceString, Attributes)
 {
     test_string_attributes<string_splice>();
-    string s("foobar");
+    istring s("foobar");
     EXPECT_EQ(0, strcmp("foobar", s.c_str()));
 }
 

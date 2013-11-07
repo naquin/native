@@ -30,16 +30,16 @@ using namespace native;
 
 TEST(String, Compare)
 {
-    test_string_compare<string>();
+    test_string_compare<istring>();
 }
 
 TEST(String, Constructors)
 {
-    test_string_constructors<string>();
+    test_string_constructors<istring>();
 
-    string ctor2(5, 'a');
-    string ctor3c(string_splice(ctor2), 1);
-    string ctor7c((string_splice(ctor2)));
+    istring ctor2(5, 'a');
+    istring ctor3c(string_splice(ctor2), 1);
+    istring ctor7c((string_splice(ctor2)));
 
     EXPECT_EQ("aaaaa", ctor2);
     EXPECT_EQ("aaaa", ctor3c);
@@ -48,22 +48,22 @@ TEST(String, Constructors)
 
 TEST(String, AssignmentOperators)
 {
-    test_string_assignment_operators<string>();
+    test_string_assignment_operators<istring>();
 
     string_splice splice_expected("lions");
-    string s = splice_expected;
+    istring s = splice_expected;
     EXPECT_EQ(splice_expected, s);
 }
 
 TEST(String, Iterators)
 {
-    test_string_iterators<string>();
+    test_string_iterators<istring>();
 }
 
 TEST(String, Literal)
 {
-    auto literal = string::literal("literal");
-    string literalCopy = literal;
+    auto literal = istring::literal("literal");
+    istring literalCopy = literal;
 
     EXPECT_EQ("literal", literal);
     EXPECT_EQ("literal", literalCopy);
@@ -73,49 +73,49 @@ TEST(String, Literal)
 
 TEST(String, Attributes)
 {
-    test_string_attributes<string>();
-    string s("foobar");
+    test_string_attributes<istring>();
+    istring s("foobar");
     EXPECT_EQ(0, strcmp("foobar", s.c_str()));
 }
 
 TEST(String, find)
 {
-    test_string_find<string>();
+    test_string_find<istring>();
 }
 
 TEST(String, rfind)
 {
-    test_string_rfind<string>();
+    test_string_rfind<istring>();
 }
 
 TEST(String, find_first_of)
 {
-    test_string_find_first_of<string>();
+    test_string_find_first_of<istring>();
 }
 
 TEST(String, find_last_of)
 {
-    test_string_find_last_of<string>();
+    test_string_find_last_of<istring>();
 }
 
 TEST(String, find_first_not_of)
 {
-    test_string_find_first_not_of<string>();
+    test_string_find_first_not_of<istring>();
 }
 
 TEST(String, find_last_not_of)
 {
-    test_string_find_last_not_of<string>();
+    test_string_find_last_not_of<istring>();
 }
 
 TEST(String, split)
 {
-    test_string_split<string>();
+    test_string_split<istring>();
 }
 
 TEST(String, OStream)
 {
-    test_string_ostream<string>();
+    test_string_ostream<istring>();
 }
 
 static const char TEST_STRING[] = "012345678901234567890123456789012345678901234567890123456789";
@@ -131,7 +131,7 @@ BENCHMARK(BenchmarkTest, assign_std_string)
 
 BENCHMARK(BenchmarkTest, assign_native_string)
 {
-    string s = TEST_STRING;
+    istring s = TEST_STRING;
 	benchmark([&s]()
     {
         benchmark_string_copy(s);
@@ -140,7 +140,7 @@ BENCHMARK(BenchmarkTest, assign_native_string)
 
 BENCHMARK(BenchmarkTest, assign_native_string_literal)
 {
-    string s = string::literal(TEST_STRING);
+    istring s = istring::literal(TEST_STRING);
 	benchmark([&s]()
     {
         benchmark_string_copy(s);
@@ -158,7 +158,7 @@ BENCHMARK(BenchmarkTest, index_std_string)
 
 BENCHMARK(BenchmarkTest, index_native_string)
 {
-    string s = TEST_STRING;
+    istring s = TEST_STRING;
 	benchmark([&s]()
     {
         benchmark_string_index(s);
@@ -177,7 +177,7 @@ BENCHMARK(BenchmarkTest, split_std_string)
 
 BENCHMARK(BenchmarkTest, split_native_string)
 {
-    string s = TEST_STRING;
+    istring s = TEST_STRING;
 	benchmark([&s]()
     {
         auto result = s.split('5');
@@ -195,7 +195,7 @@ BENCHMARK(BenchmarkTest, substr_std_string)
 
 BENCHMARK(BenchmarkTest, substr_native_string)
 {
-    string s = TEST_STRING;
+    istring s = TEST_STRING;
 	benchmark([&s]()
     {
         benchmark_string_substr(s);
