@@ -59,15 +59,10 @@ public:
     typedef basic_string_slice<value_type> slice_type;
     typedef basic_istring<Ch> string_type;
 
-    friend string_type;
-
     static const size_type npos;
     
     // 1) Default constructor. Constructs empty string.
     basic_string_slice() noexcept;
-
-    // 2) Constructs the string with count copies of character ch.
-    basic_string_slice(size_type n, value_type c);
 
     // 3) Constructs the string with a substring [pos, pos+count) of other. If
     //    the requested substring lasts past the end of the string, or if
@@ -88,8 +83,7 @@ public:
     basic_string_slice(const_pointer s);
 
     // 6) Constructs the string with the contents of the range [first, last).
-    template<class InputIterator>
-    basic_string_slice(InputIterator begin, InputIterator end);
+    basic_string_slice(const_pointer first, const_pointer last);
 
     // 7) Copy constructor. Constructs the string with the copy of the contents
     //    of other.
@@ -100,9 +94,6 @@ public:
     // 8) Move constructor. Constructs the string with the contents of other
     //    using move semantics.
     basic_string_slice(basic_string_slice&& str) noexcept;
-
-    // 9) Constructs the string with the contents of the initializer list init.
-    explicit basic_string_slice(std::initializer_list<value_type>);
 
 
     // 1) Replaces the contents with a copy of str
@@ -117,12 +108,6 @@ public:
     // 3) Replaces the contents with those of null-terminated character string
     //    pointed to by s.
     basic_string_slice& operator=(const value_type* s);
-
-    // 4) Replaces the contents with character ch
-    basic_string_slice& operator=(value_type ch);
-
-    // 5) Replaces the contents with those of the initializer list ilist.
-    basic_string_slice& operator=(std::initializer_list<value_type> ilist);
 
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
@@ -344,10 +329,7 @@ public:
 
 
 private:
-    // 0)
-    basic_string_slice(const core_type& core, size_type pos, size_type length);
 
-    core_type _core;
     const_pointer _head;
     size_type _length;
 };
@@ -364,39 +346,11 @@ typedef basic_string_slice<char32_t> u32string_slice;
 template <typename Ch>
 constexpr const typename basic_string_slice<Ch>::size_type basic_string_slice<Ch>::npos = -1;
 
-// 0)
-template <typename Ch>
-basic_string_slice<Ch>::basic_string_slice(
-    const core_type& core, size_type pos, size_type n):
-    _core(core)
-{
-    if (pos >= _core.size())
-    {
-        this->throw_out_of_range();
-    }
-    else
-    {
-        _head = _core.data() + pos;
-        _length = std::min(n, _core.size());
-    }
-}
-
 // 1) Default constructor. Constructs empty string.
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice() noexcept:
     _head(),
-    _length(),
-    _core()
-{
-
-}
-
-// 2) Constructs the string with count copies of character ch.
-template <typename Ch>
-basic_string_slice<Ch>::basic_string_slice(size_type n, value_type c):
-    _core(n, c),
-    _head(_core.data()),
-    _length(n)
+    _length()
 {
 
 }
@@ -407,16 +361,7 @@ basic_string_slice<Ch>::basic_string_slice(size_type n, value_type c):
 //    std::out_of_range is thrown.
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(
-    const basic_string_slice& str, size_type pos, size_type n):
-    basic_string_slice(str._core, pos, n)
-{
-
-}
-
-template <typename Ch>
-basic_string_slice<Ch>::basic_string_slice(
-    const std_type& str, size_type pos, size_type n):
-    _core()
+    const basic_string_slice& str, size_type pos, size_type n)
 {
     if (pos >= str.size())
     {
@@ -424,19 +369,42 @@ basic_string_slice<Ch>::basic_string_slice(
     }
     else
     {
-        n = std::min(n, str.size());
-        this->_core = std::move(core_type(str.data() + pos, n));
-        _head = _core.data();
+        n = std::min(n, str.size() - pos);
+        _head = str.data() + pos;
         _length = n;
     }
 }
 
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(
-    const string_type& str, size_type pos, size_type n):
-    basic_string_slice(str._core, pos, n)
+    const std_type& str, size_type pos, size_type n)
 {
+    if (pos >= str.size())
+    {
+        this->throw_out_of_range();
+    }
+    else
+    {
+        n = std::min(n, str.size() - pos);
+        _head = str.data() + pos;
+        _length = n;
+    }
+}
 
+template <typename Ch>
+basic_string_slice<Ch>::basic_string_slice(
+    const string_type& str, size_type pos, size_type n)
+{
+    if (pos >= str.size())
+    {
+        this->throw_out_of_range();
+    }
+    else
+    {
+        n = std::min(n, str.size() - pos);
+        _head = str.data() + pos;
+        _length = n;
+    }
 }
 
 // 4) Constructs the string with the first count characters of character
@@ -444,8 +412,7 @@ basic_string_slice<Ch>::basic_string_slice(
 //    a NULL pointer.
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(const_pointer s, size_type n):
-    _core(s, n),
-    _head(_core.data()),
+    _head(s),
     _length(n)
 {
 
@@ -457,21 +424,18 @@ basic_string_slice<Ch>::basic_string_slice(const_pointer s, size_type n):
 //    first null character. s must not be a NULL pointer.
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(const_pointer s):
-    _core(s),
-    _head(_core.data()),
-    _length(_core.size())
+    _head(s),
+    _length(traits_type::length(s))
 {
 
 }
 
 // 6) Constructs the string with the contents of the range [first, last).
 template <typename Ch>
-template<class InputIterator>
 basic_string_slice<Ch>::basic_string_slice(
-    InputIterator begin, InputIterator end):
-    _core(begin, end),
-    _head(_core.data()),
-    _length(_core.size())
+    const_pointer first, const_pointer last):
+    _head(first),
+    _length(last - first)
 {
 
 }
@@ -480,27 +444,24 @@ basic_string_slice<Ch>::basic_string_slice(
 //    of other.
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(const basic_string_slice& str):
-    _core(str._core),
-    _head(str._head),
-    _length(str._length)
+    _head(str.data()),
+    _length(str.size())
 {
 
 }
 
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(const string_type& str):
-    _core(str._core),
-    _head(_core.data()),
-    _length(_core.size())
+    _head(str.data()),
+    _length(str.size())
 {
 
 }
 
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(const std_type& str):
-    _core(str.data(), str.size()),
-    _head(_core.data()),
-    _length(_core.size())
+    _head(str.data()),
+    _length(str.size())
 {
 
 }
@@ -510,20 +471,8 @@ basic_string_slice<Ch>::basic_string_slice(const std_type& str):
 template <typename Ch>
 basic_string_slice<Ch>::basic_string_slice(
     basic_string_slice&& str) noexcept:
-    _core(std::move(str._core)),
-    _head(str._head),
-    _length(str._length)
-{
-
-}
-
-// 9) Constructs the string with the contents of the initializer list init.
-template <typename Ch>
-basic_string_slice<Ch>::basic_string_slice(
-    std::initializer_list<value_type> ilist):
-    _core(ilist.begin(), ilist.end()),
-    _head(_core.data()),
-    _length(_core.size())
+    _head(std::move(str._head)),
+    _length(std::move(str._length))
 {
 
 }
@@ -532,8 +481,7 @@ basic_string_slice<Ch>::basic_string_slice(
 template <typename Ch>
 basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(const basic_string_slice& str)
 {
-    this->_core = str._core;
-    this->_head = str._head;
+    this->_head   = str._head;
     this->_length = str._length;
     return *this;
 }
@@ -541,18 +489,16 @@ basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(const basic_string_sli
 template <typename Ch>
 basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(const std_type& str)
 {
-    this->_core   = std::move(core_type(str.data(), str.size()));
-    this->_head   = _core.data();
-    this->_length = _core.size();
+    this->_head   = str.data();
+    this->_length = str.size();
     return *this;
 }
 
 template <typename Ch>
 basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(const string_type& str)
 {
-    this->_core   = std::move(core_type(str.data(), str.size()));
-    this->_head   = _core.data();
-    this->_length = _core.size();
+    this->_head   = str.data();
+    this->_length = str.size();
     return *this;
 }
 
@@ -562,9 +508,8 @@ basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(const string_type& str
 template <typename Ch>
 basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(basic_string_slice&& str)
 {
-    this->_core   = str._core;
-    this->_head   = str._head;
-    this->_length = str._length;
+    this->_head   = std::move(str._head);
+    this->_length = std::move(str._length);
     return *this;
 }
 
@@ -572,33 +517,10 @@ basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(basic_string_slice&& s
 template <typename Ch>
 basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(const value_type* s)
 {
-    this->_core   = std::move(core_type(s));
-    this->_head   = _core.data();
-    this->_length = _core.size();
+    this->_head   = s;
+    this->_length = traits_type::length(s);
     return *this;
 }
-
-// 4) Replaces the contents with character ch
-template <typename Ch>
-basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(
-    value_type ch)
-{
-    this->_core   = std::move(core_type(ch, 1));
-    this->_head   = _core.data();
-    this->_length = _core.size();
-    return *this;
-}
-
-// 5) Replaces the contents with those of the initializer list ilist.
-template <typename Ch>
-basic_string_slice<Ch>& basic_string_slice<Ch>::operator=(std::initializer_list<value_type> ilist)
-{
-    this->_core   = std::move(core_type(ilist.begin(), ilist.end()));
-    this->_head   = _core.data();
-    this->_length = _core.size();
-    return *this;
-}
-
 
 // 1) Split a string by ch.
 template <typename Ch>
@@ -611,11 +533,11 @@ std::vector<basic_string_slice<Ch>>
     {
         if (end == npos)
         {
-            result.push_back(slice_type(_core, start, size() - start));
+            result.push_back(slice_type(*this, start, size() - start));
             break;
         }
 
-        result.push_back(slice_type(_core, start, end - start));
+        result.push_back(slice_type(*this, start, end - start));
         start = end + 1;
         end = find(ch, start);
     }
@@ -632,7 +554,7 @@ std::vector<basic_string_slice<Ch>>
     std::vector<slice_type> result;
     if (n == 0)
     {
-        result.push_back(slice_type(_core));
+        result.push_back(slice_type(*this));
     }
     else
     {
@@ -641,11 +563,11 @@ std::vector<basic_string_slice<Ch>>
         {
             if (end == npos)
             {
-                result.push_back(slice_type(_core, start, size() - start));
+                result.push_back(slice_type(*this, start, size() - start));
                 break;
             }
 
-            result.push_back(slice_type(_core, start, end - start));
+            result.push_back(slice_type(*this, start, end - start));
             start = end + n;
             end = find(s, start, n);
         }
@@ -665,7 +587,7 @@ typename std::enable_if<
     std::vector<slice_type> result;
     if (str.empty())
     {
-        result.push_back(slice_type(_core));
+        result.push_back(slice_type(str));
     }
     else
     {
@@ -674,11 +596,11 @@ typename std::enable_if<
         {
             if (end == npos)
             {
-                result.push_back(slice_type(_core, start, size() - start));
+                result.push_back(slice_type(*this, start, size() - start));
                 break;
             }
 
-            result.push_back(slice_type(_core, start, end - start));
+            result.push_back(slice_type(*this, start, end - start));
             start = end + str.size();
             end = find(str, start);
         }
@@ -841,16 +763,7 @@ template <typename Ch>
 basic_string_slice<Ch>
     basic_string_slice<Ch>::substr(size_type pos, size_type n) const
 {
-    const auto length = size();
-    if (pos > length)
-    {
-        this->throw_out_of_range();
-    }
-    n = std::min(n, length);
-    const auto offset = this->_head - this->_core.data();
-    pos += offset; // offset to original start
-    n += offset;
-    return basic_string_slice(this->_core, pos, n);
+    return basic_string_slice(*this, pos, n);
 }
 
 template <typename Ch>

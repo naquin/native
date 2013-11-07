@@ -62,8 +62,6 @@ public:
     typedef basic_string_slice<value_type> slice_type;
     typedef basic_istring<Ch> string_type;
 
-    friend slice_type;
-
     static const size_type npos;
 
     // 1) Default constructor. Constructs empty string.

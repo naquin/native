@@ -30,13 +30,39 @@ TEST(SpliceString, Compare)
 
 TEST(SpliceString, Constructors)
 {
-    test_string_constructors<string_slice>();
-
     istring ctor2(5, 'a');
-    istring ctor3c(istring(ctor2), 1);
+
+    string_slice ctor1;
+    string_slice ctor3c(ctor2, 1);
+    string_slice ctor3a(ctor3c, 1);
+    string_slice ctor3b(ctor2.std_str(), 1);
+    string_slice ctor4a("foobar", 3);
+    string_slice ctor4b("foobar", 3);
+    string_slice ctor5("foobar");
+    string_slice ctor7a(ctor5);
+    string_slice ctor7b(ctor5.std_str());
+//    String ctor7c((string(ctor5)));
+    string_slice ctor8Original("foobar");
+    string_slice ctor8(std::move(ctor8Original));
+    string_slice ctor9({'f', 'o', 'o', 'b', 'a', 'r'});
+
+    EXPECT_EQ("", ctor1);
+    EXPECT_EQ("aaaaa", ctor2);
+    EXPECT_EQ("aaaa", ctor3a);
+    EXPECT_EQ("aaaa", ctor3b);
+    EXPECT_EQ("aaaa", ctor3c);
+    EXPECT_EQ("foo", ctor4a);
+    EXPECT_EQ("foo", ctor4b);
+    EXPECT_EQ("foobar", ctor5);
+    EXPECT_EQ(ctor5, ctor7a);
+    EXPECT_EQ(ctor5, ctor7b);
+//    EXPECT_EQ(ctor5, ctor7c);
+    EXPECT_EQ("foobar", ctor8Original);
+    EXPECT_EQ("foobar", ctor8);
+    EXPECT_EQ("foobar", ctor9);
+
     istring ctor7c((istring(ctor2)));
 
-    EXPECT_EQ("aaaaa", ctor2);
     EXPECT_EQ("aaaa", ctor3c);
     EXPECT_EQ(ctor2, ctor7c);
 }
