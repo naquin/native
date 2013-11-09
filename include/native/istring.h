@@ -145,6 +145,9 @@ public:
 
     bool empty() const noexcept;
 
+    slice_type operator()(size_type start) const;
+    slice_type operator()(size_type start, size_type end) const;
+
     const_reference operator[](size_type pos) const;
 
     const_reference at(size_type n) const;
@@ -658,6 +661,20 @@ inline bool basic_istring<Ch>::empty() const noexcept
 }
 
 template <typename Ch>
+typename basic_istring<Ch>::slice_type
+    basic_istring<Ch>::operator()(size_type start) const
+{
+    return slice_type(data() + start, data() + size());
+}
+
+template <typename Ch>
+typename basic_istring<Ch>::slice_type
+    basic_istring<Ch>::operator()(size_type start, size_type end) const
+{
+    return slice_type(data() + start, data() + end);
+}
+
+template <typename Ch>
 inline typename basic_istring<Ch>::const_reference
     basic_istring<Ch>::operator[](size_type pos) const
 {
@@ -674,8 +691,6 @@ typename basic_istring<Ch>::const_reference
     }
     return data()[n];
 }
-
-
 
 template <typename Ch>
 typename basic_istring<Ch>::const_reference

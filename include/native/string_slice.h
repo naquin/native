@@ -25,8 +25,8 @@ namespace native {
 // Splice strings are a way to efficiently refer to a sub-string without having
 // to make a copy of the super-string.
 //
-// string super_string = "abcdefghijklmnopqrstuvwxyz";
-// string_slice sub_string = super_string.substr(13, 3); // just points to "mno"
+// istring super_string = "abcdefghijklmnopqrstuvwxyz";
+// string_slice sub_string = super_string(13, 16); // just points to "mno"
 //
 //
 // "abcdefghijklmnopqrstuvwxyz" - super-string
