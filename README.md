@@ -33,12 +33,15 @@ Requirements
 Compiler that supports C++11.
 
 Examples
---------
+========
+
+Immutable String
+----------------
 
 ```
 #include "native/istring.h"
 
-using native::istring;
+using native::istring; // 'i' for immutable
 
 // immutable string
 istring s = "some really long string";
@@ -46,7 +49,7 @@ istring s = "some really long string";
 // shallow copy, immutable strings can share memory
 istring copy = s;
 
-// string::literal performs no allocations!!!
+// istring::literal performs no allocations!!!
 s = istring::literal("this is a string literal");
 
 auto lambda = [s]()
@@ -56,3 +59,21 @@ auto lambda = [s]()
     std::cout << s << std::endl;
 };
 ```
+
+String Slices
+-------------
+
+```
+istring s = "foobar";
+
+// take a slice of a string from characters 3 to 6
+string_splice splice_s = s(3,6); // "bar"
+```
+
+Benchmarks
+==========
+
+- Mac OS 10.9 2.4 GHz Intel Core i5
+- Results taken from fastest performance in 1,000,000 iterations
+
+![](https://raw.github.com/syvex/native-wiki/master/benchmark-assign.png)

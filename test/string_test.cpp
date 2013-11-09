@@ -27,6 +27,7 @@
 #include <sstream>
 
 using namespace native;
+using std::to_string;
 
 TEST(String, Compare)
 {
@@ -78,6 +79,17 @@ TEST(String, Attributes)
     EXPECT_EQ(0, strcmp("foobar", s.c_str()));
 }
 
+TEST(String, Slice)
+{
+    istring s("foobar");
+
+    auto slice = s(1,2);
+    EXPECT_EQ("oo", slice);
+
+    slice = s(3,6);
+    EXPECT_EQ("bar", slice);
+}
+
 TEST(String, find)
 {
     test_string_find<istring>();
@@ -118,38 +130,104 @@ TEST(String, OStream)
     test_string_ostream<istring>();
 }
 
-static const char TEST_STRING[] = "012345678901234567890123456789012345678901234567890123456789";
+static const char TEST_STRING_10[] =
+    "0123456789";
+
+static const char TEST_STRING_100[] =
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789"
+    "0123456789";
+
+static const char TEST_STRING_1000[] =
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
+;
+
+static const std::size_t NUM_ASSIGNS = 10;
 
 BENCHMARK(BenchmarkTest, assign_std_string)
 {
-    std::string s = TEST_STRING;
-	benchmark([&s]()
+    for (std::string s: {TEST_STRING_10, TEST_STRING_100, TEST_STRING_1000})
     {
-        benchmark_string_copy(s);
-	});
+        for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
+        {
+            auto benchmark_name = "assign_std_string," +
+                to_string(s.size()) + "," +
+                to_string(i+1);
+            benchmark(benchmark_name, [&s,i]()
+            {
+                benchmark_string_copy(s, i+1);
+            });
+        }
+    }
 }
 
-BENCHMARK(BenchmarkTest, assign_native_string)
+BENCHMARK(BenchmarkTest, assign_istring)
 {
-    istring s = TEST_STRING;
-	benchmark([&s]()
+    for (istring s: {TEST_STRING_10, TEST_STRING_100, TEST_STRING_1000})
     {
-        benchmark_string_copy(s);
-	});
+        for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
+        {
+            auto benchmark_name = "assign_istring," +
+                to_string(s.size()) + "," +
+                to_string(i+1);
+            benchmark(benchmark_name, [&s,i]()
+            {
+                benchmark_string_copy(s, i+1);
+            });
+        }
+    }
 }
 
-BENCHMARK(BenchmarkTest, assign_native_string_literal)
+BENCHMARK(BenchmarkTest, assign_istring_literal)
 {
-    istring s = istring::literal(TEST_STRING);
-	benchmark([&s]()
+    auto do_benchmark = [&](const istring& s)
     {
-        benchmark_string_copy(s);
-    });
+        for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
+        {
+            auto benchmark_name = "assign_istring_literal," +
+                to_string(s.size()) + "," +
+                to_string(i+1);
+            benchmark(benchmark_name, [&s,i]()
+            {
+                benchmark_string_copy(s, i+1);
+            });
+        }
+    };
+
+    do_benchmark(istring::literal(TEST_STRING_10));
+    do_benchmark(istring::literal(TEST_STRING_100));
+    do_benchmark(istring::literal(TEST_STRING_1000));
 }
 
 BENCHMARK(BenchmarkTest, index_std_string)
 {
-    std::string s = TEST_STRING;
+    std::string s = TEST_STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_index(s);
@@ -158,7 +236,7 @@ BENCHMARK(BenchmarkTest, index_std_string)
 
 BENCHMARK(BenchmarkTest, index_native_string)
 {
-    istring s = TEST_STRING;
+    istring s = TEST_STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_index(s);
@@ -167,7 +245,7 @@ BENCHMARK(BenchmarkTest, index_native_string)
 
 BENCHMARK(BenchmarkTest, split_std_string)
 {
-    std::string s = TEST_STRING;
+    std::string s = TEST_STRING_100;
     std::vector<std::string> result;
 	benchmark([&s, &result]()
     {
@@ -177,7 +255,7 @@ BENCHMARK(BenchmarkTest, split_std_string)
 
 BENCHMARK(BenchmarkTest, split_native_string)
 {
-    istring s = TEST_STRING;
+    istring s = TEST_STRING_100;
 	benchmark([&s]()
     {
         auto result = string_slice(s).split('5');
@@ -186,7 +264,7 @@ BENCHMARK(BenchmarkTest, split_native_string)
 
 BENCHMARK(BenchmarkTest, substr_std_string)
 {
-    std::string s = TEST_STRING;
+    std::string s = TEST_STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_substr(s);
@@ -195,7 +273,7 @@ BENCHMARK(BenchmarkTest, substr_std_string)
 
 BENCHMARK(BenchmarkTest, substr_native_string)
 {
-    istring s = TEST_STRING;
+    istring s = TEST_STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_substr(s);

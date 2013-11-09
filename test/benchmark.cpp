@@ -42,7 +42,8 @@ void BenchmarkTest::TearDown()
 
 
 void BenchmarkTest::report(const boost::timer::cpu_times& fastestElapsed,
-                           const boost::timer::nanosecond_type& total)
+                           const boost::timer::nanosecond_type& total,
+                           const std::string& name)
 {
     auto fastest = fastestElapsed.wall;
     auto average = (total / trial_count);
@@ -50,12 +51,7 @@ void BenchmarkTest::report(const boost::timer::cpu_times& fastestElapsed,
 
     std::ofstream ostr("benchmarks.csv", std::ios::app);
 
-//    constexpr auto format = "%F %T";
-//
-//    const auto now = std::chrono::system_clock::now();
-//    const auto now_c = std::chrono::system_clock::to_time_t(now);
     ostr << name << ','
-//         << std::put_time(std::localtime(&now_c), format) << ','
          << fastest << ','
          << average << std::endl;
 

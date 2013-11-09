@@ -63,7 +63,7 @@ public:
     virtual void TearDown();
 
     template <typename Func>
-    void benchmark(Func func)
+    void benchmark(const std::string& name, Func func)
     {
         auto fastest = std::numeric_limits<boost::timer::nanosecond_type>::max();
         boost::timer::nanosecond_type total = 0;
@@ -82,11 +82,18 @@ public:
             total += elapsed.wall;
         }
 
-        report(fastestElapsed, total);
+        report(fastestElapsed, total, name);
+    }
+
+    template <typename Func>
+    void benchmark(Func func)
+    {
+        benchmark(this->name, func);
     }
 
     virtual void report(const boost::timer::cpu_times& fastestElapsed,
-                        const boost::timer::nanosecond_type& total);
+                        const boost::timer::nanosecond_type& total,
+                        const std::string& name);
 protected:
     std::string fixture;
     std::string name;

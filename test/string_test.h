@@ -401,9 +401,12 @@ void test_string_ostream()
 }
 
 template <typename String>
-void benchmark_string_copy(String s)
+void benchmark_string_copy(String s, size_t n)
 {
-    String s2 = s;
+    for (size_t i = 0; i < n; ++i)
+    {
+        String s2 = s;
+    }
 }
 
 template <typename String>
