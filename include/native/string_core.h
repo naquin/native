@@ -212,7 +212,7 @@ struct basic_string_core {
         }
     }
 
-    size_type size() const
+    inline size_type size() const
     {
         switch (this->type())
         {
@@ -225,7 +225,7 @@ struct basic_string_core {
         }
     }
 
-    const_pointer data() const
+    inline const_pointer data() const
     {
         switch (this->type())
         {
@@ -238,7 +238,7 @@ struct basic_string_core {
         }
     }
 
-    size_t hash() const
+    inline size_t hash() const
     {
         switch (this->type())
         {
@@ -250,12 +250,10 @@ struct basic_string_core {
             return _dynamic.hash();
         }
     }
-    
 
-    storage type() const
+    inline storage type() const
     {
-        const auto t = _static.type;
-        return static_cast<storage>(t);
+        return static_cast<storage>(_static.type);
     }
 
 public:
@@ -285,7 +283,7 @@ public:
         size_type length;
         pointer head;
 
-        dynamic_data(size_type length):
+        inline dynamic_data(size_type length):
             type(static_cast<unsigned char>(storage::dynamic)),
             length(length),
             head(create(length))
@@ -293,14 +291,13 @@ public:
             head[length] = '\0'; // null terminate
         }
 
-        smart_pointer* get()
+        inline smart_pointer* get()
         {
-            auto ptr =
+            return
                 reinterpret_cast<smart_pointer*>(
                 reinterpret_cast<unsigned char*>(head) -
                     sizeof(smart_pointer) + sizeof(size_type)
             );
-            return ptr;
         }
 
         size_type hash()
@@ -316,12 +313,12 @@ public:
         }
 
 
-        std::size_t reference_count()
+        inline std::size_t reference_count()
         {
             return get()->shared_count.load(std::memory_order_acquire);
         }
 
-        void increment_shared_count()
+        inline void increment_shared_count()
         {
             get()->shared_count.fetch_add(1, std::memory_order_acq_rel);
         }

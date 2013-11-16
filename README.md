@@ -74,6 +74,13 @@ Benchmarks
 ==========
 
 - Mac OS 10.9 2.4 GHz Intel Core i5
-- Results taken from fastest performance in 1,000,000 iterations
+- Results taken from fastest performance in 100,000 iterations
 
 ![](https://raw.github.com/syvex/native-wiki/master/benchmark-assign.png)
+
+String hashes are cached in `istring` for values that do not fit within
+the small string optimization. Therefore, we do not have to recalculate them.
+
+Hashes for strings created with `istring::literal` are computed at compile time.
+
+![](https://raw.github.com/syvex/native-wiki/master/benchmark-istring-hash.png)

@@ -18,7 +18,11 @@
 #define NATIVE_STRING_BENCHMARKS_H__
 
 #include "test.h"
+
 #include "native/istring.h"
+
+#include <functional>
+#include <string>
 
 template <typename String>
 void benchmark_string_copy(String s, size_t n)
@@ -26,6 +30,16 @@ void benchmark_string_copy(String s, size_t n)
     for (size_t i = 0; i < n; ++i)
     {
         String s2 = s;
+    }
+}
+
+template <typename String>
+void benchmark_string_hash(String& s)
+{
+    size_t hash = std::hash<typename std::remove_cv<String>::type>()(s);
+    if (hash == 0)
+    {
+        std::cout << "fail" << std::endl;
     }
 }
 

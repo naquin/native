@@ -42,17 +42,31 @@ using std::to_string;
     STRING_1000 STRING_1000 STRING_1000 STRING_1000 STRING_1000 \
     STRING_1000 STRING_1000 STRING_1000 STRING_1000 STRING_1000
 
-static const char TEST_STRING_10[]    = STRING_10;
-static const char TEST_STRING_100[]   = STRING_100;
-static const char TEST_STRING_1000[]  = STRING_1000;
-static const char TEST_STRING_10000[] = STRING_10000;
+#define STRING_100000 \
+    STRING_10000 STRING_10000 STRING_10000 STRING_10000 STRING_10000 \
+    STRING_10000 STRING_10000 STRING_10000 STRING_10000 STRING_10000
+
+#define STRING_1000000 \
+    STRING_100000 STRING_100000 STRING_100000 STRING_100000 STRING_100000 \
+    STRING_100000 STRING_100000 STRING_100000 STRING_100000 STRING_100000
 
 static const size_t NUM_ASSIGNS = 10;
-static const size_t MAX_HASH_LENGTH = 10000000;
+
+static std::vector<const char*> SMALL_STRINGS = {STRING_10, STRING_100, STRING_1000};
+static std::vector<const char*> LARGE_STRINGS =
+    {
+        STRING_10,
+        STRING_100,
+        STRING_1000,
+        STRING_10000,
+        STRING_100000,
+        STRING_1000000,
+    };
+
 
 BENCHMARK(BenchmarkTest, assign_std_string)
 {
-    for (std::string s: {TEST_STRING_10, TEST_STRING_100, TEST_STRING_1000})
+    for (std::string s: SMALL_STRINGS)
     {
         for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
         {
@@ -69,7 +83,7 @@ BENCHMARK(BenchmarkTest, assign_std_string)
 
 BENCHMARK(BenchmarkTest, assign_istring)
 {
-    for (istring s: {TEST_STRING_10, TEST_STRING_100, TEST_STRING_1000})
+    for (istring s: SMALL_STRINGS)
     {
         for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
         {
@@ -100,60 +114,68 @@ BENCHMARK(BenchmarkTest, assign_istring_literal)
         }
     };
 
-    do_benchmark(istring::literal(TEST_STRING_10));
-    do_benchmark(istring::literal(TEST_STRING_100));
-    do_benchmark(istring::literal(TEST_STRING_1000));
+    do_benchmark(istring::literal(STRING_10));
+    do_benchmark(istring::literal(STRING_100));
+    do_benchmark(istring::literal(STRING_1000));
 }
 
 BENCHMARK(BenchmarkTest, hash_std_string)
 {
-    auto do_benchmark = [&](size_t size)
+    auto do_benchmark = [&](const std::string& s)
     {
         auto benchmark_name = "hash_std_string," +
-            to_string(size);
+            to_string(s.size());
 
-        std::string key(size, '7');
-        benchmark(benchmark_name, [&key](){
-
-            size_t hash = std::hash<std::string>()(key);
-            if (hash == 0)
-            {
-                std::cout << "fail" << std::endl;
-            }
+        benchmark(benchmark_name, [&s](){
+            benchmark_string_hash(s);
         });
     };
 
-    for (size_t i = 10; i < MAX_HASH_LENGTH; i *= 10)
+    for (std::string s: LARGE_STRINGS)
     {
-        do_benchmark(i);
+        do_benchmark(s);
     }
 }
 
 BENCHMARK(BenchmarkTest, hash_istring)
 {
-    auto do_benchmark = [&](size_t size)
+    auto do_benchmark = [&](const istring& s)
     {
-        auto benchmark_name = "hash_istring," + to_string(size);
+        auto benchmark_name = "hash_istring," + to_string(s.size());
 
-        istring key(size, '7');
-        benchmark(benchmark_name, [&key](){
-            size_t hash = std::hash<istring>()(key);
-            if (hash == 0)
-            {
-                std::cout << "fail" << std::endl;
-            }
+        benchmark(benchmark_name, [&s](){
+            benchmark_string_hash(s);
         });
     };
 
-    for (size_t i = 10; i < MAX_HASH_LENGTH; i *= 10)
+    for (istring s: LARGE_STRINGS)
     {
-        do_benchmark(i);
+        do_benchmark(s);
     }
+}
+
+BENCHMARK(BenchmarkTest, hash_istring_literal)
+{
+    auto do_benchmark = [&](const istring& s)
+    {
+        auto benchmark_name = "hash_istring_literal," + to_string(s.size());
+
+        benchmark(benchmark_name, [&s](){
+            benchmark_string_hash(s);
+        });
+    };
+
+    do_benchmark(istring::literal(STRING_10));
+    do_benchmark(istring::literal(STRING_100));
+    do_benchmark(istring::literal(STRING_1000));
+    do_benchmark(istring::literal(STRING_10000));
+    do_benchmark(istring::literal(STRING_100000));
+    do_benchmark(istring::literal(STRING_1000000));
 }
 
 BENCHMARK(BenchmarkTest, index_std_string)
 {
-    std::string s = TEST_STRING_100;
+    std::string s = STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_index(s);
@@ -162,7 +184,7 @@ BENCHMARK(BenchmarkTest, index_std_string)
 
 BENCHMARK(BenchmarkTest, index_native_string)
 {
-    istring s = TEST_STRING_100;
+    istring s = STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_index(s);
@@ -171,7 +193,7 @@ BENCHMARK(BenchmarkTest, index_native_string)
 
 BENCHMARK(BenchmarkTest, split_std_string)
 {
-    std::string s = TEST_STRING_100;
+    std::string s = STRING_100;
     std::vector<std::string> result;
 	benchmark([&s, &result]()
     {
@@ -181,7 +203,7 @@ BENCHMARK(BenchmarkTest, split_std_string)
 
 BENCHMARK(BenchmarkTest, split_native_string)
 {
-    istring s = TEST_STRING_100;
+    istring s = STRING_100;
 	benchmark([&s]()
     {
         auto result = string_slice(s).split('5');
@@ -190,7 +212,7 @@ BENCHMARK(BenchmarkTest, split_native_string)
 
 BENCHMARK(BenchmarkTest, substr_std_string)
 {
-    std::string s = TEST_STRING_100;
+    std::string s = STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_substr(s);
@@ -199,7 +221,7 @@ BENCHMARK(BenchmarkTest, substr_std_string)
 
 BENCHMARK(BenchmarkTest, substr_native_string)
 {
-    istring s = TEST_STRING_100;
+    istring s = STRING_100;
 	benchmark([&s]()
     {
         benchmark_string_substr(s);
