@@ -75,6 +75,7 @@ struct fnv_traits<T, 8>
 template <typename T>
 struct basic_fnv1_hasher
 {
+    typedef basic_fnv1_hasher<T> this_type;
     typedef fnv_traits<T, sizeof(T)> traits_type;
 
     typedef typename traits_type::size_type size_type;
@@ -95,7 +96,7 @@ struct basic_fnv1_hasher
         return static_hash(s[0], s + 1, size, basis);
     }
 
-    static size_type hash(const char* s)
+    size_type operator()(const char* s)
     {
         size_type value = basis;
         for (; *s; ++s)
@@ -110,7 +111,7 @@ struct basic_fnv1_hasher
         return value;
     }
 
-    static size_type hash(const void* buf, size_t size)
+    size_type operator()(const void* buf, size_t size)
     {
         size_type value = basis;
         const auto* char_buf = reinterpret_cast<const unsigned char*>(buf);
@@ -127,12 +128,12 @@ struct basic_fnv1_hasher
     }
 
     template <typename String>
-    static typename std::enable_if<
+    typename std::enable_if<
         is_string_class<String>::value,
         size_type
-    >::type hash(const String& s)
+    >::type operator()(const String& s)
     {
-        return hash(s.data(), s.size());
+        return *this(s.data(), s.size());
     }
 };
 
@@ -140,6 +141,7 @@ struct basic_fnv1_hasher
 template <typename T>
 struct basic_fnv1a_hasher
 {
+    typedef basic_fnv1a_hasher<T> this_type;
     typedef fnv_traits<T, sizeof(T)> traits_type;
     
     typedef typename traits_type::size_type size_type;
@@ -160,7 +162,7 @@ struct basic_fnv1a_hasher
         return static_hash(s[0], s + 1, size, basis);
     }
 
-    static size_type hash(const char* s)
+    size_type operator()(const char* s)
     {
         size_type value = basis;
         for (; *s; ++s)
@@ -175,7 +177,7 @@ struct basic_fnv1a_hasher
         return value;
     }
 
-    static size_type hash(const void* buf, size_t size)
+    size_type operator()(const void* buf, size_t size)
     {
         size_type value = basis;
         const auto* char_buf = reinterpret_cast<const unsigned char*>(buf);
@@ -193,12 +195,12 @@ struct basic_fnv1a_hasher
     }
 
     template <typename String>
-    static typename std::enable_if<
+    typename std::enable_if<
         is_string_class<String>::value,
         size_type
-    >::type hash(const String& s)
+    >::type operator()(const String& s)
     {
-        return hash(s.data(), s.size());
+        return *this(s.data(), s.size());
     }
 };
 
@@ -210,6 +212,8 @@ typedef basic_fnv1_hasher<uint64> fnv1_64_hasher;
 typedef basic_fnv1a_hasher<size_t> fnv1a_hasher;
 typedef basic_fnv1a_hasher<uint32> fnv1a_32_hasher;
 typedef basic_fnv1a_hasher<uint64> fnv1a_64_hasher;
+
+typedef fnv1a_hasher default_hasher;
 
 //
 // user-defined literals
@@ -251,22 +255,43 @@ constexpr size_t operator ""_fnv64a(const char* s, size_t size)
 //
 constexpr size_t operator ""_hash(const char* s, size_t size)
 {
-    return fnv1a_hasher::static_hash(s, size);
+    return default_hasher::static_hash(s, size);
 }
 
 //
 // convenience functions
 //
 
+// generic hash
+inline size_t hash(const void* buf, size_t size)
+{
+    return default_hasher()(buf, size);
+}
+
+inline size_t hash(const char* s)
+{
+    return default_hasher()(s);
+}
+
+template <typename String>
+inline typename std::enable_if<
+    is_string_class<String>::value,
+    size_t
+>::type hash(const String& s)
+{
+    return default_hasher()(s);
+}
+
+
 // fnv1 (size_t)
 inline size_t fnv1(const char* s)
 {
-    return fnv1_hasher::hash(s);
+    return fnv1_hasher()(s);
 }
 
 inline size_t fnv1(const void* buf, size_t size)
 {
-    return fnv1_hasher::hash(buf, size);
+    return fnv1_hasher()(buf, size);
 }
 
 template <typename String>
@@ -275,19 +300,19 @@ inline typename std::enable_if<
     size_t
 >::type fnv1(const String& s)
 {
-    return fnv1_hasher::hash(s);
+    return fnv1_hasher()(s);
 }
 
 
 // fnv1a (size_t)
 inline size_t fnv1a(const char* s)
 {
-    return fnv1_hasher::hash(s);
+    return fnv1_hasher()(s);
 }
 
 inline size_t fnv1a(const void* buf, size_t size)
 {
-    return fnv1_hasher::hash(buf, size);
+    return fnv1_hasher()(buf, size);
 }
 
 template <typename String>
@@ -296,18 +321,18 @@ inline typename std::enable_if<
     size_t
 >::type fnv1a(const String& s)
 {
-    return fnv1a_hasher::hash(s);
+    return fnv1a_hasher()(s);
 }
 
 // fnv1 (32 bit)
 inline uint32 fnv32(const char* s)
 {
-    return fnv1_32_hasher::hash(s);
+    return fnv1_32_hasher()(s);
 }
 
 inline uint32 fnv32(const void* buf, size_t size)
 {
-    return fnv1_32_hasher::hash(buf, size);
+    return fnv1_32_hasher()(buf, size);
 }
 
 template <typename String>
@@ -316,18 +341,18 @@ inline typename std::enable_if<
     uint32
 >::type fnv32(const String& s)
 {
-    return fnv1_32_hasher::hash(s);
+    return fnv1_32_hasher()(s);
 }
 
 // fnv1 (64 bit)
 inline uint64 fnv64(const char* s)
 {
-    return fnv1_64_hasher::hash(s);
+    return fnv1_64_hasher()(s);
 }
 
 inline uint64 fnv64(const void* buf, size_t size)
 {
-    return fnv1_64_hasher::hash(buf, size);
+    return fnv1_64_hasher()(buf, size);
 }
 
 template <typename String>
@@ -336,18 +361,18 @@ inline typename std::enable_if<
     uint64
 >::type fnv64(const String& s)
 {
-    return fnv1_64_hasher::hash(s);
+    return fnv1_64_hasher()(s);
 }
 
 // fnv1a (32 bit)
 inline uint32 fnv32a(const char* s)
 {
-    return fnv1a_32_hasher::hash(s);
+    return fnv1a_32_hasher()(s);
 }
 
 inline uint32 fnv32a(const void* buf, size_t size)
 {
-    return fnv1a_32_hasher::hash(buf, size);
+    return fnv1a_32_hasher()(buf, size);
 }
 
 template <typename String>
@@ -356,18 +381,18 @@ inline typename std::enable_if<
     uint32
 >::type fnv32a(const String& s)
 {
-    return fnv1a_32_hasher::hash(s);
+    return fnv1a_32_hasher()(s);
 }
 
 // fnv1a (64 bit)
 inline uint64 fnv64a(const char* s)
 {
-    return fnv1a_64_hasher::hash(s);
+    return fnv1a_64_hasher()(s);
 }
 
 inline uint64 fnv64a(const void* buf, size_t size)
 {
-    return fnv1a_64_hasher::hash(buf, size);
+    return fnv1a_64_hasher()(buf, size);
 }
 
 template <typename String>
@@ -376,7 +401,7 @@ inline typename std::enable_if<
     uint64
 >::type fnv64a(const String& s)
 {
-    return fnv1a_64_hasher::hash(s);
+    return fnv1a_64_hasher()(s);
 }
 
 } // namespace native

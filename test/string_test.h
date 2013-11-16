@@ -38,6 +38,7 @@ void test_string_compare()
     EXPECT_EQ(fooCopy, foo);
     EXPECT_EQ(foo, fooOther);
     EXPECT_EQ(fooOther, foo);
+    EXPECT_EQ("this string needs to be longer than 23 characters", String("this string needs to be longer than 23 characters"));
 
     EXPECT_NE(0, strcmp("bar", foo.data()));
     EXPECT_NE("bar", foo);
@@ -217,9 +218,9 @@ void test_string_attributes()
     
     s = "foobar";
     
-    char copy[7];
+    char copy[6];
     EXPECT_EQ(6, s.copy(copy));
-    EXPECT_EQ(0, strcmp("foobar", copy));
+    EXPECT_EQ(0, strncmp("foobar", copy, 6));
 }
 
 template <typename String>
@@ -400,29 +401,5 @@ void test_string_ostream()
     EXPECT_EQ("foobar", ostr.str());
 }
 
-template <typename String>
-void benchmark_string_copy(String s, size_t n)
-{
-    for (size_t i = 0; i < n; ++i)
-    {
-        String s2 = s;
-    }
-}
-
-template <typename String>
-void benchmark_string_index(String& s)
-{
-    typename String::value_type ch = s[0];
-    for (std::size_t i = 1; i < s.size(); ++i)
-    {
-        ch = std::max(ch, s[i]);
-    }
-}
-
-template <typename String>
-void benchmark_string_substr(const String& s)
-{
-    auto sub = s.substr(5, 30);
-}
 
 #endif

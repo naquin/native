@@ -55,7 +55,7 @@ void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::TestBody()
 class BenchmarkTest:
     public ::testing::Test {
 public:
-    static const std::size_t trial_count = 1000000;
+    static const std::size_t trial_count = 100000;
 
     BenchmarkTest(const char* fixture, const char* name);
 

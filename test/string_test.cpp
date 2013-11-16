@@ -25,6 +25,7 @@
 #include <boost/algorithm/string/classification.hpp>
 
 #include <sstream>
+#include <unordered_map>
 
 using namespace native;
 using std::to_string;
@@ -90,6 +91,18 @@ TEST(String, Slice)
     EXPECT_EQ("bar", slice);
 }
 
+TEST(String, hash)
+{
+    istring short_s("foobar");
+    EXPECT_EQ("foobar"_hash, short_s.hash());
+
+    istring dynamic_s("this string needs to be longer than 23 characters");
+    EXPECT_EQ("this string needs to be longer than 23 characters"_hash, dynamic_s.hash());
+    
+    istring static_s = istring::literal("foobar");
+    EXPECT_EQ("foobar"_hash, short_s.hash());
+}
+
 TEST(String, find)
 {
     test_string_find<istring>();
@@ -128,154 +141,4 @@ TEST(String, split)
 TEST(String, OStream)
 {
     test_string_ostream<istring>();
-}
-
-static const char TEST_STRING_10[] =
-    "0123456789";
-
-static const char TEST_STRING_100[] =
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789"
-    "0123456789";
-
-static const char TEST_STRING_1000[] =
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-    "0123456789" "0123456789" "0123456789" "0123456789" "0123456789"
-;
-
-static const std::size_t NUM_ASSIGNS = 10;
-
-BENCHMARK(BenchmarkTest, assign_std_string)
-{
-    for (std::string s: {TEST_STRING_10, TEST_STRING_100, TEST_STRING_1000})
-    {
-        for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
-        {
-            auto benchmark_name = "assign_std_string," +
-                to_string(s.size()) + "," +
-                to_string(i+1);
-            benchmark(benchmark_name, [&s,i]()
-            {
-                benchmark_string_copy(s, i+1);
-            });
-        }
-    }
-}
-
-BENCHMARK(BenchmarkTest, assign_istring)
-{
-    for (istring s: {TEST_STRING_10, TEST_STRING_100, TEST_STRING_1000})
-    {
-        for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
-        {
-            auto benchmark_name = "assign_istring," +
-                to_string(s.size()) + "," +
-                to_string(i+1);
-            benchmark(benchmark_name, [&s,i]()
-            {
-                benchmark_string_copy(s, i+1);
-            });
-        }
-    }
-}
-
-BENCHMARK(BenchmarkTest, assign_istring_literal)
-{
-    auto do_benchmark = [&](const istring& s)
-    {
-        for (std::size_t i = 0; i < NUM_ASSIGNS; ++i)
-        {
-            auto benchmark_name = "assign_istring_literal," +
-                to_string(s.size()) + "," +
-                to_string(i+1);
-            benchmark(benchmark_name, [&s,i]()
-            {
-                benchmark_string_copy(s, i+1);
-            });
-        }
-    };
-
-    do_benchmark(istring::literal(TEST_STRING_10));
-    do_benchmark(istring::literal(TEST_STRING_100));
-    do_benchmark(istring::literal(TEST_STRING_1000));
-}
-
-BENCHMARK(BenchmarkTest, index_std_string)
-{
-    std::string s = TEST_STRING_100;
-	benchmark([&s]()
-    {
-        benchmark_string_index(s);
-	});
-}
-
-BENCHMARK(BenchmarkTest, index_native_string)
-{
-    istring s = TEST_STRING_100;
-	benchmark([&s]()
-    {
-        benchmark_string_index(s);
-	});
-}
-
-BENCHMARK(BenchmarkTest, split_std_string)
-{
-    std::string s = TEST_STRING_100;
-    std::vector<std::string> result;
-	benchmark([&s, &result]()
-    {
-        boost::algorithm::split(result, s, boost::algorithm::is_any_of("5"));
-	});
-}
-
-BENCHMARK(BenchmarkTest, split_native_string)
-{
-    istring s = TEST_STRING_100;
-	benchmark([&s]()
-    {
-        auto result = string_slice(s).split('5');
-	});
-}
-
-BENCHMARK(BenchmarkTest, substr_std_string)
-{
-    std::string s = TEST_STRING_100;
-	benchmark([&s]()
-    {
-        benchmark_string_substr(s);
-	});
-}
-
-BENCHMARK(BenchmarkTest, substr_native_string)
-{
-    istring s = TEST_STRING_100;
-	benchmark([&s]()
-    {
-        benchmark_string_substr(s);
-	});
 }

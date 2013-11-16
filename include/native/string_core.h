@@ -17,6 +17,8 @@
 #ifndef NATIVE_STRING_CORE_H__
 #define NATIVE_STRING_CORE_H__
 
+#include "native/hash.h"
+
 #include <atomic>
 #include <cassert>
 #include <cstdlib>
@@ -40,25 +42,19 @@ struct basic_string_core {
     static const value_type empty_value[1];
 
     enum class storage: unsigned char {
-        small    = 0x0,
-        static_  = 0x1,
-        dynamic  = 0x2,
+        dynamic  = 0x0,
+        small    = 0x1,
+        static_  = 0x2,
     };
 
-    basic_string_core()
+    inline basic_string_core()
     {
         _static = static_data();
     }
 
-    basic_string_core(const_pointer ptr,
-                      size_type length,
-                      storage type = storage::dynamic)
+    basic_string_core(const_pointer ptr, size_type length)
     {
-        if (type == storage::static_)
-        {
-            _static = static_data(ptr, length);
-        }
-        else if (length < max_small_size)
+        if (length < max_small_size)
         {
             _small = small_data(length);
             std::copy(ptr, ptr + length, &_small.head[0]);
@@ -71,9 +67,15 @@ struct basic_string_core {
         }
     }
 
-    basic_string_core(const_pointer ptr,
-                      storage type = storage::dynamic):
-        basic_string_core(ptr, traits_type::length(ptr), type)
+    // static string only -- hash is pre-computed
+    inline basic_string_core(const_pointer ptr, size_type length, size_type hash):
+        _static(static_data(ptr, length, hash))
+    {
+
+    }
+
+    inline basic_string_core(const_pointer ptr):
+        basic_string_core(ptr, traits_type::length(ptr))
     {
 
     }
@@ -129,7 +131,7 @@ struct basic_string_core {
     }
 
     template <typename InputIterator>
-    basic_string_core(InputIterator first, InputIterator last):
+    inline basic_string_core(InputIterator first, InputIterator last):
         basic_string_core(first, last, iterator_length(first, last))
     {
 
@@ -236,6 +238,20 @@ struct basic_string_core {
         }
     }
 
+    size_t hash() const
+    {
+        switch (this->type())
+        {
+        case storage::static_:
+            return _static.hash;
+        case storage::small:
+            return ::native::hash(_small.head, _small.attribs.length  * sizeof(value_type));
+        case storage::dynamic:
+            return _dynamic.hash();
+        }
+    }
+    
+
     storage type() const
     {
         const auto t = _static.type;
@@ -258,13 +274,15 @@ public:
     // from https://github.com/facebook/folly, available under Apache 2.0
     // license.
     struct smart_pointer {
-        std::atomic<std::size_t> shared_count;
-        value_type               head[1];
+        std::atomic<size_t>    shared_count;
+        std::atomic<size_type> hash;
+        value_type             head[1];
     };
 
     struct dynamic_data {
-        size_type type:type_bits;
-        size_type length:length_bits;
+        size_type type; // no need for bit packing here since we need the size of
+                        // dynmaic_data to be the same as static and small
+        size_type length;
         pointer head;
 
         dynamic_data(size_type length):
@@ -279,10 +297,24 @@ public:
         {
             auto ptr =
                 reinterpret_cast<smart_pointer*>(
-                reinterpret_cast<unsigned char*>(head) - sizeof(std::atomic<std::size_t>)
+                reinterpret_cast<unsigned char*>(head) -
+                    sizeof(smart_pointer) + sizeof(size_type)
             );
             return ptr;
         }
+
+        size_type hash()
+        {
+            auto ptr = get();
+            size_type value = ptr->hash.load(std::memory_order_relaxed);
+            if (!value)
+            {
+                value = ::native::hash(head, length * sizeof(value_type));
+                ptr->hash.store(value, std::memory_order_relaxed);
+            }
+            return value;
+        }
+
 
         std::size_t reference_count()
         {
@@ -296,7 +328,7 @@ public:
 
         void decrement_shared_count()
         {
-            const auto ptr = get();
+            smart_pointer* ptr = get();
             std::size_t previousCount =
                 ptr->shared_count.fetch_sub(1, std::memory_order_acq_rel);
             if (previousCount == 1)
@@ -308,9 +340,13 @@ public:
         static pointer create(std::size_t size)
         {
             const std::size_t allocSize =
-                sizeof(dynamic_data) + (size * sizeof(value_type));
+                sizeof(dynamic_data) +
+                sizeof(smart_pointer) - sizeof(value_type) +
+                (size * sizeof(value_type));
+
             auto result = reinterpret_cast<smart_pointer*>(std::malloc(allocSize));
             result->shared_count.store(1, std::memory_order_release);
+            result->hash.store(0, std::memory_order_relaxed);
             return &result->head[0];
         }
     };
@@ -332,7 +368,7 @@ public:
         
         small_data(size_type length)
         {
-            attribs.type = 0;
+            attribs.type   = static_cast<unsigned char>(storage::small);
             attribs.length = length;
         }
     };
@@ -340,9 +376,10 @@ public:
     struct static_data {
         size_type     type:type_bits;
         size_type     length:length_bits;
+        size_type     hash;
         const_pointer head;
         
-        static_data():
+        inline static_data():
             type(static_cast<unsigned char>(storage::static_)),
             length(),
             head(empty_value)
@@ -350,9 +387,10 @@ public:
         
         }
 
-        static_data(const_pointer ptr, size_type length):
+        inline static_data(const_pointer ptr, size_type length, size_type hash):
             type(static_cast<unsigned char>(storage::static_)),
             length(length),
+            hash(hash),
             head(ptr)
         {
         

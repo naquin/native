@@ -23,6 +23,8 @@
 #include "native/string_operators.h"
 #include "native/string_slice.h"
 
+#include "native/hash.h"
+
 #include <vector>
 
 namespace native {
@@ -156,7 +158,7 @@ public:
     const_reference back() const;
 
     size_type copy(pointer s, size_type n, size_type pos = 0) const;
-    template <std::size_t Size>
+    template <size_t Size>
     size_type copy(value_type (&s)[Size], size_type pos = 0) const;
     basic_istring substr(size_type pos = 0, size_type n = npos) const;
 
@@ -164,8 +166,9 @@ public:
     const_pointer c_str() const noexcept;
     std_type      std_str() const;
 
-    // Return a hash for this string. Hashes are computed once and then cached.
-//    std::size_t hash() const;
+    // Return a hash for this string. Hashes are computed once and then cached
+    // for strings that don't fit in the small string optimization.
+    size_type hash() const;
 
     // 1) Finds the first substring equal to str. If str.size() is zero, returns pos.
     template <typename String>
@@ -340,10 +343,16 @@ public:
 
     // Create a string that references a string literal. This string performs
     // no allocations and is über efficient.
-    template <std::size_t size>
-    static basic_istring literal(const value_type (&s)[size]);
+    template <size_t size>
+    static constexpr basic_istring literal(const value_type (&s)[size]);
 
 private:
+
+    // helper for constructing substrings
+    template <typename String>
+    size_type _substr_length(
+        const String& str, size_type pos, size_type n);
+
     // 0)
     basic_istring(const core_type& s);
     
@@ -374,12 +383,12 @@ template <typename Ch>
 constexpr const typename basic_istring<Ch>::size_type basic_istring<Ch>::npos = -1;
 
 template <typename Ch>
-template <std::size_t n>
-basic_istring<Ch> basic_istring<Ch>::literal(
-    const value_type (&s)[n])
+template <size_t n>
+constexpr basic_istring<Ch> basic_istring<Ch>::literal(const value_type (&s)[n])
 {
-    core_type core(const_cast<pointer>(s), n-1, core_type::storage::static_);
-    return std::move(basic_istring<Ch>(core));
+    return basic_istring<Ch>(core_type(
+        s, n-1, default_hasher::static_hash(s, n * sizeof(value_type)
+    )));
 }
 
 // 0)
@@ -405,53 +414,39 @@ basic_istring<Ch>::basic_istring(size_type n, value_type c):
 //    the resulting substring is [pos, size()). If pos >= other.size(),
 //    std::out_of_range is thrown.
 template <typename Ch>
-basic_istring<Ch>::basic_istring(
-    const basic_istring& str, size_type pos, size_type n):
-    _core()
+template <typename String>
+inline typename basic_istring<Ch>::size_type
+    basic_istring<Ch>::_substr_length(
+        const String& str, size_type pos, size_type n)
 {
-    if (pos == 0 && str.size() == n)
-    {
-        this->_core = str._core;
-    }
-    else if (pos >= str.size())
+    if (pos >= str.size())
     {
         this->throw_out_of_range();
     }
-    else
-    {
-        n = std::min(n, str.size());
-        this->_core = std::move(core_type(str.data() + pos, n));
-    }
+
+    return std::min(n, str.size());
+}
+
+template <typename Ch>
+basic_istring<Ch>::basic_istring(
+    const basic_istring& str, size_type pos, size_type n):
+    _core(str.data() + pos, _substr_length(str, pos, n))
+{
+
 }
 
 template <typename Ch>
 basic_istring<Ch>::basic_istring(const std_type& str, size_type pos, size_type n):
-    _core()
+    _core(str.data() + pos, _substr_length(str, pos, n))
 {
-    if (pos >= str.size())
-    {
-        this->throw_out_of_range();
-    }
-    else
-    {
-        n = std::min(n, str.size());
-        this->_core = std::move(core_type(str.data() + pos, n));
-    }
+
 }
 
 template <typename Ch>
 basic_istring<Ch>::basic_istring(const slice_type& str, size_type pos, size_type n):
-    _core()
+    _core(str.data() + pos, _substr_length(str, pos, n))
 {
-    if (pos >= str.size())
-    {
-        this->throw_out_of_range();
-    }
-    else
-    {
-        n = std::min(n, str.size());
-        this->_core = std::move(core_type(str.data() + pos, n));
-    }
+
 }
 
 
@@ -724,11 +719,11 @@ typename basic_istring<Ch>::size_type
 }
 
 template <typename Ch>
-template <std::size_t Size>
+template <size_t Size>
 inline typename basic_istring<Ch>::size_type
     basic_istring<Ch>::copy(value_type (&s)[Size], size_type pos) const
 {
-    return copy(s, Size-1, pos);
+    return copy(s, Size, pos);
 }
 
 template <typename Ch>
@@ -759,6 +754,15 @@ typename basic_istring<Ch>::const_pointer
     return this->_core.data();
 }
 
+
+//
+// hash
+//
+template <typename Ch>
+inline typename basic_istring<Ch>::size_type basic_istring<Ch>::hash() const
+{
+    return this->_core.hash();
+}
 
 
 //
@@ -1047,5 +1051,17 @@ inline std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const b
 }
 
 } // namespace native
+
+namespace std {
+
+template <typename Ch>
+struct hash<native::basic_istring<Ch>> {
+    std::size_t operator()(const native::basic_istring<Ch>& s) const noexcept
+    {
+        return s.hash();
+    }
+};
+
+} // namespace
 
 #endif
