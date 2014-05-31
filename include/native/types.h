@@ -17,6 +17,7 @@
 #ifndef NATIVE_TYPES_H__
 #define NATIVE_TYPES_H__
 
+#include <cstddef>
 #include <cstdint>
 
 namespace native {
