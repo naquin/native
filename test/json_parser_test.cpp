@@ -235,57 +235,67 @@ TEST(ParserTest, Parser_Should_ParseAroundEncodingErrors)
     }
 
     // 4  Overlong sequences
+    
+    auto narrow = [](const std::initializer_list<unsigned short> value)
+    {
+        std::string result;
+        for (const auto c: value)
+        {
+            result.push_back(c);
+        }
+        return result;
+    };
 
     // 4.1  Examples of an overlong ASCII character
     EXPECT_EQ("\uC0AF", parse_string("\"\uC0AF\""));
 
-    EXPECT_EQ(std::string({0xE0u, 0x80u, 0xAFu}),
-              parse_string<char>({'\"', 0xE0u, 0x80u, 0xAFu, '\"'}));
+    EXPECT_EQ(narrow({0xE0, 0x80, 0xAF}),
+              parse_string<char>(narrow({'\"', 0xE0, 0x80, 0xAF, '\"'})));
 
-    EXPECT_EQ(std::string({0xF0u, 0x80u, 0x80u, 0xAFu}),
-              parse_string<char>({'\"', 0xF0u, 0x80u, 0x80u, 0xAFu, '\"'}));
+    EXPECT_EQ(narrow({0xF0, 0x80, 0x80, 0xAF}),
+              parse_string<char>(narrow({'\"', 0xF0, 0x80, 0x80, 0xAF, '\"'})));
 
     // 4.2  Maximum overlong sequences 
-    EXPECT_EQ(std::string({0xC1u, 0xBFu}),
-              parse_string<char>({'\"', 0xC1u, 0xBFu, '\"'}));
+    EXPECT_EQ(narrow({0xC1, 0xBF}),
+              parse_string<char>(narrow({'\"', 0xC1, 0xBF, '\"'})));
 
-    EXPECT_EQ(std::string({0xE0u, 0x9Fu, 0xBFu}),
-              parse_string<char>({'\"', 0xE0u, 0x9Fu, 0xBFu, '\"'}));
+    EXPECT_EQ(narrow({0xE0, 0x9F, 0xBF}),
+              parse_string<char>(narrow({'\"', 0xE0, 0x9F, 0xBF, '\"'})));
 
-    EXPECT_EQ(std::string({0xF0u, 0x8Fu, 0xBFu, 0xBFu}),
-              parse_string<char>({'\"', 0xF0u, 0x8Fu, 0xBFu, 0xBFu, '\"'}));
+    EXPECT_EQ(narrow({0xF0, 0x8F, 0xBF, 0xBF}),
+              parse_string<char>(narrow({'\"', 0xF0, 0x8F, 0xBF, 0xBF, '\"'})));
 
     // 4.3  Overlong representation of the NUL character 
-    EXPECT_EQ(std::string({0xC0u, 0x80u}),
-              parse_string<char>({'\"', 0xC0u, 0x80u, '\"'}));
-    EXPECT_EQ(std::string({0xE0u, 0x80u, 0x80u}),
-              parse_string<char>({'\"', 0xE0u, 0x80u, 0x80u, '\"'}));
-    EXPECT_EQ(std::string({0xF0u, 0x80u, 0x80u, 0x80u}),
-              parse_string<char>({'\"', 0xF0u, 0x80u, 0x80u, 0x80u, '\"'}));
+    EXPECT_EQ(narrow({0xC0, 0x80}),
+              parse_string<char>(narrow({'\"', 0xC0, 0x80, '\"'})));
+    EXPECT_EQ(narrow({0xE0, 0x80, 0x80}),
+              parse_string<char>(narrow({'\"', 0xE0, 0x80, 0x80, '\"'})));
+    EXPECT_EQ(narrow({0xF0, 0x80, 0x80, 0x80}),
+              parse_string<char>(narrow({'\"', 0xF0, 0x80, 0x80, 0x80, '\"'})));
 
     // 5  Illegal code positions
 
     // 5.1 Single UTF-16 surrogates
-    EXPECT_EQ(std::string({0xEDu, 0xA0u, 0x80u}),
-              parse_string<char>({'\"', 0xEDu, 0xA0u, 0x80u, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xA0, 0x80}),
+              parse_string<char>(narrow({'\"', 0xED, 0xA0, 0x80, '\"'})));
     
-    EXPECT_EQ(std::string({0xEDu, 0xADu, 0xBFu}),
-              parse_string<char>({'\"', 0xEDu, 0xADu, 0xBFu, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xAD, 0xBF}),
+              parse_string<char>(narrow({'\"', 0xED, 0xAD, 0xBF, '\"'})));
 
-    EXPECT_EQ(std::string({0xEDu, 0xAEu, 0x80u}),
-              parse_string<char>({'\"', 0xEDu, 0xAEu, 0x80u, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xAE, 0x80}),
+              parse_string<char>(narrow({'\"', 0xED, 0xAE, 0x80, '\"'})));
 
-    EXPECT_EQ(std::string({0xEDu, 0xAFu, 0xBFu}),
-              parse_string<char>({'\"', 0xEDu, 0xAFu, 0xBFu, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xAF, 0xBF}),
+              parse_string<char>(narrow({'\"', 0xED, 0xAF, 0xBF, '\"'})));
 
-    EXPECT_EQ(std::string({0xEDu, 0xB0u, 0x80u}),
-              parse_string<char>({'\"', 0xEDu, 0xB0u, 0x80u, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xB0, 0x80}),
+              parse_string<char>(narrow({'\"', 0xED, 0xB0, 0x80, '\"'})));
 
-    EXPECT_EQ(std::string({0xEDu, 0xBEu, 0x80u}),
-              parse_string<char>({'\"', 0xEDu, 0xBEu, 0x80u, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xBE, 0x80}),
+              parse_string<char>(narrow({'\"', 0xED, 0xBE, 0x80, '\"'})));
 
-    EXPECT_EQ(std::string({0xEDu, 0xBFu, 0xBFu}),
-              parse_string<char>({'\"', 0xEDu, 0xBFu, 0xBFu, '\"'}));
+    EXPECT_EQ(narrow({0xED, 0xBF, 0xBF}),
+              parse_string<char>(narrow({'\"', 0xED, 0xBF, 0xBF, '\"'})));
 
 }
 
