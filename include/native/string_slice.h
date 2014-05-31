@@ -756,7 +756,7 @@ template <std::size_t Size>
 inline typename basic_string_slice<Ch>::size_type
     basic_string_slice<Ch>::copy(value_type (&s)[Size], size_type pos) const
 {
-    return copy(s, Size-1, pos);
+    return copy(s, Size, pos);
 }
 
 template <typename Ch>
