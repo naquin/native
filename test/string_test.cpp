@@ -20,6 +20,7 @@
 #include "benchmark.h"
 
 #include "native/istring.h"
+#include "native/string_conversion.h"
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -142,3 +143,49 @@ TEST(String, OStream)
 {
     test_string_ostream<istring>();
 }
+
+TEST(String, StaticCoversion)
+{
+    {
+        constexpr auto actual = to_string_literal<unsigned, 1>::value;
+        static_assert(sizeof(to_string_literal<unsigned, 1>::value) == 2, "");
+        std::string expected = "1";
+        EXPECT_EQ(actual, expected);
+    }
+
+    {
+        constexpr auto actual = to_string_literal<unsigned, 12>::value;
+        static_assert(sizeof(to_string_literal<unsigned, 12>::value) == 3, "");
+        std::string expected = "12";
+        EXPECT_EQ(actual, expected);
+    }
+
+    {
+        constexpr auto actual = to_string_literal<unsigned, 123>::value;
+        static_assert(sizeof(to_string_literal<unsigned, 123>::value) == 4, "");
+        std::string expected = "123";
+        EXPECT_EQ(actual, expected);
+    }
+
+    {
+        constexpr auto actual = to_string_literal<int, -1>::value;
+        static_assert(sizeof(to_string_literal<int, -1>::value) == 3, "");
+        std::string expected = "-1";
+        EXPECT_EQ(actual, expected);
+    }
+
+    {
+        constexpr auto actual = to_string_literal<int, -12>::value;
+        static_assert(sizeof(to_string_literal<int, -12>::value) == 4, "");
+        std::string expected = "-12";
+        EXPECT_EQ(actual, expected);
+    }
+
+    {
+        constexpr auto actual = to_string_literal<int, -123>::value;
+        static_assert(sizeof(to_string_literal<int, -123>::value) == 5, "");
+        std::string expected = "-123";
+        EXPECT_EQ(actual, expected);
+    }
+}
+

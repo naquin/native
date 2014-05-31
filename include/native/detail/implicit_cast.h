@@ -6,10 +6,13 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 #pragma once
 
-namespace native {
-namespace detail {
+namespace native
+{
+namespace detail
+{
 
-template<class T> struct icast_identity
+template <class T>
+struct icast_identity
 {
     typedef T type;
 };
@@ -22,12 +25,13 @@ template<class T> struct icast_identity
 // The use of identity creates a non-deduced form, so that the
 // explicit template argument must be supplied
 template <typename T>
-inline T implicit_cast (typename boost::detail::icast_identity<T>::type x) {
+inline T implicit_cast(typename detail::icast_identity<T>::type x)
+{
     return x;
 }
 
 // incomplete return type now is here
-//template <typename T>
-//void implicit_cast (...);
+// template <typename T>
+// void implicit_cast (...);
 
 } // namespace native

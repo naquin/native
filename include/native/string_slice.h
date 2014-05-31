@@ -21,6 +21,8 @@
 
 #include "native/detail/string_core.h"
 
+#include <vector>
+
 namespace native {
 
 // Splice strings are a way to efficiently refer to a sub-string without having

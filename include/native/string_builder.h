@@ -17,6 +17,8 @@
 #ifndef NATIVE_STRING_BUILDER_H__
 #define NATIVE_STRING_BUILDER_H__
 
+#include "native/config.h"
+
 #include "native/string_base.h"
 
 #include "native/detail/string_builder_core.h"
@@ -25,10 +27,12 @@
 
 #include "native/istring.h"
 
-namespace native {
+namespace native
+{
 
 template <typename Ch>
-class basic_string_builder : public string_base {
+class basic_string_builder : public string_base
+{
 public:
     using this_type = basic_string_builder<Ch>;
     using traits_type = std::char_traits<Ch>;
@@ -52,7 +56,7 @@ public:
     using string_type = basic_string_builder<Ch>;
     using istring_type = basic_istring<Ch>;
 
-    static const size_type npos;
+    static const size_type npos = -1;
 
     // 1) Default constructor. Constructs empty string. The buffer capacity
     //    can be preallocated.
@@ -162,22 +166,19 @@ using u32string_builder = basic_string_builder<char32_t>;
 // implementation
 //
 
-//
-// basic_string_builder
-//
-template <typename Ch>
-constexpr const typename basic_string_builder<Ch>::size_type
-    basic_string_builder<Ch>::npos = -1;
-
 // 1) Default constructor. Constructs empty string.
 template <typename Ch>
 constexpr basic_string_builder<Ch>::basic_string_builder(
-    size_type capacity) noexcept : _core(capacity) {}
+    size_type capacity) noexcept : _core(capacity)
+{
+}
 
 // 2) Constructs the string with count copies of character ch.
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(size_type n, value_type c)
-    : _core(n, c) {}
+    : _core(n, c)
+{
+}
 
 // 3) Constructs the string with a substring [pos, pos+count) of other. If the
 //    requested substring lasts past the end of the string, or if count == npos,
@@ -187,8 +188,10 @@ template <typename Ch>
 template <typename String>
 inline typename basic_string_builder<Ch>::size_type
 basic_string_builder<Ch>::_substr_length(const String& str, size_type pos,
-                                         size_type n) {
-    if (pos >= str.size()) {
+                                         size_type n)
+{
+    if (pos >= str.size())
+    {
         this->throw_out_of_range();
     }
 
@@ -198,22 +201,30 @@ basic_string_builder<Ch>::_substr_length(const String& str, size_type pos,
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const basic_string_builder& str,
                                                size_type pos, size_type n)
-    : _core(str.data() + pos, _substr_length(str, pos, n)) {}
+    : _core(str.data() + pos, _substr_length(str, pos, n))
+{
+}
 
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const istring_type& str,
                                                size_type pos, size_type)
-    : _core(str._core) {}
+    : _core(str._core)
+{
+}
 
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const std_type& str,
                                                size_type pos, size_type n)
-    : _core(str.data() + pos, _substr_length(str, pos, n)) {}
+    : _core(str.data() + pos, _substr_length(str, pos, n))
+{
+}
 
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const slice_type& str,
                                                size_type pos, size_type n)
-    : _core(str.data() + pos, _substr_length(str, pos, n)) {}
+    : _core(str.data() + pos, _substr_length(str, pos, n))
+{
+}
 
 // 4) Constructs the string with the first count characters of character string
 //    pointed to by s. s can contain null characters. s must not be a NULL
@@ -221,7 +232,9 @@ basic_string_builder<Ch>::basic_string_builder(const slice_type& str,
 template <typename Ch>
 constexpr basic_string_builder<Ch>::basic_string_builder(const_pointer s,
                                                          size_type n)
-    : _core(s, n) {}
+    : _core(s, n)
+{
+}
 
 // 5) Constructs the string with the contents of null-terminated character
 // string
@@ -229,103 +242,130 @@ constexpr basic_string_builder<Ch>::basic_string_builder(const_pointer s,
 //    character. s must not be a NULL pointer.
 template <typename Ch>
 constexpr basic_string_builder<Ch>::basic_string_builder(const_pointer first)
-    : _core(first) {}
+    : _core(first)
+{
+}
 
 // 6) Constructs the string with the contents of the range [first, last).
 template <typename Ch>
 template <class InputIterator>
 basic_string_builder<Ch>::basic_string_builder(InputIterator begin,
                                                InputIterator end)
-    : _core(begin, end) {}
+    : _core(begin, end)
+{
+}
 
 // 7) Copy constructor. Constructs the string with the copy of the contents of
 // other.
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const basic_string_builder& str)
-    : _core(str._core) {}
+    : _core(str._core)
+{
+}
 
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const istring_type& str)
-    : _core(str._core) {}
+    : _core(str._core)
+{
+}
 
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const std_type& str)
-    : _core(str.data(), str.size()) {}
+    : _core(str.data(), str.size())
+{
+}
 
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(const slice_type& str)
-    : _core(str.data(), str.size()) {}
+    : _core(str.data(), str.size())
+{
+}
 
 // 8) Move constructor. Constructs the string with the contents of other using
 // move semantics.
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(
-    basic_string_builder&& str) noexcept : _core(std::move(str._core)) {}
+    basic_string_builder&& str) noexcept : _core(std::move(str._core))
+{
+}
 
 // 9) Constructs the string with the contents of the initializer list init.
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(
     std::initializer_list<value_type> init)
-    : _core(init.begin(), init.end()) {}
+    : _core(init.begin(), init.end())
+{
+}
 
 // Destructor
 template <typename Ch>
-basic_string_builder<Ch>::~basic_string_builder() {}
+basic_string_builder<Ch>::~basic_string_builder()
+{
+}
 
 template <typename Ch>
 inline typename basic_string_builder<Ch>::size_type
-basic_string_builder<Ch>::size() const noexcept {
+basic_string_builder<Ch>::size() const noexcept
+{
     return this->_core.size();
 }
 
 template <typename Ch>
 inline typename basic_string_builder<Ch>::size_type
-basic_string_builder<Ch>::length() const noexcept {
+basic_string_builder<Ch>::length() const noexcept
+{
     return this->_core.size();
 }
 
 template <typename Ch>
 inline typename basic_string_builder<Ch>::size_type
-basic_string_builder<Ch>::max_size() const noexcept {
+basic_string_builder<Ch>::max_size() const noexcept
+{
     return this->_core.max_size();
 }
 
 template <typename Ch>
 inline typename basic_string_builder<Ch>::size_type
-basic_string_builder<Ch>::capacity() const noexcept {
+basic_string_builder<Ch>::capacity() const noexcept
+{
     return this->_core.capacity();
 }
 
 template <typename Ch>
-inline void basic_string_builder<Ch>::reserve(size_t n) {
+inline void basic_string_builder<Ch>::reserve(size_t n)
+{
     this->_core.reserve(n);
 }
 
 template <typename Ch>
-inline void basic_string_builder<Ch>::resize(size_t n) {
+inline void basic_string_builder<Ch>::resize(size_t n)
+{
     this->_core.resize(n);
 }
 
 template <typename Ch>
-inline void basic_string_builder<Ch>::clear() noexcept {
+inline void basic_string_builder<Ch>::clear() noexcept
+{
     this->_core.clear();
 }
 
 template <typename Ch>
-inline bool basic_string_builder<Ch>::empty() const noexcept {
+inline bool basic_string_builder<Ch>::empty() const noexcept
+{
     return this->_core.size() == 0;
 }
 
 template <typename Ch>
-typename basic_string_builder<Ch>::istring_type
-basic_string_builder<Ch>::str() {
+typename basic_string_builder<Ch>::istring_type basic_string_builder<Ch>::str()
+{
     _core.null_terminate();
     return istring_type(std::move(_core));
 }
 
 template <typename Ch>
 typename basic_string_builder<Ch>::slice_type
-basic_string_builder<Ch>::slice() const noexcept {
+basic_string_builder<Ch>::slice() const noexcept
+{
     return slice_type(this->_core.data(),
                       this->_core.data() + this->_core.size());
 }
@@ -336,90 +376,104 @@ basic_string_builder<Ch>::slice() const noexcept {
 
 // char
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(short value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(short value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(unsigned short value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(unsigned short value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::operator<<(int value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(int value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(unsigned int value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(unsigned int value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::operator<<(long value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(long value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(unsigned long value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(unsigned long value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(long long value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(long long value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(unsigned long long value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(unsigned long long value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(float value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(float value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(double value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(double value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
-basic_string_builder<char>& basic_string_builder<char>::
-operator<<(long double value) {
+inline basic_string_builder<char>& basic_string_builder<char>::
+operator<<(long double value)
+{
     detail::stream_append(*this, value);
     return *this;
 }
 
 template <typename Ch>
 basic_string_builder<Ch>& basic_string_builder<Ch>::
-operator<<(const_pointer ptr) {
+operator<<(const_pointer ptr)
+{
     write(ptr, traits_type::length(ptr));
     return *this;
 }
 
 // wchar_t
 // template <>
-// basic_string_builder<wchar_t>&
+// inline basic_string_builder<wchar_t>&
 // basic_string_builder<wchar_t>::operator<<(short value)
 //{
 //    _append_string(std::swprintf, L"%hd", value);
@@ -427,7 +481,7 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>&
+// inline basic_string_builder<wchar_t>&
 // basic_string_builder<wchar_t>::operator<<(unsigned short value)
 //{
 //    _append_string(std::swprintf, L"%hu", value);
@@ -435,7 +489,8 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>& basic_string_builder<wchar_t>::operator<<(int
+// inline basic_string_builder<wchar_t>&
+// basic_string_builder<wchar_t>::operator<<(int
 // value)
 //{
 //    _append_string(std::swprintf, L"%d", value);
@@ -443,7 +498,7 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>&
+// inline basic_string_builder<wchar_t>&
 // basic_string_builder<wchar_t>::operator<<(unsigned int value)
 //{
 //    _append_string(std::swprintf, L"%u", value);
@@ -451,7 +506,8 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>& basic_string_builder<wchar_t>::operator<<(long
+// inline basic_string_builder<wchar_t>&
+// basic_string_builder<wchar_t>::operator<<(long
 // value)
 //{
 //    _append_string(std::swprintf, L"%ld", value);
@@ -459,7 +515,8 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder& basic_string_builder<wchar_t>::operator<<(unsigned long
+// inline basic_string_builder&
+// basic_string_builder<wchar_t>::operator<<(unsigned long
 // value)
 //{
 //    _append_string(std::swprintf, L"%lu", value);
@@ -467,7 +524,8 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>& basic_string_builder<wchar_t>::operator<<(long
+// inline basic_string_builder<wchar_t>&
+// basic_string_builder<wchar_t>::operator<<(long
 // long value)
 //{
 //    _append_string(std::swprintf, L"%lld", value);
@@ -475,7 +533,7 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>&
+// inline basic_string_builder<wchar_t>&
 // basic_string_builder<wchar_t>::operator<<(unsigned long long value)
 //{
 //    _append_string(std::swprintf, L"%llu", value);
@@ -483,7 +541,7 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>&
+// inline basic_string_builder<wchar_t>&
 // basic_string_builder<wchar_t>::operator<<(float value)
 //{
 //    _append_string(std::swprintf, L"%f", value);
@@ -491,7 +549,7 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>&
+// inline basic_string_builder<wchar_t>&
 // basic_string_builder<wchar_t>::operator<<(double value)
 //{
 //    _append_string(std::swprintf, L"%f", value);
@@ -499,7 +557,8 @@ operator<<(const_pointer ptr) {
 //}
 //
 // template <>
-// basic_string_builder<wchar_t>& basic_string_builder<wchar_t>::operator<<(long
+// inline basic_string_builder<wchar_t>&
+// basic_string_builder<wchar_t>::operator<<(long
 // double value)
 //{
 //    _append_string(std::swprintf, L"%Lf", value);
@@ -507,19 +566,22 @@ operator<<(const_pointer ptr) {
 //}
 
 template <typename Ch>
-basic_string_builder<Ch>& basic_string_builder<Ch>::operator<<(bool value) {
+basic_string_builder<Ch>& basic_string_builder<Ch>::operator<<(bool value)
+{
     return put(value ? '1' : '0');
 }
 
 template <typename Ch>
-basic_string_builder<Ch>& basic_string_builder<Ch>::put(value_type ch) {
+basic_string_builder<Ch>& basic_string_builder<Ch>::put(value_type ch)
+{
     _core.push_back(ch);
     return *this;
 }
 
 template <typename Ch>
 basic_string_builder<Ch>& basic_string_builder<Ch>::write(const_pointer s,
-                                                          size_type length) {
+                                                          size_type length)
+{
     const auto size = _core.size();
     _core.resize(size + length);
     std::copy(s, s + length, _core.mutable_data() + size);
@@ -530,7 +592,8 @@ basic_string_builder<Ch>& basic_string_builder<Ch>::write(const_pointer s,
 // streams
 //
 template <typename Ch>
-basic_string_builder<Ch>& operator<<(basic_string_builder<Ch>& s, Ch ch) {
+basic_string_builder<Ch>& operator<<(basic_string_builder<Ch>& s, Ch ch)
+{
     s.put(ch);
     return s;
 }
@@ -538,7 +601,8 @@ basic_string_builder<Ch>& operator<<(basic_string_builder<Ch>& s, Ch ch) {
 template <typename Ch>
 basic_string_builder<Ch>&
 operator<<(basic_string_builder<Ch>& s,
-           const typename basic_string_builder<Ch>::string_type& str) {
+           const typename basic_string_builder<Ch>::string_type& str)
+{
     s.write(str.data(), str.length());
     return s;
 }
@@ -546,7 +610,8 @@ operator<<(basic_string_builder<Ch>& s,
 template <typename Ch>
 basic_string_builder<Ch>&
 operator<<(basic_string_builder<Ch>& s,
-           const typename basic_string_builder<Ch>::istring_type& str) {
+           const typename basic_string_builder<Ch>::istring_type& str)
+{
     s.write(str.data(), str.length());
     return s;
 }
@@ -554,7 +619,8 @@ operator<<(basic_string_builder<Ch>& s,
 template <typename Ch>
 basic_string_builder<Ch>&
 operator<<(basic_string_builder<Ch>& s,
-           const typename basic_string_builder<Ch>::std_type& str) {
+           const typename basic_string_builder<Ch>::std_type& str)
+{
     s.write(str.data(), str.length());
     return s;
 }
@@ -562,19 +628,23 @@ operator<<(basic_string_builder<Ch>& s,
 template <typename Ch>
 basic_string_builder<Ch>&
 operator<<(basic_string_builder<Ch>& s,
-           const typename basic_string_builder<Ch>::slice_type& str) {
+           const typename basic_string_builder<Ch>::slice_type& str)
+{
     s.write(str.data(), str.length());
     return s;
 }
 
 } // namespace native
 
-namespace std {
+namespace std
+{
 
 template <typename Ch>
-struct hash<native::basic_string_builder<Ch>> {
+struct hash<native::basic_string_builder<Ch>>
+{
     std::size_t operator()(const native::basic_string_builder<Ch>& s) const
-        noexcept {
+        noexcept
+    {
         return hash(s.data(), s.length() * sizeof(Ch));
     }
 };

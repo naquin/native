@@ -426,14 +426,22 @@ struct string_core : string_core_base<Ch> {
         copy(rhs);
     }
 
-    string_core& operator=(const string_core& rhs) = delete;
+    string_core& operator=(const string_core& rhs)
+    {
+        copy(rhs);
+        return *this;
+    }
 
     string_core(string_core&& rhs)
     {
         copy(rhs);
     }
 
-    string_core& operator= (string_core&& rhs) = delete;
+    string_core& operator= (string_core&& rhs)
+    {
+        copy(rhs);
+        return *this;
+    }
 
     string_core(string_builder_core<Ch>&& core)
     {

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2013 Mike Naquin. All rights reserved.
+// Copyright (c) 2015 Mike Naquin. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,11 @@
 // limitations under the License.
 //
 
-#ifndef NATIVE_CONVERSION_H__
-#define NATIVE_CONVERSION_H__
+#ifndef NATIVE_JSON_H__
+#define NATIVE_JSON_H__
 
 #include "native/config.h"
 
-#include "native/json/conversion.h"
-
-namespace native
-{
-
-using json::to;
-
-} // namespace native
+#include "native/json/any.h"
 
 #endif

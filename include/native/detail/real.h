@@ -24,15 +24,18 @@
 #include "native/detail/double-conversion/strtod.h"
 #include "native/detail/double-conversion/double-conversion.h"
 
-namespace native {
-namespace detail {
+namespace native
+{
+namespace detail
+{
 
 template <typename T>
 T string_to_real(const number_parse<T>& attribs);
 
 template <>
 inline long double
-string_to_real<long double>(const number_parse<long double>& attribs) {
+string_to_real<long double>(const number_parse<long double>& attribs)
+{
     using namespace double_conversion;
     double converted = Strtod(
         Vector<const char>(attribs.buffer, attribs.length), attribs.exponent);
@@ -40,7 +43,8 @@ string_to_real<long double>(const number_parse<long double>& attribs) {
 }
 
 template <>
-inline double string_to_real<double>(const number_parse<double>& attribs) {
+inline double string_to_real<double>(const number_parse<double>& attribs)
+{
     using namespace double_conversion;
     double converted = Strtod(
         Vector<const char>(attribs.buffer, attribs.length), attribs.exponent);
@@ -48,7 +52,8 @@ inline double string_to_real<double>(const number_parse<double>& attribs) {
 }
 
 template <>
-inline float string_to_real<float>(const number_parse<float>& attribs) {
+inline float string_to_real<float>(const number_parse<float>& attribs)
+{
     using namespace double_conversion;
     float converted = Strtof(Vector<const char>(attribs.buffer, attribs.length),
                              attribs.exponent);
@@ -63,7 +68,8 @@ template <class Stream, class Source>
 typename std::enable_if<std::is_floating_point<Source>::value>::type
 stream_append(Stream& stream, Source value,
               double_conversion::DoubleToStringConverter::DtoaMode mode,
-              unsigned int numDigits) {
+              unsigned int numDigits)
+{
     using namespace double_conversion;
     DoubleToStringConverter conv(DoubleToStringConverter::NO_FLAGS, "infinity",
                                  "NaN", 'E', kConvMaxDecimalInShortestLow,
@@ -72,7 +78,8 @@ stream_append(Stream& stream, Source value,
                                  1); // max trailing padding zeros
     char buffer[256];
     StringBuilder builder(buffer, sizeof(buffer));
-    switch (mode) {
+    switch (mode)
+    {
         case DoubleToStringConverter::SHORTEST:
             conv.ToShortest(value, &builder);
             break;
@@ -94,12 +101,13 @@ stream_append(Stream& stream, Source value,
 // As above, but for floating point
 template <class Stream, class Source>
 typename std::enable_if<std::is_floating_point<Source>::value>::type
-stream_append(Stream& stream, Source value) {
+stream_append(Stream& stream, Source value)
+{
     stream_append(stream, value,
                   double_conversion::DoubleToStringConverter::SHORTEST, 0);
 }
 
-} // namespace native::detail
+} // namespace detail
 } // namespace native
 
 #endif
