@@ -88,7 +88,7 @@ typename std::enable_if<std::is_same<T, std::string>::value && std::is_floating_
 // bool to string
 template <typename T>
 typename std::enable_if<std::is_same<T, std::string>::value, T>::type
-to(bool value)
+    to(bool value)
 {
     return value ? "true" : "false";
 }

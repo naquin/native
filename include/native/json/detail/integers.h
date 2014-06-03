@@ -21,6 +21,8 @@
 
 #include "native/json/detail/number_parse.h"
 
+#include "native/string_conversion.h"
+
 #include <cassert>
 
 namespace native {
@@ -166,7 +168,8 @@ __attribute__((aligned(16))) constexpr uint16_t shift1000[] =
 // Maximum value of number when represented as a string
 template <class T> struct max_string
 {
-    static const char* const value;
+    constexpr static const char* const value =
+        to_string_literal<T, std::numeric_limits<T>::max()>::value;
 };
 
 template <typename T>
