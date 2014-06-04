@@ -218,34 +218,34 @@ typedef fnv1a_hasher default_hasher;
 //
 // user-defined literals
 //
-constexpr size_t operator ""_fnv1(const char* s, size_t size)
+constexpr size_t operator "" _fnv1(const char* s, size_t size)
 {
     return fnv1_hasher::static_hash(s, size);
 }
 
-constexpr size_t operator ""_fnv1a(const char* s, size_t size)
+constexpr size_t operator "" _fnv1a(const char* s, size_t size)
 {
     return fnv1a_hasher::static_hash(s, size);
 }
 
 // fnv1 (32-bit)
-constexpr size_t operator ""_fnv32(const char* s, size_t size)
+constexpr size_t operator "" _fnv32(const char* s, size_t size)
 {
     return fnv1_32_hasher::static_hash(s, size);
 }
 
-constexpr size_t operator ""_fnv64(const char* s, size_t size)
+constexpr size_t operator "" _fnv64(const char* s, size_t size)
 {
     return fnv1_64_hasher::static_hash(s, size);
 }
 
 // fnv1a (32-bit)
-constexpr size_t operator ""_fnv32a(const char* s, size_t size)
+constexpr size_t operator "" _fnv32a(const char* s, size_t size)
 {
     return fnv1a_32_hasher::static_hash(s, size);
 }
 
-constexpr size_t operator ""_fnv64a(const char* s, size_t size)
+constexpr size_t operator "" _fnv64a(const char* s, size_t size)
 {
     return fnv1a_64_hasher::static_hash(s, size);
 }
@@ -253,7 +253,7 @@ constexpr size_t operator ""_fnv64a(const char* s, size_t size)
 //
 // generic static hash
 //
-constexpr size_t operator ""_hash(const char* s, size_t size)
+constexpr size_t operator "" _hash(const char* s, size_t size)
 {
     return default_hasher::static_hash(s, size);
 }

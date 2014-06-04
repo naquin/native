@@ -170,7 +170,8 @@ BENCHMARK(BenchmarkTest, hash_istring_literal)
     do_benchmark(istring::literal(STRING_1000));
     do_benchmark(istring::literal(STRING_10000));
     do_benchmark(istring::literal(STRING_100000));
-    do_benchmark(istring::literal(STRING_1000000));
+//  Segfaults during execution with g++ 4.8.2
+//    do_benchmark(istring::literal(STRING_1000000));
 }
 
 BENCHMARK(BenchmarkTest, index_std_string)

@@ -291,7 +291,7 @@ public:
             head[length] = '\0'; // null terminate
         }
 
-        inline smart_pointer* get()
+        inline smart_pointer* get() const
         {
             return
                 reinterpret_cast<smart_pointer*>(
@@ -300,7 +300,7 @@ public:
             );
         }
 
-        size_type hash()
+        size_type hash() const
         {
             auto ptr = get();
             size_type value = ptr->hash.load(std::memory_order_relaxed);
