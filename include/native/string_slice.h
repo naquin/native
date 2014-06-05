@@ -619,7 +619,7 @@ inline typename basic_string_slice<Ch>::const_iterator
 
 template <typename Ch>
 inline typename basic_string_slice<Ch>::const_iterator
-    basic_string_slice<Ch>::basic_string_slice<Ch>::end() const noexcept
+    basic_string_slice<Ch>::end() const noexcept
 {
     return &data()[0] + size();
 }

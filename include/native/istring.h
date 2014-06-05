@@ -355,7 +355,7 @@ private:
 
     // 0)
     basic_istring(const core_type& s);
-    
+
     core_type _core;
 };
 
@@ -574,7 +574,7 @@ inline typename basic_istring<Ch>::const_iterator
 
 template <typename Ch>
 inline typename basic_istring<Ch>::const_iterator
-    basic_istring<Ch>::basic_istring<Ch>::end() const noexcept
+    basic_istring<Ch>::end() const noexcept
 {
     return &data()[0] + size();
 }
