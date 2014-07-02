@@ -64,7 +64,7 @@ public:
     typedef basic_string_slice<value_type> slice_type;
     typedef basic_istring<Ch> string_type;
 
-    static const size_type npos;
+    static constexpr const size_type npos = -1;
 
     // 1) Default constructor. Constructs empty string.
     basic_istring() noexcept;
@@ -380,7 +380,7 @@ std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_is
 // basic_istring
 //
 template <typename Ch>
-constexpr const typename basic_istring<Ch>::size_type basic_istring<Ch>::npos = -1;
+constexpr const typename basic_istring<Ch>::size_type basic_istring<Ch>::npos;
 
 template <typename Ch>
 template <size_t n>

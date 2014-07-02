@@ -35,16 +35,18 @@ TEST(SpliceString, Constructors)
     string_slice ctor1;
     string_slice ctor3c(ctor2, 1);
     string_slice ctor3a(ctor3c, 1);
-    string_slice ctor3b(ctor2.std_str(), 1);
+    auto ctor2stdstr = ctor2.std_str();
+    string_slice ctor3b(ctor2stdstr, 1);
     string_slice ctor4a("foobar", 3);
     string_slice ctor4b("foobar", 3);
     string_slice ctor5("foobar");
     string_slice ctor7a(ctor5);
-    string_slice ctor7b(ctor5.std_str());
+    auto ctor5stdstr = ctor5.std_str();
+    string_slice ctor7b(ctor5stdstr);
 //    String ctor7c((string(ctor5)));
     string_slice ctor8Original("foobar");
     string_slice ctor8(std::move(ctor8Original));
-    string_slice ctor9({'f', 'o', 'o', 'b', 'a', 'r'});
+//    string_slice ctor9({'f', 'o', 'o', 'b', 'a', 'r'});
 
     EXPECT_EQ("", ctor1);
     EXPECT_EQ("aaaaa", ctor2);
@@ -59,7 +61,7 @@ TEST(SpliceString, Constructors)
 //    EXPECT_EQ(ctor5, ctor7c);
     EXPECT_EQ("foobar", ctor8Original);
     EXPECT_EQ("foobar", ctor8);
-    EXPECT_EQ("foobar", ctor9);
+//    EXPECT_EQ("foobar", ctor9);
 
     istring ctor7c((istring(ctor2)));
 

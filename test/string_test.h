@@ -218,9 +218,10 @@ void test_string_attributes()
     
     s = "foobar";
     
-    char copy[6];
+    char copy[7] = {};
     EXPECT_EQ(6, s.copy(copy));
     EXPECT_EQ(0, strncmp("foobar", copy, 6));
+    EXPECT_EQ("foobar", std::string(copy, copy + 6));
 }
 
 template <typename String>

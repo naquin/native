@@ -59,8 +59,8 @@ public:
     typedef basic_string_slice<value_type> slice_type;
     typedef basic_istring<Ch> string_type;
 
-    static const size_type npos;
-    
+    static constexpr const size_type npos = -1;
+
     // 1) Default constructor. Constructs empty string.
     basic_string_slice() noexcept;
 
@@ -344,7 +344,7 @@ typedef basic_string_slice<char32_t> u32string_slice;
 //
 
 template <typename Ch>
-constexpr const typename basic_string_slice<Ch>::size_type basic_string_slice<Ch>::npos = -1;
+constexpr const typename basic_string_slice<Ch>::size_type basic_string_slice<Ch>::npos;
 
 // 1) Default constructor. Constructs empty string.
 template <typename Ch>
