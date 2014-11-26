@@ -45,24 +45,24 @@ template <typename Ch>
 class basic_istring:
     public string_base {
 public:
-    typedef basic_istring<Ch> this_type;
-    typedef std::char_traits<Ch> traits_type;
-    typedef typename traits_type::char_type value_type;
-    typedef std::allocator<Ch> allocator_type;
-    typedef typename allocator_type::size_type size_type;
-    typedef typename allocator_type::difference_type difference_type;
-    typedef typename allocator_type::reference reference;
-    typedef typename allocator_type::const_reference const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
-    typedef const_pointer const_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    using this_type              = basic_istring<Ch>;
+    using traits_type            = std::char_traits<Ch>;
+    using value_type             = typename traits_type::char_type;
+    using allocator_type         = std::allocator<Ch>;
+    using size_type              = typename allocator_type::size_type;
+    using difference_type        = typename allocator_type::difference_type;
+    using reference              = typename allocator_type::reference;
+    using const_reference        = typename allocator_type::const_reference;
+    using pointer                = typename allocator_type::pointer;
+    using const_pointer          = typename allocator_type::const_pointer;
+    using const_iterator         = const_pointer;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    typedef std::basic_string<value_type> std_type;
-    typedef detail::string_common<this_type> common;
-    typedef basic_string_core<Ch> core_type;
-    typedef basic_string_slice<value_type> slice_type;
-    typedef basic_istring<Ch> string_type;
+    using std_type    = std::basic_string<value_type>;
+    using common      = detail::string_common<this_type>;
+    using core_type   = basic_string_core<Ch>;
+    using slice_type  = basic_string_slice<value_type>;
+    using string_type = basic_istring<Ch>;
 
     static const size_type npos;
 
@@ -360,10 +360,10 @@ private:
 };
 
 
-typedef basic_istring<char>     istring;
-typedef basic_istring<wchar_t>  wistring;
-typedef basic_istring<char16_t> u16istring;
-typedef basic_istring<char32_t> u32istring;
+using istring    =  basic_istring<char>;
+using wistring   = basic_istring<wchar_t> ;
+using u16istring = basic_istring<char16_t>;
+using u32istring = basic_istring<char32_t>;
 
 
 template <typename Ch>

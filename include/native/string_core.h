@@ -27,17 +27,17 @@ namespace native {
 
 template <typename Ch>
 struct basic_string_core {
-    typedef std::char_traits<Ch> traits_type;
-    typedef typename traits_type::char_type value_type;
-    typedef std::allocator<Ch> allocator_type;
-    typedef typename allocator_type::size_type size_type;
-    typedef typename allocator_type::difference_type difference_type;
-    typedef typename allocator_type::reference reference;
-    typedef typename allocator_type::const_reference const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
-    typedef const_pointer const_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    using traits_type            = std::char_traits<Ch>;
+    using value_type             = typename traits_type::char_type;
+    using allocator_type         = std::allocator<Ch>;
+    using size_type              = typename allocator_type::size_type;
+    using difference_type        = typename allocator_type::difference_type;
+    using reference              = typename allocator_type::reference;
+    using const_reference        = typename allocator_type::const_reference;
+    using pointer                = typename allocator_type::pointer;
+    using const_pointer          = typename allocator_type::const_pointer;
+    using const_iterator         = const_pointer;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     static const value_type empty_value[1];
 

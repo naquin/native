@@ -32,7 +32,7 @@ struct fnv_traits;
 template <typename T>
 struct fnv_traits<T, 4>
 {
-    typedef T size_type;
+    using size_type = T;
 
     static constexpr size_type prime = 16777619UL;
     static constexpr size_type basis = 2166136261UL;
@@ -51,7 +51,7 @@ struct fnv_traits<T, 4>
 template <typename T>
 struct fnv_traits<T, 8>
 {
-    typedef T size_type;
+    using size_type = T;
 
     static constexpr size_type prime = 1099511628211ULL;
     static constexpr size_type basis = 14695981039346656037ULL;
@@ -75,10 +75,9 @@ struct fnv_traits<T, 8>
 template <typename T>
 struct basic_fnv1_hasher
 {
-    typedef basic_fnv1_hasher<T> this_type;
-    typedef fnv_traits<T, sizeof(T)> traits_type;
-
-    typedef typename traits_type::size_type size_type;
+    using this_type   = basic_fnv1_hasher<T>;
+    using traits_type = fnv_traits<T, sizeof(T)>;
+    using size_type   = typename traits_type::size_type;
 
     static constexpr size_type prime = traits_type::prime;
     static constexpr size_type basis = traits_type::basis;
@@ -141,10 +140,9 @@ struct basic_fnv1_hasher
 template <typename T>
 struct basic_fnv1a_hasher
 {
-    typedef basic_fnv1a_hasher<T> this_type;
-    typedef fnv_traits<T, sizeof(T)> traits_type;
-    
-    typedef typename traits_type::size_type size_type;
+    using this_type   = basic_fnv1a_hasher<T>;
+    using traits_type = fnv_traits<T, sizeof(T)>;
+    using size_type   = typename traits_type::size_type;
 
     static constexpr size_type prime = traits_type::prime;
     static constexpr size_type basis = traits_type::basis;
@@ -205,15 +203,15 @@ struct basic_fnv1a_hasher
 };
 
 
-typedef basic_fnv1_hasher<size_t> fnv1_hasher;
-typedef basic_fnv1_hasher<uint32> fnv1_32_hasher;
-typedef basic_fnv1_hasher<uint64> fnv1_64_hasher;
+using fnv1_hasher    = basic_fnv1_hasher<size_t>;
+using fnv1_32_hasher = basic_fnv1_hasher<uint32>;
+using fnv1_64_hasher = basic_fnv1_hasher<uint64>;
 
-typedef basic_fnv1a_hasher<size_t> fnv1a_hasher;
-typedef basic_fnv1a_hasher<uint32> fnv1a_32_hasher;
-typedef basic_fnv1a_hasher<uint64> fnv1a_64_hasher;
+using fnv1a_hasher    = basic_fnv1a_hasher<size_t>;
+using fnv1a_32_hasher = basic_fnv1a_hasher<uint32>;
+using fnv1a_64_hasher = basic_fnv1a_hasher<uint64>;
 
-typedef fnv1a_hasher default_hasher;
+using default_hasher  = fnv1a_hasher;
 
 //
 // user-defined literals

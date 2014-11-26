@@ -30,19 +30,19 @@ namespace detail {
 
 template <typename String>
 struct string_common {
-    typedef String string_type;
+    using string_type = String;
 
-    typedef typename string_type::traits_type traits_type;
-    typedef typename string_type::value_type value_type;
-    typedef typename string_type::allocator_type allocator_type;
-    typedef typename string_type::size_type size_type;
-    typedef typename string_type::difference_type difference_type;
-    typedef typename string_type::reference reference;
-    typedef typename string_type::const_reference const_reference;
-    typedef typename string_type::pointer pointer;
-    typedef typename string_type::const_pointer const_pointer;
-    typedef typename string_type::const_pointer const_iterator;
-    typedef typename string_type::const_reverse_iterator const_reverse_iterator;
+    using traits_type            = typename string_type::traits_type;
+    using value_type             = typename string_type::value_type;
+    using allocator_type         = typename string_type::allocator_type;
+    using size_type              = typename string_type::size_type;
+    using difference_type        = typename string_type::difference_type;
+    using reference              = typename string_type::reference;
+    using const_reference        = typename string_type::const_reference;
+    using pointer                = typename string_type::pointer;
+    using const_pointer          = typename string_type::const_pointer;
+    using const_iterator         = typename string_type::const_pointer;
+    using const_reverse_iterator = typename string_type::const_reverse_iterator;
 
     //
     // find
