@@ -67,7 +67,7 @@ public:
     static const size_type npos;
 
     // 1) Default constructor. Constructs empty string.
-    basic_istring() noexcept;
+    constexpr basic_istring() noexcept;
 
     // 2) Constructs the string with count copies of character ch.
     basic_istring(size_type n, value_type c);
@@ -83,12 +83,12 @@ public:
     // 4) Constructs the string with the first count characters of character
     //    string pointed to by s. s can contain null characters. s must not be
     //    a NULL pointer.
-    basic_istring(const_pointer s, size_type n);
+    constexpr basic_istring(const_pointer s, size_type n);
 
     // 5) Constructs the string with the contents of null-terminated character
     //    string pointed to by s. The length of the string is determined by the
     //    first null character. s must not be a NULL pointer.
-    basic_istring(const_pointer s);
+    constexpr basic_istring(const_pointer s);
 
     // 6) Constructs the string with the contents of the range [first, last).
     template<class InputIterator>
@@ -399,7 +399,7 @@ basic_istring<Ch>::basic_istring(const core_type& core):
 
 // 1) Default constructor. Constructs empty string.
 template <typename Ch>
-basic_istring<Ch>::basic_istring() noexcept:
+constexpr basic_istring<Ch>::basic_istring() noexcept:
     _core()
 { }
 
@@ -454,7 +454,7 @@ basic_istring<Ch>::basic_istring(const slice_type& str, size_type pos, size_type
 //    pointed to by s. s can contain null characters. s must not be a NULL
 //    pointer.
 template <typename Ch>
-basic_istring<Ch>::basic_istring(const_pointer s, size_type n):
+constexpr basic_istring<Ch>::basic_istring(const_pointer s, size_type n):
     _core(s, n)
 { }
 
@@ -462,7 +462,7 @@ basic_istring<Ch>::basic_istring(const_pointer s, size_type n):
 //    pointed to by s. The length of the string is determined by the first null
 //    character. s must not be a NULL pointer.
 template <typename Ch>
-basic_istring<Ch>::basic_istring(const_pointer first):
+constexpr basic_istring<Ch>::basic_istring(const_pointer first):
     _core(first)
 { }
 

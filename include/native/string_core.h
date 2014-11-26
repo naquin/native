@@ -47,9 +47,10 @@ struct basic_string_core {
         static_  = 0x2,
     };
 
-    inline basic_string_core()
+    inline constexpr basic_string_core():
+        _static(static_data())
     {
-        _static = static_data();
+
     }
 
     basic_string_core(const_pointer ptr, size_type length)
@@ -68,7 +69,7 @@ struct basic_string_core {
     }
 
     // static string only -- hash is pre-computed
-    inline basic_string_core(const_pointer ptr, size_type length, size_type hash):
+    inline constexpr basic_string_core(const_pointer ptr, size_type length, size_type hash):
         _static(static_data(ptr, length, hash))
     {
 
