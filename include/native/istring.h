@@ -370,7 +370,7 @@ template <typename Ch>
 std::basic_ostream<Ch>& operator<< (std::basic_ostream<Ch>& ostr, const basic_istring<Ch>& s);
 
 template <typename Ch>
-std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_istring<Ch>& s);
+std::basic_istream<Ch>& operator>> (std::basic_istream<Ch>& istr, basic_istring<Ch>& s);
 
 //
 // implementation
@@ -1042,7 +1042,7 @@ inline std::basic_ostream<Ch>& operator<< (std::basic_ostream<Ch>& ostr, const b
 }
 
 template <typename Ch>
-inline std::basic_istream<Ch>& operator<< (std::basic_istream<Ch>& istr, const basic_istring<Ch>& s)
+inline std::basic_istream<Ch>& operator>> (std::basic_istream<Ch>& istr, basic_istring<Ch>& s)
 {
     std::string tmp;
     istr >> tmp;
