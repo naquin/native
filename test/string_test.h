@@ -142,55 +142,63 @@ void test_string_iterators()
 {
     String s("foobar");
     
-    auto it = s.begin();
-    EXPECT_EQ('f', *it); ++it;
-    EXPECT_EQ('o', *it); ++it;
-    EXPECT_EQ('o', *it); ++it;
-    EXPECT_EQ('b', *it); ++it;
-    EXPECT_EQ('a', *it); ++it;
-    EXPECT_EQ('r', *it); ++it;
-    EXPECT_EQ(it, s.end());
-    --it; --it;
-    EXPECT_EQ('a', *it);
+    {
+        auto it = s.begin();
+        EXPECT_EQ('f', *it); ++it;
+        EXPECT_EQ('o', *it); ++it;
+        EXPECT_EQ('o', *it); ++it;
+        EXPECT_EQ('b', *it); ++it;
+        EXPECT_EQ('a', *it); ++it;
+        EXPECT_EQ('r', *it); ++it;
+        EXPECT_EQ(it, s.end());
+        --it; --it;
+        EXPECT_EQ('a', *it);
+    }
 
-    it = s.cbegin();
-    EXPECT_EQ('f', *it); ++it;
-    EXPECT_EQ('o', *it); ++it;
-    EXPECT_EQ('o', *it); ++it;
-    EXPECT_EQ('b', *it); ++it;
-    EXPECT_EQ('a', *it); ++it;
-    EXPECT_EQ('r', *it); ++it;
-    EXPECT_EQ(it, s.end());
-    --it; --it;
-    EXPECT_EQ('a', *it);
+    {
+        auto it = s.cbegin();
+        EXPECT_EQ('f', *it); ++it;
+        EXPECT_EQ('o', *it); ++it;
+        EXPECT_EQ('o', *it); ++it;
+        EXPECT_EQ('b', *it); ++it;
+        EXPECT_EQ('a', *it); ++it;
+        EXPECT_EQ('r', *it); ++it;
+        EXPECT_EQ(it, s.end());
+        --it; --it;
+        EXPECT_EQ('a', *it);
+    }
 
-    auto reverseIt = s.rbegin();
-    EXPECT_EQ('r', *reverseIt); ++reverseIt;
-    EXPECT_EQ('a', *reverseIt); ++reverseIt;
-    EXPECT_EQ('b', *reverseIt); ++reverseIt;
-    EXPECT_EQ('o', *reverseIt); ++reverseIt;
-    EXPECT_EQ('o', *reverseIt); ++reverseIt;
-    EXPECT_EQ('f', *reverseIt); ++reverseIt;
-    EXPECT_EQ(reverseIt, s.rend());
-    --reverseIt;
-    --reverseIt;
-    --reverseIt;
-    --reverseIt;
-    EXPECT_EQ('b', *reverseIt);
+    {
+        auto reverseIt = s.rbegin();
+        EXPECT_EQ('r', *reverseIt); ++reverseIt;
+        EXPECT_EQ('a', *reverseIt); ++reverseIt;
+        EXPECT_EQ('b', *reverseIt); ++reverseIt;
+        EXPECT_EQ('o', *reverseIt); ++reverseIt;
+        EXPECT_EQ('o', *reverseIt); ++reverseIt;
+        EXPECT_EQ('f', *reverseIt); ++reverseIt;
+        EXPECT_EQ(reverseIt, s.rend());
+        --reverseIt;
+        --reverseIt;
+        --reverseIt;
+        --reverseIt;
+        EXPECT_EQ('b', *reverseIt);
+    }
 
-    reverseIt = s.crbegin();
-    EXPECT_EQ('r', *reverseIt); ++reverseIt;
-    EXPECT_EQ('a', *reverseIt); ++reverseIt;
-    EXPECT_EQ('b', *reverseIt); ++reverseIt;
-    EXPECT_EQ('o', *reverseIt); ++reverseIt;
-    EXPECT_EQ('o', *reverseIt); ++reverseIt;
-    EXPECT_EQ('f', *reverseIt); ++reverseIt;
-    EXPECT_EQ(reverseIt, s.rend());
-    --reverseIt;
-    --reverseIt;
-    --reverseIt;
-    --reverseIt;
-    EXPECT_EQ('b', *reverseIt);
+    {
+        auto reverseIt = s.crbegin();
+        EXPECT_EQ('r', *reverseIt); ++reverseIt;
+        EXPECT_EQ('a', *reverseIt); ++reverseIt;
+        EXPECT_EQ('b', *reverseIt); ++reverseIt;
+        EXPECT_EQ('o', *reverseIt); ++reverseIt;
+        EXPECT_EQ('o', *reverseIt); ++reverseIt;
+        EXPECT_EQ('f', *reverseIt); ++reverseIt;
+        EXPECT_EQ(reverseIt, s.rend());
+        --reverseIt;
+        --reverseIt;
+        --reverseIt;
+        --reverseIt;
+        EXPECT_EQ('b', *reverseIt);
+    }
 }
 
 template <typename String>
@@ -199,8 +207,7 @@ void test_string_attributes()
     String s("foobar");
     EXPECT_EQ(6, s.size());
     EXPECT_EQ(6, s.length());
-    EXPECT_EQ(6, s.max_size());
-    EXPECT_EQ(6, s.capacity());
+    EXPECT_EQ(std::numeric_limits<typename String::size_type>::max(), s.max_size());
     EXPECT_EQ('b', s[3]);
     EXPECT_EQ('b', s.at(3));
     EXPECT_ANY_THROW(s.at(7));

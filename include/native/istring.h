@@ -17,17 +17,21 @@
 #ifndef NATIVE_BASIC_STRING_H__
 #define NATIVE_BASIC_STRING_H__
 
+#include "native/hash.h"
 #include "native/string_base.h"
-#include "native/string_core.h"
 #include "native/string_common.h"
 #include "native/string_operators.h"
 #include "native/string_slice.h"
 
-#include "native/hash.h"
+#include "native/detail/string_core.h"
 
+#include <limits>
 #include <vector>
 
 namespace native {
+
+template <typename Ch>
+class basic_string_builder;
 
 // With C++11, there is a greater need for thread-safety for fundamental types.
 // All POD integer types are by there nature thread safe since a copy of the
@@ -60,9 +64,10 @@ public:
 
     using std_type    = std::basic_string<value_type>;
     using common      = detail::string_common<this_type>;
-    using core_type   = basic_string_core<Ch>;
+    using core_type   = string_core<Ch>;
     using slice_type  = basic_string_slice<value_type>;
     using string_type = basic_istring<Ch>;
+    using builer_type = basic_string_builder<Ch>;
 
     static const size_type npos;
 
@@ -103,6 +108,7 @@ public:
     // 8) Move constructor. Constructs the string with the contents of other
     //    using move semantics.
     basic_istring(basic_istring&& str) noexcept;
+    basic_istring(builer_type&& builer) noexcept;
 
     // 9) Constructs the string with the contents of the initializer list init.
     explicit basic_istring(std::initializer_list<value_type>);
@@ -170,6 +176,7 @@ public:
     // for strings that don't fit in the small string optimization.
     size_type hash() const;
 
+
     // 1) Finds the first substring equal to str. If str.size() is zero, returns pos.
     template <typename String>
     typename std::enable_if<
@@ -189,7 +196,8 @@ public:
 
     // 4) Finds the first character ch.
     size_type find(value_type c, size_type pos = 0) const noexcept;
-    
+
+
     // 1) Finds the last substring equal to str. If str.size() is zero, returns
     //    pos or size()-1, whichever is smaller.
     template <typename String>
@@ -211,6 +219,7 @@ public:
 
     // 4) Finds the last character ch.
     size_type rfind(value_type c, size_type pos = npos) const noexcept;
+
 
     // 1) Finds the first character equal to one of characters in str.
     template <typename String>
@@ -252,6 +261,7 @@ public:
     // 4) Finds the last character equal to ch.
     size_type find_last_of(value_type c, size_type pos = npos) const noexcept;
 
+
     // 1) Finds the first character equal to none of characters in str.
     template <typename String>
     typename std::enable_if<
@@ -271,7 +281,8 @@ public:
 
     // 4) Finds the first character not equal to ch.
     size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept;
-    
+
+
     // 1) Finds the last character equal to none of characters in str.
     template <typename String>
     typename std::enable_if<
@@ -347,6 +358,7 @@ public:
     static constexpr basic_istring literal(const value_type (&s)[size]);
 
 private:
+    friend basic_string_builder<Ch>;
 
     // helper for constructing substrings
     template <typename String>
@@ -497,6 +509,11 @@ basic_istring<Ch>::basic_istring(basic_istring&& str) noexcept:
     _core(std::move(str._core))
 { }
 
+template <typename Ch>
+basic_istring<Ch>::basic_istring(builer_type&& builder) noexcept:
+    _core(std::move(builder._core))
+{ }
+
 // 9) Constructs the string with the contents of the initializer list init.
 template <typename Ch>
 basic_istring<Ch>::basic_istring(std::initializer_list<value_type> init):
@@ -512,21 +529,21 @@ basic_istring<Ch>::~basic_istring()
 template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(const basic_istring& str)
 {
-    this->_core = str._core;
+    this->_core.copy(str._core);
     return *this;
 }
 
 template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(const std_type& str)
 {
-    this->_core = core_type(str.data(), str.size());
+    this->_core.assign(str.data(), str.size());
     return *this;
 }
 
 template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(const slice_type& str)
 {
-    this->_core = core_type(str.data(), str.size());
+    this->_core.assign(str.data(), str.size());
     return *this;
 }
 
@@ -536,7 +553,7 @@ basic_istring<Ch>& basic_istring<Ch>::operator=(const slice_type& str)
 template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(basic_istring&& str)
 {
-    this->_core = str._core;
+    this->_core = std::move(str._core);
     return *this;
 }
 
@@ -544,7 +561,7 @@ basic_istring<Ch>& basic_istring<Ch>::operator=(basic_istring&& str)
 template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(const value_type* s)
 {
-    this->_core = std::move(core_type(s));
+    this->_core.assign(s);
     return *this;
 }
 
@@ -553,7 +570,7 @@ template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(
     value_type ch)
 {
-    this->_core = std::move(core_type(ch, 1));
+    this->_core.assign(ch, 1);
     return *this;
 }
 
@@ -561,7 +578,7 @@ basic_istring<Ch>& basic_istring<Ch>::operator=(
 template <typename Ch>
 basic_istring<Ch>& basic_istring<Ch>::operator=(std::initializer_list<value_type> ilist)
 {
-    this->_core = std::move(core_type(ilist.begin(), ilist.end()));
+    this->_core.assign(ilist.begin(), ilist.end());
     return *this;
 }
 
@@ -639,14 +656,14 @@ template <typename Ch>
 inline typename basic_istring<Ch>::size_type
     basic_istring<Ch>::max_size() const noexcept
 {
-    return this->_core.size();
+    return std::numeric_limits<size_type>::max();
 }
 
 template <typename Ch>
 inline typename basic_istring<Ch>::size_type
     basic_istring<Ch>::capacity() const noexcept
 {
-    return this->_core.size();
+    return this->_core.capacity();
 }
 
 template <typename Ch>

@@ -18,7 +18,8 @@
 #define NATIVE_STRING_SLICE_H__
 
 #include "native/string_base.h"
-#include "native/string_core.h"
+
+#include "native/detail/string_core.h"
 
 namespace native {
 
@@ -55,7 +56,7 @@ public:
 
     using std_type    = std::basic_string<value_type>;
     using common      = detail::string_common<this_type>;
-    using core_type   = basic_string_core<Ch>;
+    using core_type   = string_core<Ch>;
     using slice_type  = basic_string_slice<value_type>;
     using string_type = basic_istring<Ch>;
 
@@ -684,7 +685,7 @@ template <typename Ch>
 inline typename basic_string_slice<Ch>::size_type
     basic_string_slice<Ch>::max_size() const noexcept
 {
-    return this->_length;
+    return std::numeric_limits<size_type>::max();
 }
 
 template <typename Ch>

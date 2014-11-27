@@ -34,6 +34,9 @@ class basic_istring;
 template <typename Ch>
 class basic_string_slice;
 
+template <typename Ch>
+class basic_string_builder;
+
 class string_base;
 
 template <class T>
@@ -54,7 +57,7 @@ public:
 
 inline void string_base::throw_out_of_range() const
 {
-    throw std::out_of_range("native::basic_istring");
+    throw std::out_of_range("native::string_base");
 }
 
 

@@ -23,6 +23,7 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
 
 template <typename String>
 void benchmark_string_copy(String s, size_t n)
@@ -58,5 +59,52 @@ void benchmark_string_substr(const String& s)
 {
     auto sub = s.substr(5, 30);
 }
+
+template <typename String>
+std::vector<String> benchmark_create_unordered_map_keys()
+{
+    return {
+        {"zero"},
+        {"one"},
+        {"two"},
+        {"three"},
+        {"four"},
+        {"five"},
+        {"six"},
+        {"seven"},
+        {"eight"},
+        {"nine"},
+        {"ten"},
+        {"eleven"},
+        {"twelve"},
+        {"thirteen"},
+        {"fourteen"},
+        {"fifteen"},
+    };
+}
+
+template <typename String>
+std::unordered_map<String, unsigned> benchmark_create_unordered_map(const std::vector<String>& keys)
+{
+    std::unordered_map<String, unsigned> result;
+    unsigned i = 0;
+    for (const auto& key : keys) {
+        result.emplace(key, i++);
+    }
+    return result;
+}
+
+template <typename String>
+void benchmark_unordered_map(const std::vector<String>& keys, const std::unordered_map<String, unsigned>& map)
+{
+    for (const auto& key : keys) {
+        auto it = map.find(key);
+        if (it == map.end())
+        {
+            std::cout << "not found" << std::endl;
+        }
+    }
+}
+
 
 #endif

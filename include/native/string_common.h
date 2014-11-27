@@ -522,7 +522,6 @@ struct string_common {
         s = tmp;
         return istr;
     }
-
 };
 
 } } // namespace native

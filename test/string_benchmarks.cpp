@@ -227,3 +227,23 @@ BENCHMARK(BenchmarkTest, substr_native_string)
         benchmark_string_substr(s);
 	});
 }
+
+BENCHMARK(BenchmarkTest, unordered_map_std_string)
+{
+    const auto keys = benchmark_create_unordered_map_keys<std::string>();
+    const auto map  = benchmark_create_unordered_map<std::string>(keys);
+    benchmark([&keys, &map]()
+    {
+        benchmark_unordered_map(keys, map);
+    });
+}
+
+BENCHMARK(BenchmarkTest, unordered_map_native_string)
+{
+    const auto keys = benchmark_create_unordered_map_keys<istring>();
+    const auto map  = benchmark_create_unordered_map<istring>(keys);
+    benchmark([&keys, &map]()
+    {
+        benchmark_unordered_map(keys, map);
+    });
+}
