@@ -21,6 +21,7 @@
 
 #include "native/detail/string_builder_core.h"
 #include "native/detail/integers.h"
+#include "native/detail/real.h"
 
 #include "native/istring.h"
 
@@ -148,9 +149,6 @@ private:
     // helper for constructing substrings
     template <typename String>
     size_type _substr_length(const String& str, size_type pos, size_type n);
-
-    template <typename PrintF, typename T>
-    void _append_string(PrintF sprintf_like, const_pointer fmt, T value);
 
     core_type _core;
 };
@@ -394,21 +392,21 @@ operator<<(unsigned long long value) {
 template <>
 basic_string_builder<char>& basic_string_builder<char>::
 operator<<(float value) {
-    _append_string(std::snprintf, "%f", value);
+    detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
 basic_string_builder<char>& basic_string_builder<char>::
 operator<<(double value) {
-    _append_string(std::snprintf, "%f", value);
+    detail::stream_append(*this, value);
     return *this;
 }
 
 template <>
 basic_string_builder<char>& basic_string_builder<char>::
 operator<<(long double value) {
-    _append_string(std::snprintf, "%Lf", value);
+    detail::stream_append(*this, value);
     return *this;
 }
 
@@ -531,37 +529,6 @@ basic_string_builder<Ch>& basic_string_builder<Ch>::write(const_pointer s,
 //
 // streams
 //
-
-template <typename Ch>
-template <typename PrintF, typename T>
-void basic_string_builder<Ch>::_append_string(PrintF sprintf_like,
-                                              const_pointer fmt, T value) {
-    size_type available = capacity() - size();
-    static const auto capacity_guess = std::numeric_limits<T>::digits / 3;
-    if (available < capacity_guess) {
-        _core.resize(_core.capacity() + capacity_guess);
-        available = _core.capacity() - _core.size();
-    }
-
-    while (true) {
-        int status = sprintf_like(&_core.mutable_data()[_core.size()],
-                                  available + 1, fmt, value);
-        if (status >= 0) {
-            size_type used = static_cast<size_type>(status);
-            if (used <= available) {
-                _core.resize(_core.size() + used);
-                break;
-            }
-            available =
-                used; // Assume this is advice of how much space we need.
-        } else {
-            available = available * 2 + 1;
-        }
-
-        _core.resize(_core.capacity() + available);
-    }
-}
-
 template <typename Ch>
 basic_string_builder<Ch>& operator<<(basic_string_builder<Ch>& s, Ch ch) {
     s.put(ch);

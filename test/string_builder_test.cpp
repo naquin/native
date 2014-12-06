@@ -78,7 +78,7 @@ void test_append()
 
     sb.clear();
     sb << 1.2345f;
-    EXPECT_EQ("1.234500", sb.slice());
+    EXPECT_EQ("1.2345000505447388", sb.slice());
 
     sb.clear();
     sb << 123456.789;
