@@ -67,6 +67,38 @@ istring s = "foobar";
 string_splice splice_s = s(3,6); // "bar"
 ```
 
+JSON Parser
+-----------
+
+```
+struct person
+{
+    string name;
+    unsigned short age;
+};
+
+struct myhandler: native::json::handler<>
+{
+    person& _p;
+
+    myhandler(person& p): _p(p) { }
+
+    void value(unsigned short val) { _p.age = value; }
+    void value(const char* val, size_t len) { _p.name = val; }
+};
+
+auto input = istring::literal("{\"name\": \"jack\", \"age\": 5");
+person jack;
+myhandler handler(jack);
+
+native::json::parser parser;
+parser.parse(input, jack);
+```
+
+
+jack.name == "jack";
+jack.age == 5;
+
 Benchmarks
 ==========
 
