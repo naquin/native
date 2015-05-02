@@ -67,8 +67,38 @@ istring s = "foobar";
 string_splice splice_s = s(3,6); // "bar"
 ```
 
-JSON Parser
+Easy JSON
 -----------
+
+```
+auto any = native::json::parse(R"json({
+  "array": [
+    2,
+    "c++",
+    7,
+    {
+      "color": "orange",
+      "problems": 99
+    }
+  ],
+  "bar": "string",
+  "foo": 42
+})json");
+
+any.is_object(); // == true
+any["array"][2].string_value(); // == "c++";
+any["foo"].int_value(); // == 42;
+
+any.dump(std::cout); // write formatted json to stream
+
+// initialization
+json::any object{{{"foo", 42}, {"bar", "string"}}};
+json::any array{{42, "hello", true}};
+```
+
+
+Fast JSON Parser
+----------------
 
 ```
 struct person
@@ -93,11 +123,10 @@ myhandler handler(jack);
 
 native::json::parser parser;
 parser.parse(input, jack);
-```
-
 
 jack.name == "jack";
 jack.age == 5;
+```
 
 Benchmarks
 ==========
