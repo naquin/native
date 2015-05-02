@@ -17,9 +17,8 @@
 #ifndef NATIVE_CONFIG_H__
 #define NATIVE_CONFIG_H__
 
-#include "native/types.h"
-
-namespace native {
+namespace native
+{
 
 } // namespace native
 

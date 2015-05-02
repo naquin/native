@@ -241,7 +241,7 @@ T string_to_unsigned(const char* b, const std::size_t size)
 
 template <typename T, typename U>
 typename std::enable_if<std::numeric_limits<T>::is_signed, T>::type
-    string_to_integer(const detail::number_parse<U>& attribs)
+string_to_integer(const detail::number_parse<U>& attribs)
 {
     if (attribs.sign)
     {
@@ -279,9 +279,9 @@ string_to_integer(const detail::number_parse<U>& attribs)
  * separate overload for 32-bit integers is not worthwhile.
  */
 
-inline uint32_t digits10(uint64_t v)
+inline std::uint32_t digits10(uint64_t v)
 {
-    uint32_t result = 1;
+    std::uint32_t result = 1;
     for (;;)
     {
         if (NATIVE_LIKELY(v < 10))
@@ -302,7 +302,7 @@ inline uint32_t digits10(uint64_t v)
  * Copies the ASCII base 10 representation of v into buffer and
  * returns the number of bytes written. Does NOT append a \0. Assumes
  * the buffer points to digits10(v) bytes of valid memory. Note that
- * uint64 needs at most 20 bytes, uint32_t needs at most 10 bytes,
+ * std::uint64_t needs at most 20 bytes, uint32_t needs at most 10 bytes,
  * uint16_t needs at most 5 bytes, and so on. Measurements suggest
  * that defining a separate overload for 32-bit integers is not
  * worthwhile.
@@ -311,24 +311,24 @@ inline uint32_t digits10(uint64_t v)
  * because it does not add a terminating \0.
  */
 
-inline uint32_t uint64_to_buffer_unsafe(uint64_t v, char* const buffer)
+inline std::uint32_t uint64_to_buffer_unsafe(uint64_t v, char* const buffer)
 {
     auto const result = digits10(v);
     // WARNING: using size_t or pointer arithmetic for pos slows down
     // the loop below 20x. This is because several 32-bit ops can be
     // done in parallel, but only fewer 64-bit ones.
-    uint32_t pos = result - 1;
+    std::uint32_t pos = result - 1;
     while (v >= 10)
     {
         // Keep these together so a peephole optimization "sees" them and
         // computes them in one shot.
         auto const q = v / 10;
-        auto const r = static_cast<uint32_t>(v % 10);
+        auto const r = static_cast<std::uint32_t>(v % 10);
         buffer[pos--] = '0' + r;
         v = q;
     }
     // Last digit is trivial to handle
-    buffer[pos] = static_cast<uint32_t>(v) + '0';
+    buffer[pos] = static_cast<std::uint32_t>(v) + '0';
     return result;
 }
 
