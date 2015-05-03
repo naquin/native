@@ -32,7 +32,7 @@ template <typename Stream>
 class writer
 {
 public:
-    writer(Stream& ostr, std::size_t indent = 2);
+    writer(Stream& ostr, std::size_t indent = 0);
 
     void open_array();
     void close_array();
@@ -50,10 +50,19 @@ public:
     void append(T&& key, U&& value);
 
 private:
-    enum class state : unsigned char
+    struct state
     {
-        array,
-        object,
+        enum t : unsigned char
+        {
+            array,
+            object,
+        } type;
+        bool has_elements = false;
+
+        state(t type)
+            : type{type}
+        {
+        }
     };
 
     void _comma();
@@ -75,7 +84,6 @@ private:
     Stream& _ostr;
     istring _indent_string;
     std::vector<state> _state;
-    bool _needs_comma = false;
 };
 
 template <typename Stream>
@@ -88,11 +96,6 @@ writer<Stream>::writer(Stream& ostr, std::size_t indent)
 template <typename Stream>
 void writer<Stream>::open_array()
 {
-    _needs_comma = false;
-    if (!_state.empty())
-    {
-        _indent();
-    }
     _ostr.put('[');
     _state.push_back(state::array);
 }
@@ -108,7 +111,7 @@ void writer<Stream>::open_object()
 {
     if (!_state.empty())
     {
-        if (_needs_comma && _state.back() == state::array)
+        if (_state.back().type == state::array && _state.back().has_elements)
         {
             _comma();
         }
@@ -116,7 +119,6 @@ void writer<Stream>::open_object()
     }
     _ostr.put('{');
     _state.push_back(state::object);
-    _needs_comma = false;
 }
 
 template <typename Stream>
@@ -129,13 +131,17 @@ template <typename Stream>
 template <typename T>
 void writer<Stream>::key(T&& key)
 {
-    if (_needs_comma)
+    if (!_state.empty() && _state.back().has_elements)
     {
         _comma();
     }
     _indent();
     _write(key);
-    _ostr.write(": ", 2);
+    _ostr.put(':');
+    if (!_indent_string.empty())
+    {
+        _ostr.put(' ');
+    }
 }
 
 template <typename Stream>
@@ -150,16 +156,20 @@ template <typename Stream>
 template <typename T>
 void writer<Stream>::append(T&& value)
 {
-    if (!_state.empty() && _state.back() == state::array)
+    if (!_state.empty())
     {
-        if (_needs_comma)
+        if (_state.back().type == state::array)
         {
-            _comma();
+            if (_state.back().has_elements)
+            {
+                _comma();
+            }
+            _indent();
         }
-        _indent();
+
+        _state.back().has_elements = true;
     }
     _write(value);
-    _needs_comma = true;
 }
 
 template <typename Stream>
@@ -217,6 +227,10 @@ void writer<Stream>::_comma()
 template <typename Stream>
 void writer<Stream>::_indent()
 {
+    if (_indent_string.empty())
+    {
+        return;
+    }
     _ostr.put('\n');
     for (size_t i = 0; i < _state.size(); ++i)
     {
@@ -234,8 +248,11 @@ void writer<Stream>::_close()
 
     const auto current_state = _state.back();
     _state.pop_back();
-    _indent();
-    switch (current_state)
+    if (current_state.has_elements)
+    {
+        _indent();
+    }
+    switch (current_state.type)
     {
         case state::array:
             _ostr.put(']');
@@ -244,7 +261,10 @@ void writer<Stream>::_close()
             _ostr.put('}');
             break;
     }
-    _needs_comma = !_state.empty();
+    if (!_state.empty() && _state.back().type == state::object)
+    {
+        _state.back().has_elements = true;
+    }
 }
 
 } // namespace json

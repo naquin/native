@@ -182,40 +182,40 @@ TEST(json_any_test, object) {
 }
 
 TEST(json_any_test, dump) {
-    json::any value{{{"foo", 42}, {"bar", "string"}}};
-    auto json = value.dump(true);
+    json::any value{{{"foo", 42}, {"bar", "string"}, {"null", nullptr}}};
+    auto json = value.dump(true, 2);
     EXPECT_EQ(
 R"json({
   "bar": "string",
-  "foo": 42
+  "foo": 42,
+  "null": null
 })json", json);
     
-    value["array"] = json::any{{2, "c++", 7.0}};
+    value["array"] = json::any{{2, "c++", 1.5}};
     value["array"].push_back(json::any::object{{"problems", 99}, {"color", "orange"}});
-    json = value.dump(true);
+    json = value.dump(true, 2);
     EXPECT_EQ(R"json({
-  "array": 
-  [
+  "array": [
     2,
     "c++",
-    7,
+    1.5,
     {
       "color": "orange",
       "problems": 99
     }
   ],
   "bar": "string",
-  "foo": 42
+  "foo": 42,
+  "null": null
 })json", json);
 }
 
 TEST(json_any_test, parse) {
     auto json = istring::literal(R"json({
-  "array": 
-  [
+  "array": [
     2,
     "c++",
-    7,
+    1.5,
     {
       "color": "orange",
       "problems": 99
@@ -227,5 +227,5 @@ TEST(json_any_test, parse) {
 
     auto value = json::parse(json);
 
-    EXPECT_EQ(json, value.dump(true));
+    EXPECT_EQ(json, value.dump(true, 2));
 }

@@ -189,11 +189,11 @@ public:
 
     // Convert to a JSON string.
     void dump(std::ostream& ostr, bool sort_keys = false,
-              std::size_t indent = 2) const;
+              std::size_t indent = 0) const;
 
-    istring dump(bool sort_keys = false, std::size_t indent = 2) const;
+    istring dump(bool sort_keys = false, std::size_t indent = 0) const;
     void dump(std::string& str, bool sort_keys = false,
-              std::size_t indent = 2) const;
+              std::size_t indent = 0) const;
 
 private:
     template <typename Writer>

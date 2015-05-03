@@ -22,45 +22,67 @@
 
 using namespace native;
 
-TEST(JsonWriterTest, ObjectTypes_Should_Work) {
+TEST(json_writer_test, write_object)
+{
     std::ostringstream ostr;
-    json::writer<std::ostringstream> writer(ostr);
+    json::writer<std::ostringstream> writer(ostr, 2);
     writer.open_object();
     writer.append("foo", 42);
     writer.append("bar", "string");
     writer.append("bool", true);
     writer.close_object();
 
-    EXPECT_EQ("{\n  \"foo\": 42,\n  \"bar\": \"string\",\n  \"bool\": true\n}" , ostr.str());
+    EXPECT_EQ(R"json({
+  "foo": 42,
+  "bar": "string",
+  "bool": true
+})json", ostr.str());
+
 }
 
-TEST(JsonWriterTest, ArrayTypes_Should_Work) {
+TEST(json_writer_test, write_array)
+{
     std::ostringstream ostr;
-    json::writer<std::ostringstream> writer(ostr);
+    json::writer<std::ostringstream> writer(ostr, 2);
     writer.open_array();
     writer.append("foo");
     writer.append(42);
     writer.close_array();
-    
-    EXPECT_EQ("[\n  \"foo\",\n  42\n]" , ostr.str());
+
+    EXPECT_EQ(R"json([
+  "foo",
+  42
+])json", ostr.str());
 }
 
-TEST(JsonWriterTest, ComplexTypes_Should_Work) {
+TEST(json_writer_test, write_complex_objects)
+{
     std::ostringstream ostr;
-    json::writer<std::ostringstream> writer(ostr);
+    json::writer<std::ostringstream> writer(ostr, 2);
     writer.open_object();
     writer.append("foo", 42);
     writer.append("bar", "string");
     writer.key("array");
-        writer.open_array();
-        writer.append("foo");
-        writer.append(42);
-            writer.open_object();
-            writer.append("foo", 42);
-            writer.append("bar", "string");
-            writer.close_object();
-        writer.close_array();
+    writer.open_array();
+    writer.append("foo");
+    writer.append(42);
+    writer.open_object();
+    writer.append("foo", 42);
+    writer.append("bar", "string");
     writer.close_object();
-    
-    EXPECT_EQ("{\n  \"foo\": 42,\n  \"bar\": \"string\",\n  \"array\": \n  [\n    \"foo\",\n    42,\n    {\n      \"foo\": 42,\n      \"bar\": \"string\"\n    }\n  ]\n}" , ostr.str());
+    writer.close_array();
+    writer.close_object();
+
+    EXPECT_EQ(R"json({
+  "foo": 42,
+  "bar": "string",
+  "array": [
+    "foo",
+    42,
+    {
+      "foo": 42,
+      "bar": "string"
+    }
+  ]
+})json", ostr.str());
 }
