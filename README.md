@@ -67,8 +67,8 @@ istring s = "foobar";
 string_splice splice_s = s(3,6); // "bar"
 ```
 
-Easy JSON
------------
+Easy C++11 JSON (DOM-style)
+---------------------------
 
 ```
 auto any = native::json::parse(R"json({
@@ -93,12 +93,11 @@ any.dump(std::cout); // write formatted json to stream
 
 // initialization
 json::any object{{{"foo", 42}, {"bar", "string"}}};
-json::any array{{42, "hello", true}};
+json::any array{{42, "hello", true, nullptr}};
 ```
 
-
-Fast JSON Parser
-----------------
+Super Fast C++11 JSON Parser (SAX-style)
+----------------------------------------
 
 ```
 struct person
@@ -127,6 +126,7 @@ parser.parse(input, jack);
 jack.name == "jack";
 jack.age == 5;
 ```
+
 
 Benchmarks
 ==========
