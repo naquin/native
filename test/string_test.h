@@ -38,7 +38,8 @@ void test_string_compare()
     EXPECT_EQ(fooCopy, foo);
     EXPECT_EQ(foo, fooOther);
     EXPECT_EQ(fooOther, foo);
-    EXPECT_EQ("this string needs to be longer than 23 characters", String("this string needs to be longer than 23 characters"));
+    EXPECT_EQ("this string needs to be longer than 23 characters",
+              String("this string needs to be longer than 23 characters"));
 
     EXPECT_NE(0, strcmp("bar", foo.data()));
     EXPECT_NE("bar", foo);
@@ -90,14 +91,14 @@ void test_string_constructors()
     String ctor2(5, 'a');
     String ctor3a(ctor2, 1);
     String ctor3b(ctor2.std_str(), 1);
-//    String ctor3c(string(ctor2), 1);
+    //    String ctor3c(string(ctor2), 1);
     String ctor4a("foobar", 3);
     String ctor4b("foobar", 3);
     String ctor5("foobar");
     String ctor6(vector_of_chars.begin(), vector_of_chars.end());
     String ctor7a(ctor5);
     String ctor7b(ctor5.std_str());
-//    String ctor7c((string(ctor5)));
+    //    String ctor7c((string(ctor5)));
     String ctor8Original("foobar");
     String ctor8(std::move(ctor8Original));
     String ctor9({'f', 'o', 'o', 'b', 'a', 'r'});
@@ -106,14 +107,14 @@ void test_string_constructors()
     EXPECT_EQ("aaaaa", ctor2);
     EXPECT_EQ("aaaa", ctor3a);
     EXPECT_EQ("aaaa", ctor3b);
-//    EXPECT_EQ("aaaa", ctor3c);
+    //    EXPECT_EQ("aaaa", ctor3c);
     EXPECT_EQ("foo", ctor4a);
     EXPECT_EQ("foo", ctor4b);
     EXPECT_EQ("foobar", ctor5);
     EXPECT_EQ("foobar", ctor6);
     EXPECT_EQ(ctor5, ctor7a);
     EXPECT_EQ(ctor5, ctor7b);
-//    EXPECT_EQ(ctor5, ctor7c);
+    //    EXPECT_EQ(ctor5, ctor7c);
     EXPECT_EQ("foobar", ctor8Original);
     EXPECT_EQ("foobar", ctor8);
     EXPECT_EQ("foobar", ctor9);
@@ -141,41 +142,61 @@ template <typename String>
 void test_string_iterators()
 {
     String s("foobar");
-    
+
     {
         auto it = s.begin();
-        EXPECT_EQ('f', *it); ++it;
-        EXPECT_EQ('o', *it); ++it;
-        EXPECT_EQ('o', *it); ++it;
-        EXPECT_EQ('b', *it); ++it;
-        EXPECT_EQ('a', *it); ++it;
-        EXPECT_EQ('r', *it); ++it;
+        EXPECT_EQ('f', *it);
+        ++it;
+        EXPECT_EQ('o', *it);
+        ++it;
+        EXPECT_EQ('o', *it);
+        ++it;
+        EXPECT_EQ('b', *it);
+        ++it;
+        EXPECT_EQ('a', *it);
+        ++it;
+        EXPECT_EQ('r', *it);
+        ++it;
         EXPECT_EQ(it, s.end());
-        --it; --it;
+        --it;
+        --it;
         EXPECT_EQ('a', *it);
     }
 
     {
         auto it = s.cbegin();
-        EXPECT_EQ('f', *it); ++it;
-        EXPECT_EQ('o', *it); ++it;
-        EXPECT_EQ('o', *it); ++it;
-        EXPECT_EQ('b', *it); ++it;
-        EXPECT_EQ('a', *it); ++it;
-        EXPECT_EQ('r', *it); ++it;
+        EXPECT_EQ('f', *it);
+        ++it;
+        EXPECT_EQ('o', *it);
+        ++it;
+        EXPECT_EQ('o', *it);
+        ++it;
+        EXPECT_EQ('b', *it);
+        ++it;
+        EXPECT_EQ('a', *it);
+        ++it;
+        EXPECT_EQ('r', *it);
+        ++it;
         EXPECT_EQ(it, s.end());
-        --it; --it;
+        --it;
+        --it;
         EXPECT_EQ('a', *it);
     }
 
     {
         auto reverseIt = s.rbegin();
-        EXPECT_EQ('r', *reverseIt); ++reverseIt;
-        EXPECT_EQ('a', *reverseIt); ++reverseIt;
-        EXPECT_EQ('b', *reverseIt); ++reverseIt;
-        EXPECT_EQ('o', *reverseIt); ++reverseIt;
-        EXPECT_EQ('o', *reverseIt); ++reverseIt;
-        EXPECT_EQ('f', *reverseIt); ++reverseIt;
+        EXPECT_EQ('r', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('a', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('b', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('o', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('o', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('f', *reverseIt);
+        ++reverseIt;
         EXPECT_EQ(reverseIt, s.rend());
         --reverseIt;
         --reverseIt;
@@ -186,12 +207,18 @@ void test_string_iterators()
 
     {
         auto reverseIt = s.crbegin();
-        EXPECT_EQ('r', *reverseIt); ++reverseIt;
-        EXPECT_EQ('a', *reverseIt); ++reverseIt;
-        EXPECT_EQ('b', *reverseIt); ++reverseIt;
-        EXPECT_EQ('o', *reverseIt); ++reverseIt;
-        EXPECT_EQ('o', *reverseIt); ++reverseIt;
-        EXPECT_EQ('f', *reverseIt); ++reverseIt;
+        EXPECT_EQ('r', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('a', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('b', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('o', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('o', *reverseIt);
+        ++reverseIt;
+        EXPECT_EQ('f', *reverseIt);
+        ++reverseIt;
         EXPECT_EQ(reverseIt, s.rend());
         --reverseIt;
         --reverseIt;
@@ -207,7 +234,8 @@ void test_string_attributes()
     String s("foobar");
     EXPECT_EQ(6, s.size());
     EXPECT_EQ(6, s.length());
-    EXPECT_EQ(std::numeric_limits<typename String::size_type>::max(), s.max_size());
+    EXPECT_EQ(std::numeric_limits<typename String::size_type>::max(),
+              s.max_size());
     EXPECT_EQ('b', s[3]);
     EXPECT_EQ('b', s.at(3));
     EXPECT_ANY_THROW(s.at(7));
@@ -222,9 +250,9 @@ void test_string_attributes()
     s = "";
 
     EXPECT_TRUE(s.empty());
-    
+
     s = "foobar";
-    
+
     char copy[6];
     EXPECT_EQ(6, s.copy(copy));
     EXPECT_EQ(0, strncmp("foobar", copy, 6));
@@ -373,28 +401,27 @@ void test_string_split()
 {
     using namespace native;
     String s("one two three four");
-    
+
     auto split = string_slice(s).split(' ');
     EXPECT_EQ(4, split.size());
-    EXPECT_EQ("one",   split[0]);
-    EXPECT_EQ("two",   split[1]);
+    EXPECT_EQ("one", split[0]);
+    EXPECT_EQ("two", split[1]);
     EXPECT_EQ("three", split[2]);
-    EXPECT_EQ("four",  split[3]);
+    EXPECT_EQ("four", split[3]);
 
     split = string_slice(s).split("ee");
     EXPECT_EQ(2, split.size());
-    EXPECT_EQ("one two thr",   split[0]);
-    EXPECT_EQ(" four",  split[1]);
+    EXPECT_EQ("one two thr", split[0]);
+    EXPECT_EQ(" four", split[1]);
 
     split = string_slice(s).split("");
     EXPECT_EQ(1, split.size());
-    EXPECT_EQ(s,   split[0]);
+    EXPECT_EQ(s, split[0]);
 
     split = string_slice(s).split(String("two"));
     EXPECT_EQ(2, split.size());
-    EXPECT_EQ("one ",   split[0]);
-    EXPECT_EQ(" three four",  split[1]);
-
+    EXPECT_EQ("one ", split[0]);
+    EXPECT_EQ(" three four", split[1]);
 }
 
 template <typename String>
@@ -407,6 +434,5 @@ void test_string_ostream()
 
     EXPECT_EQ("foobar", ostr.str());
 }
-
 
 #endif

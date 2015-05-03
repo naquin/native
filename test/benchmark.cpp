@@ -16,34 +16,23 @@
 
 #include "benchmark.h"
 
-
 #include <chrono>
 #include <fstream>
 
-
-BenchmarkTest::BenchmarkTest(const char* fixture, const char* name):
-    fixture(fixture),
-    name(name),
-    timers(trial_count)
+benchmark_test::benchmark_test(const char* fixture, const char* name)
+    : fixture(fixture)
+    , name(name)
+    , timers(trial_count)
 {
-    
 }
 
-void BenchmarkTest::SetUp()
-{
+void benchmark_test::SetUp() {}
 
-}
+void benchmark_test::TearDown() {}
 
-
-void BenchmarkTest::TearDown()
-{
-
-}
-
-
-void BenchmarkTest::report(const boost::timer::cpu_times& fastestElapsed,
-                           const boost::timer::nanosecond_type& total,
-                           const std::string& name)
+void benchmark_test::report(const boost::timer::cpu_times& fastestElapsed,
+                            const boost::timer::nanosecond_type& total,
+                            const std::string& name)
 {
     auto fastest = fastestElapsed.wall;
     auto average = (total / trial_count);
@@ -51,9 +40,7 @@ void BenchmarkTest::report(const boost::timer::cpu_times& fastestElapsed,
 
     std::ofstream ostr("benchmarks.csv", std::ios::app);
 
-    ostr << name << ','
-         << fastest << ','
-         << average << std::endl;
+    ostr << name << ',' << fastest << ',' << average << std::endl;
 
     std::cout << "Fastest: " << fastest << " ns" << std::endl;
     std::cout << "Average: " << average << " ns" << std::endl;

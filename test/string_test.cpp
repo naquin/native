@@ -31,12 +31,9 @@
 using namespace native;
 using std::to_string;
 
-TEST(String, Compare)
-{
-    test_string_compare<istring>();
-}
+TEST(string, compare) { test_string_compare<istring>(); }
 
-TEST(String, Constructors)
+TEST(string, constructors)
 {
     test_string_constructors<istring>();
 
@@ -49,7 +46,7 @@ TEST(String, Constructors)
     EXPECT_EQ(ctor2, ctor7c);
 }
 
-TEST(String, AssignmentOperators)
+TEST(string, assignment_operators)
 {
     test_string_assignment_operators<istring>();
 
@@ -58,12 +55,9 @@ TEST(String, AssignmentOperators)
     EXPECT_EQ(slice_expected, s);
 }
 
-TEST(String, Iterators)
-{
-    test_string_iterators<istring>();
-}
+TEST(string, iterators) { test_string_iterators<istring>(); }
 
-TEST(String, Literal)
+TEST(string, literal)
 {
     auto literal = istring::literal("literal");
     istring literalCopy = literal;
@@ -74,77 +68,54 @@ TEST(String, Literal)
     EXPECT_EQ(literalCopy, literal);
 }
 
-TEST(String, Attributes)
+TEST(string, attributes)
 {
     test_string_attributes<istring>();
     istring s("foobar");
     EXPECT_EQ(0, strcmp("foobar", s.c_str()));
 }
 
-TEST(String, Slice)
+TEST(string, slice)
 {
     istring s("foobar");
 
-    auto slice = s(1,2);
+    auto slice = s(1, 2);
     EXPECT_EQ("oo", slice);
 
-    slice = s(3,6);
+    slice = s(3, 6);
     EXPECT_EQ("bar", slice);
 }
 
-TEST(String, hash)
+TEST(string, hash)
 {
     istring short_s("foobar");
     EXPECT_EQ("foobar"_hash, short_s.hash());
 
     istring dynamic_s("this string needs to be longer than 23 characters");
-    EXPECT_EQ("this string needs to be longer than 23 characters"_hash, dynamic_s.hash());
-    
+    EXPECT_EQ("this string needs to be longer than 23 characters"_hash,
+              dynamic_s.hash());
+
     istring static_s = istring::literal("foobar");
     EXPECT_EQ("foobar"_hash, short_s.hash());
 }
 
-TEST(String, find)
-{
-    test_string_find<istring>();
-}
+TEST(string, find) { test_string_find<istring>(); }
 
-TEST(String, rfind)
-{
-    test_string_rfind<istring>();
-}
+TEST(string, rfind) { test_string_rfind<istring>(); }
 
-TEST(String, find_first_of)
-{
-    test_string_find_first_of<istring>();
-}
+TEST(string, find_first_of) { test_string_find_first_of<istring>(); }
 
-TEST(String, find_last_of)
-{
-    test_string_find_last_of<istring>();
-}
+TEST(string, find_last_of) { test_string_find_last_of<istring>(); }
 
-TEST(String, find_first_not_of)
-{
-    test_string_find_first_not_of<istring>();
-}
+TEST(string, find_first_not_of) { test_string_find_first_not_of<istring>(); }
 
-TEST(String, find_last_not_of)
-{
-    test_string_find_last_not_of<istring>();
-}
+TEST(string, find_last_not_of) { test_string_find_last_not_of<istring>(); }
 
-TEST(String, split)
-{
-    test_string_split<istring>();
-}
+TEST(string, split) { test_string_split<istring>(); }
 
-TEST(String, OStream)
-{
-    test_string_ostream<istring>();
-}
+TEST(string, OStream) { test_string_ostream<istring>(); }
 
-TEST(String, StaticCoversion)
+TEST(string, static_coversion)
 {
     {
         constexpr auto actual = to_string_literal<unsigned, 1>::value;
@@ -188,4 +159,3 @@ TEST(String, StaticCoversion)
         EXPECT_EQ(actual, expected);
     }
 }
-

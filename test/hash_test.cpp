@@ -1067,7 +1067,7 @@ std::vector<fnv1a_64_test_vector> fnv1a_64_vector = {
 //
 // gtest integration
 //
-TEST(Hash, fnv1_32)
+TEST(hash, fnv1_32)
 {
     for (const auto& test : fnv1_32_vector)
     {
@@ -1081,7 +1081,7 @@ TEST(Hash, fnv1_32)
     EXPECT_EQ(fnv32(s), "hello, world!"_fnv32);
 }
 
-TEST(Hash, fnv1a_32)
+TEST(hash, fnv1a_32)
 {
     for (const auto& test : fnv1a_32_vector)
     {
@@ -1095,7 +1095,7 @@ TEST(Hash, fnv1a_32)
     EXPECT_EQ(fnv32a(s), "hello, world!"_fnv32a);
 }
 
-TEST(Hash, fnv1_64)
+TEST(hash, fnv1_64)
 {
     for (const auto& test : fnv1_64_vector)
     {
@@ -1109,7 +1109,7 @@ TEST(Hash, fnv1_64)
     EXPECT_EQ(fnv64(s), "hello, world!"_fnv64);
 }
 
-TEST(Hash, fnv1a_64)
+TEST(hash, fnv1a_64)
 {
     for (const auto& test : fnv1a_64_vector)
     {

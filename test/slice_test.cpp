@@ -23,12 +23,9 @@
 
 using namespace native;
 
-TEST(SpliceString, Compare)
-{
-    test_string_compare<string_slice>();
-}
+TEST(splice_string, compare) { test_string_compare<string_slice>(); }
 
-TEST(SpliceString, Constructors)
+TEST(splice_string, constructors)
 {
     istring ctor2(5, 'a');
 
@@ -41,7 +38,7 @@ TEST(SpliceString, Constructors)
     string_slice ctor5("foobar");
     string_slice ctor7a(ctor5);
     string_slice ctor7b(ctor5.std_str());
-//    String ctor7c((string(ctor5)));
+    //    String ctor7c((string(ctor5)));
     string_slice ctor8Original("foobar");
     string_slice ctor8(std::move(ctor8Original));
     string_slice ctor9({'f', 'o', 'o', 'b', 'a', 'r'});
@@ -56,7 +53,7 @@ TEST(SpliceString, Constructors)
     EXPECT_EQ("foobar", ctor5);
     EXPECT_EQ(ctor5, ctor7a);
     EXPECT_EQ(ctor5, ctor7b);
-//    EXPECT_EQ(ctor5, ctor7c);
+    //    EXPECT_EQ(ctor5, ctor7c);
     EXPECT_EQ("foobar", ctor8Original);
     EXPECT_EQ("foobar", ctor8);
     EXPECT_EQ("foobar", ctor9);
@@ -67,7 +64,7 @@ TEST(SpliceString, Constructors)
     EXPECT_EQ(ctor2, ctor7c);
 }
 
-TEST(SpliceString, AssignmentOperators)
+TEST(splice_string, assignment_operators)
 {
     test_string_assignment_operators<string_slice>();
 
@@ -76,54 +73,36 @@ TEST(SpliceString, AssignmentOperators)
     EXPECT_EQ(slice_expected, s);
 }
 
-TEST(SpliceString, Iterators)
-{
-    test_string_iterators<string_slice>();
-}
+TEST(splice_string, iterators) { test_string_iterators<string_slice>(); }
 
-TEST(SpliceString, Attributes)
+TEST(splice_string, attributes)
 {
     test_string_attributes<string_slice>();
     istring s("foobar");
     EXPECT_EQ(0, strcmp("foobar", s.c_str()));
 }
 
-TEST(SpliceString, find)
-{
-    test_string_find<string_slice>();
-}
+TEST(splice_string, find) { test_string_find<string_slice>(); }
 
-TEST(SpliceString, rfind)
-{
-    test_string_rfind<string_slice>();
-}
+TEST(splice_string, rfind) { test_string_rfind<string_slice>(); }
 
-TEST(SpliceString, find_first_of)
+TEST(splice_string, find_first_of)
 {
     test_string_find_first_of<string_slice>();
 }
 
-TEST(SpliceString, find_last_of)
-{
-    test_string_find_last_of<string_slice>();
-}
+TEST(splice_string, find_last_of) { test_string_find_last_of<string_slice>(); }
 
-TEST(SpliceString, find_first_not_of)
+TEST(splice_string, find_first_not_of)
 {
     test_string_find_first_not_of<string_slice>();
 }
 
-TEST(SpliceString, find_last_not_of)
+TEST(splice_string, find_last_not_of)
 {
     test_string_find_last_not_of<string_slice>();
 }
 
-TEST(SpliceString, split)
-{
-    test_string_split<string_slice>();
-}
+TEST(splice_string, split) { test_string_split<string_slice>(); }
 
-TEST(SpliceString, OStream)
-{
-    test_string_ostream<string_slice>();
-}
+TEST(splice_string, ostream) { test_string_ostream<string_slice>(); }

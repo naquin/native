@@ -29,7 +29,9 @@ template <typename Stream>
 void test_strings()
 {
     Stream ostr;
-    ostr << "The" << ' ' << "quick" << ' ' << "brown" << ' ' << "fox" << ' ' << "jumps" << ' ' << "over" << ' ' << "the" << ' ' << "lazy" << ' ' << "dog";
+    ostr << "The" << ' ' << "quick" << ' ' << "brown" << ' ' << "fox" << ' '
+         << "jumps" << ' ' << "over" << ' ' << "the" << ' ' << "lazy" << ' '
+         << "dog";
     ostr.str();
 }
 
@@ -49,53 +51,53 @@ void test_floats()
     ostr.str();
 }
 
-BENCHMARK(BenchmarkTest, build_std_stringstream)
+BENCHMARK(benchmark_test, build_std_stringstream)
 {
-    
+
     benchmark([]()
-    {
-        test_strings<std::ostringstream>();
-    });
+              {
+                  test_strings<std::ostringstream>();
+              });
 }
 
-BENCHMARK(BenchmarkTest, build_native_string_builder)
+BENCHMARK(benchmark_test, build_native_string_builder)
 {
     benchmark([]()
-    {
-        test_strings<string_builder>();
-    });
+              {
+                  test_strings<string_builder>();
+              });
 }
 
-BENCHMARK(BenchmarkTest, build_integers_std_stringstream)
+BENCHMARK(benchmark_test, build_integers_std_stringstream)
 {
-    
+
     benchmark([]()
-    {
-        test_integers<std::ostringstream>();
-    });
+              {
+                  test_integers<std::ostringstream>();
+              });
 }
 
-BENCHMARK(BenchmarkTest, build_integers_native_string_builder)
+BENCHMARK(benchmark_test, build_integers_native_string_builder)
 {
     benchmark([]()
-    {
-        test_integers<string_builder>();
-    });
+              {
+                  test_integers<string_builder>();
+              });
 }
 
-BENCHMARK(BenchmarkTest, build_floats_std_stringstream)
+BENCHMARK(benchmark_test, build_floats_std_stringstream)
 {
-    
+
     benchmark([]()
-    {
-        test_floats<std::ostringstream>();
-    });
+              {
+                  test_floats<std::ostringstream>();
+              });
 }
 
-BENCHMARK(BenchmarkTest, build_floats_native_string_builder)
+BENCHMARK(benchmark_test, build_floats_native_string_builder)
 {
     benchmark([]()
-    {
-        test_floats<string_builder>();
-    });
+              {
+                  test_floats<string_builder>();
+              });
 }
