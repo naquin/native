@@ -20,6 +20,11 @@
 #include "native/config.h"
 
 #include "native/istring.h"
+#include "native/utf.h"
+
+#include "native/detail/range_istream.h"
+
+#include "native/json/conversion.h"
 
 #include <type_traits>
 
@@ -69,6 +74,7 @@ private:
     void _indent();
     void _close();
 
+    void _encode(const unsigned char* first, const unsigned char* last);
     void _write(std::nullptr_t);
     void _write(bool value);
     void _write(const char* value);
@@ -201,11 +207,79 @@ void writer<Stream>::_write(bool value)
 }
 
 template <typename Stream>
+void writer<Stream>::_encode(const unsigned char* first,
+                             const unsigned char* last)
+{
+    auto write_utf = [=](uint32_t codepoint)
+    {
+        auto hex_digit = [](uint32_t ch) -> char
+        {
+            return ch < 10 ? ch + '0' : ch - 10 + 'a';
+        };
+
+        _ostr.put('\\');
+        _ostr.put('u');
+        _ostr.put(hex_digit(codepoint >> 0xC));
+        _ostr.put(hex_digit((codepoint >> 0x8) & 0x0f));
+        _ostr.put(hex_digit((codepoint >> 0x4) & 0x0f));
+        _ostr.put(hex_digit(codepoint & 0x0f));
+    };
+
+    ::native::detail::range_istream<const unsigned char*> istr{first, last};
+    _ostr.put('"');
+    for (; istr;)
+    {
+        if (istr.peek() & 0x80)
+        {
+            uint32_t codepoint = utf8::decode(istr);
+            if (codepoint & 0xFFFF0000)
+            {
+                write_utf((codepoint >> 10) + 0xD7C0);
+                write_utf((codepoint & 0x3FF) + 0xDC00);
+            }
+            else
+            {
+                write_utf(codepoint);
+            }
+        }
+        else
+        {
+            switch (istr.peek())
+            {
+                case '\b':
+                    _ostr.write("\\b", 2);
+                    break;
+                case '\f':
+                    _ostr.write("\\f", 2);
+                    break;
+                case '\n':
+                    _ostr.write("\\n", 2);
+                    break;
+                case '\r':
+                    _ostr.write("\\r", 2);
+                    break;
+                case '\t':
+                    _ostr.write("\\t", 2);
+                    break;
+                // case '/': // unnecessary & ugly :/
+                case '\\':
+                case '"':
+                    _ostr.put('\\');
+                default:
+                    _ostr.put(istr.peek());
+                    break;
+            }
+            istr.next();
+        }
+    }
+    _ostr.put('"');
+}
+
+template <typename Stream>
 void writer<Stream>::_write(const char* value)
 {
-    _ostr.put('"');
-    _ostr.write(value, std::strlen(value));
-    _ostr.put('"');
+    _encode(reinterpret_cast<const unsigned char*>(value),
+            reinterpret_cast<const unsigned char*>(value) + std::strlen(value));
 }
 
 template <typename Stream>
@@ -213,9 +287,9 @@ template <typename T>
 typename std::enable_if<is_string_class<T>::value, void>::type
 writer<Stream>::_write(const T& value)
 {
-    _ostr.put('"');
-    _ostr.write(value.data(), value.size());
-    _ostr.put('"');
+    _encode(reinterpret_cast<const unsigned char*>(value.data()),
+            reinterpret_cast<const unsigned char*>(value.data()) +
+                value.size());
 }
 
 template <typename Stream>

@@ -21,14 +21,16 @@
 
 #include "native/json/detail/parser_impl.h"
 
-#include "native/encoding.h"
+#include "native/utf.h"
 
-namespace native {
-namespace json {
+namespace native
+{
+namespace json
+{
 
-template <typename SourceEncoding,
-          typename TargetEncoding>
-class basic_parser {
+template <typename SourceEncoding, typename TargetEncoding>
+class basic_parser
+{
 public:
     typedef SourceEncoding source_encoding_type;
     typedef TargetEncoding target_encoding_type;
@@ -40,11 +42,9 @@ public:
         typedef typename String::const_iterator iterator_type;
         typedef iterator_stream<iterator_type> stream_type;
         stream_type stream(source.cbegin(), source.cend());
-        detail::parser_impl<
-            stream_type,
-            Handler,
-            source_encoding_type,
-            target_encoding_type> parser(std::move(stream), handler);
+        detail::parser_impl<stream_type, Handler, source_encoding_type,
+                            target_encoding_type> parser(std::move(stream),
+                                                         handler);
         parser.parse_whole();
     }
 
@@ -55,11 +55,9 @@ public:
         typedef iterator_stream<iterator_type> stream_type;
 
         stream_type stream(source, source + length);
-        detail::parser_impl<
-            stream_type,
-            Handler,
-            source_encoding_type,
-            target_encoding_type> parser(std::move(stream), handler);
+        detail::parser_impl<stream_type, Handler, source_encoding_type,
+                            target_encoding_type> parser(std::move(stream),
+                                                         handler);
         parser.parse_whole();
     }
 
@@ -69,11 +67,9 @@ public:
         typedef Iterator iterator_type;
         typedef iterator_stream<iterator_type> stream_type;
         stream_type stream(first, last);
-        detail::parser_impl<
-            stream_type,
-            Handler,
-            source_encoding_type,
-            target_encoding_type> parser(std::move(stream), handler);
+        detail::parser_impl<stream_type, Handler, source_encoding_type,
+                            target_encoding_type> parser(std::move(stream),
+                                                         handler);
         parser.parse();
     }
 
@@ -82,11 +78,9 @@ public:
     {
         typedef istream_stream<IStream> stream_type;
         stream_type stream(istr);
-        detail::parser_impl<
-            stream_type,
-            Handler,
-            source_encoding_type,
-            target_encoding_type> parser(std::move(stream), handler);
+        detail::parser_impl<stream_type, Handler, source_encoding_type,
+                            target_encoding_type> parser(std::move(stream),
+                                                         handler);
         parser.parse();
     }
 };
@@ -94,7 +88,7 @@ public:
 typedef basic_parser<utf8, utf8> parser;
 typedef basic_parser<utf8, utf16> utf8_to_utf16_parser;
 typedef basic_parser<utf16, utf8> utf16_to_utf8_parser;
-
-} } // namespace native::json
+}
+} // namespace native::json
 
 #endif

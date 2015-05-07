@@ -84,6 +84,7 @@ typename std::enable_if<is_string_class<T>::value && std::is_integral<U>::value,
                         T>::type
 to(U value)
 {
+    // TODO: optimize
     return std::to_string(value);
 }
 
@@ -93,6 +94,7 @@ typename std::enable_if<
     is_string_class<T>::value && std::is_floating_point<U>::value, T>::type
 to(U value)
 {
+    // TODO: optimize
     return std::to_string(value);
 }
 
@@ -108,6 +110,14 @@ template <typename T, typename U>
 const typename std::enable_if<
     is_string_class<T>::value && is_string_class<U>::value, T>::type&
 to(const U& value)
+{
+    return value;
+}
+
+// char array to string
+template <typename T>
+typename std::enable_if<is_string_class<T>::value, T>::type
+to(const char* value)
 {
     return value;
 }
@@ -152,6 +162,36 @@ to(const U& value)
     auto stream = make_parser_range_iterator(value.begin(), value.end());
     p.to_buffer(stream);
     return detail::string_to_real<T>(p);
+}
+
+namespace detail
+{
+template <typename T>
+typename std::enable_if<is_string_class<T>::value, T>::type append_to()
+{
+    return T{};
+}
+
+template <typename T, typename U>
+typename std::enable_if<is_string_class<T>::value, T>::type append_to(U&& value)
+{
+    return to<T>(value);
+}
+
+template <typename T, typename U, typename... Args>
+typename std::enable_if<is_string_class<T>::value, T>::type
+append_to(U&& value, Args&&... args)
+{
+    return to<T>(value) + append_to<T>(std::forward<Args>(args)...);
+}
+} // namespace detail
+
+template <typename T, typename U, typename... Args>
+typename std::enable_if<is_string_class<T>::value, T>::type to(U&& value,
+                                                               Args&&... args)
+{
+    return detail::append_to<T>(std::forward<U>(value),
+                                std::forward<Args>(args)...);
 }
 
 } // namespace json
