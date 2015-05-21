@@ -56,9 +56,8 @@
 class benchmark_test : public ::testing::Test
 {
 public:
-    static const std::size_t trial_count = 100000;
-
-    benchmark_test(const char* fixture, const char* name);
+    benchmark_test(const char* fixture, const char* name,
+                   std::size_t trial_count = 100000);
 
     virtual void SetUp();
     virtual void TearDown();
@@ -70,7 +69,7 @@ public:
             std::numeric_limits<boost::timer::nanosecond_type>::max();
         boost::timer::nanosecond_type total = 0;
         boost::timer::cpu_times fastestElapsed;
-        for (std::size_t i = 0; i < trial_count; ++i)
+        for (std::size_t i = 0; i < timers.size(); ++i)
         {
             boost::timer::cpu_timer timer;
             func();

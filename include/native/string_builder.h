@@ -36,7 +36,7 @@ class basic_string_builder : public string_base
 public:
     using this_type = basic_string_builder<Ch>;
     using traits_type = std::char_traits<Ch>;
-    using value_type = typename traits_type::char_type;
+    using char_type = typename traits_type::char_type;
     using allocator_type = std::allocator<Ch>;
     using size_type = typename allocator_type::size_type;
     using difference_type = typename allocator_type::difference_type;
@@ -49,10 +49,10 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    using std_type = std::basic_string<value_type>;
+    using std_type = std::basic_string<char_type>;
     using common = detail::string_common<this_type>;
     using core_type = string_builder_core<Ch>;
-    using slice_type = basic_string_slice<value_type>;
+    using slice_type = basic_string_slice<char_type>;
     using string_type = basic_string_builder<Ch>;
     using istring_type = basic_istring<Ch>;
 
@@ -63,7 +63,7 @@ public:
     constexpr basic_string_builder(size_type capacity = 1024) noexcept;
 
     // 2) Constructs the string with count copies of character ch.
-    basic_string_builder(size_type n, value_type c);
+    basic_string_builder(size_type n, char_type c);
 
     // 3) Constructs the string with a substring [pos, pos+count) of other. If
     //    the requested substring lasts past the end of the string, or if
@@ -104,7 +104,7 @@ public:
     basic_string_builder(basic_string_builder&& str) noexcept;
 
     // 9) Constructs the string with the contents of the initializer list init.
-    explicit basic_string_builder(std::initializer_list<value_type>);
+    explicit basic_string_builder(std::initializer_list<char_type>);
 
     // Destructor
     ~basic_string_builder();
@@ -124,8 +124,10 @@ public:
     basic_string_builder& operator<<(bool value);
     basic_string_builder& operator<<(const_pointer value);
 
-    basic_string_builder& put(value_type ch);
+    basic_string_builder& put(char_type ch);
     basic_string_builder& write(const_pointer s, size_type length);
+
+    const_pointer data() const noexcept;
 
     size_type size() const noexcept;
     size_type length() const noexcept;
@@ -175,7 +177,7 @@ constexpr basic_string_builder<Ch>::basic_string_builder(
 
 // 2) Constructs the string with count copies of character ch.
 template <typename Ch>
-basic_string_builder<Ch>::basic_string_builder(size_type n, value_type c)
+basic_string_builder<Ch>::basic_string_builder(size_type n, char_type c)
     : _core(n, c)
 {
 }
@@ -292,7 +294,7 @@ basic_string_builder<Ch>::basic_string_builder(
 // 9) Constructs the string with the contents of the initializer list init.
 template <typename Ch>
 basic_string_builder<Ch>::basic_string_builder(
-    std::initializer_list<value_type> init)
+    std::initializer_list<char_type> init)
     : _core(init.begin(), init.end())
 {
 }
@@ -301,6 +303,13 @@ basic_string_builder<Ch>::basic_string_builder(
 template <typename Ch>
 basic_string_builder<Ch>::~basic_string_builder()
 {
+}
+
+template <typename Ch>
+inline typename basic_string_builder<Ch>::const_pointer
+basic_string_builder<Ch>::data() const noexcept
+{
+    return this->_core.data();
 }
 
 template <typename Ch>
@@ -572,7 +581,7 @@ basic_string_builder<Ch>& basic_string_builder<Ch>::operator<<(bool value)
 }
 
 template <typename Ch>
-basic_string_builder<Ch>& basic_string_builder<Ch>::put(value_type ch)
+basic_string_builder<Ch>& basic_string_builder<Ch>::put(char_type ch)
 {
     _core.push_back(ch);
     return *this;

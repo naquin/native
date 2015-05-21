@@ -643,8 +643,8 @@ public:
     stream_type stream;
     handler_type& handler;
     data_type expected_type;
-    std::vector<char_type> key_buffer;
-    std::vector<char_type> string_buffer;
+    buffer_type key_buffer;
+    buffer_type string_buffer;
 };
 
 template <typename Handler, typename Iterator>
