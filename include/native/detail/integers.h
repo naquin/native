@@ -379,8 +379,8 @@ template <class Source>
     sizeof(Source)<4 && !std::is_same<Source, char>::value, size_t>::type
     estimate_space_needed(Source value)
 {
-    typedef typename std::conditional<std::is_signed<Source>::value, int64_t,
-                                      uint64_t>::type Intermediate;
+    using Intermediate = typename std::conditional<
+        std::is_signed<Source>::value, int64_t, uint64_t>::type;
     return estimate_space_needed(static_cast<Intermediate>(value));
 }
 
@@ -434,8 +434,8 @@ template <class Stream, class Source>
         typename std::enable_if < std::is_integral<Source>::value &&
     sizeof(Source)<4>::type stream_append(Stream& stream, Source value)
 {
-    typedef typename std::conditional<std::is_signed<Source>::value, int64_t,
-                                      uint64_t>::type Intermediate;
+    using Intermediate = typename std::conditional<
+        std::is_signed<Source>::value, int64_t, uint64_t>::type;
     stream_append(stream, static_cast<Intermediate>(value));
 }
 

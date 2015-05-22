@@ -33,14 +33,17 @@ namespace json
 {
 
 // A JSON-like value class.
-class any
+template <typename String>
+class basic_any
 {
-    using array = std::vector<any>;
+    using this_type = basic_any<String>;
+    using array = std::vector<this_type>;
 
 public:
-    using const_iterator = array::const_iterator;
-    using value_type = any;
-    using object = std::unordered_map<istring, any>;
+    using string_type = String;
+    using const_iterator = typename array::const_iterator;
+    using value_type = this_type;
+    using object = std::unordered_map<string_type, this_type>;
     struct handler;
     struct object_key_iterator;
     struct object_value_iterator;
@@ -50,54 +53,53 @@ public:
     struct object_range;
 
     // Default constructor. Sets as null.
-    any() noexcept;
+    basic_any() noexcept;
 
     // nullptr_t overload. Sets as null.
-    any(std::nullptr_t) noexcept;
+    basic_any(std::nullptr_t) noexcept;
 
     // Initialize as the given type with that type's default constructor.
-    any(element_type type);
+    basic_any(element_type type);
 
     // Initialize with bool value.
-    any(bool value);
+    basic_any(bool value);
 
     // Initialize with an integral value.
-    any(short value);
-    any(unsigned short value);
-    any(int value);
-    any(unsigned value);
-    any(long value);
-    any(unsigned long value);
-    any(long long value);
-    any(unsigned long long value);
+    basic_any(short value);
+    basic_any(unsigned short value);
+    basic_any(int value);
+    basic_any(unsigned value);
+    basic_any(long value);
+    basic_any(unsigned long value);
+    basic_any(long long value);
+    basic_any(unsigned long long value);
 
     // Initialize with a floating point value.
-    any(float value);
-    any(double value);
-    any(long double value);
+    basic_any(float value);
+    basic_any(double value);
+    basic_any(long double value);
 
     // Initialize with a string value.
-    any(const char* value);
-    any(const std::string& value);
-    any(const istring& value);
+    basic_any(const char* value);
+    basic_any(const string_type& value);
 
     // Initialize with an array. Works with initializer_list too.
-    //    any x{{42, "foo", 5.0, true, nullptr}};
-    any(const array& value);
-    any(array&& value);
+    //    basic_any x{{42, "foo", 5.0, true, nullptr}};
+    basic_any(const array& value);
+    basic_any(array&& value);
 
     // Initialize with an object.
-    //    any x{{{"foo", 42}, {"bar", 5.0}}};
-    any(const object& value);
-    any(object&& value);
+    //    basic_any x{{{"foo", 42}, {"bar", 5.0}}};
+    basic_any(const object& value);
+    basic_any(object&& value);
 
-    any(const any& right);
-    any(any&& right) noexcept;
+    basic_any(const basic_any& right);
+    basic_any(basic_any&& right) noexcept;
 
-    any& operator=(const any& right);
-    any& operator=(any&& right) noexcept;
+    basic_any& operator=(const basic_any& right);
+    basic_any& operator=(basic_any&& right) noexcept;
 
-    ~any();
+    ~basic_any();
 
     // Returns the data type of this object.
     element_type type() const;
@@ -119,7 +121,7 @@ public:
     // can be converted, then a conversion is performed on the specified type.
     //
     // If no conversion can be performed, then std::logic_error is thrown.
-    istring string_value() const;
+    string_type string_value() const;
     long double double_value() const;
     long long int_value() const;
     bool bool_value() const;
@@ -141,21 +143,21 @@ public:
     const_iterator begin() const;
     const_iterator end() const;
 
-    any& front();
-    const any& front() const;
+    basic_any& front();
+    const basic_any& front() const;
 
-    any& back();
-    const any& back() const;
+    basic_any& back();
+    const basic_any& back() const;
 
-    any& operator[](std::size_t index);
-    const any& operator[](std::size_t index) const;
+    basic_any& operator[](std::size_t index);
+    const basic_any& operator[](std::size_t index) const;
 
-    void push_back(const any& value);
-    void emplace_back(any&& value);
+    void push_back(const basic_any& value);
+    void emplace_back(basic_any&& value);
 
     void pop_back();
 
-    void resize(std::size_t n, const any& defaultValue = nullptr);
+    void resize(std::size_t n, const basic_any& defaultValue = nullptr);
 
     const_iterator erase(const_iterator it);
     const_iterator erase(const_iterator first, const_iterator last);
@@ -164,14 +166,14 @@ public:
     // Object methods. If this object is not an array, then std::logic_error is
     // thrown.
     //
-    any& operator[](const istring& key);
-    const any& operator[](const istring& key) const;
+    basic_any& operator[](const string_type& key);
+    const basic_any& operator[](const string_type& key) const;
 
-    object::const_iterator find(const istring& key) const;
+    typename object::const_iterator find(const string_type& key) const;
 
-    std::size_t erase(const istring& key);
+    std::size_t erase(const string_type& key);
 
-    object::const_iterator erase(object::const_iterator it);
+    typename object::const_iterator erase(typename object::const_iterator it);
 
     object_range<object_key_iterator> keys() const;
     object_range<object_value_iterator> values() const;
@@ -180,18 +182,18 @@ public:
     //
     // Deep comparisons.
     //
-    bool operator==(const any& right) const;
-    bool operator!=(const any& right) const;
-    bool operator<(const any& right) const;
-    bool operator>(const any& right) const;
-    bool operator<=(const any& right) const;
-    bool operator>=(const any& right) const;
+    bool operator==(const basic_any& right) const;
+    bool operator!=(const basic_any& right) const;
+    bool operator<(const basic_any& right) const;
+    bool operator>(const basic_any& right) const;
+    bool operator<=(const basic_any& right) const;
+    bool operator>=(const basic_any& right) const;
 
     // Convert to a JSON string.
     void dump(std::ostream& ostr, bool sort_keys = false,
               std::size_t indent = 0) const;
 
-    istring dump(bool sort_keys = false, std::size_t indent = 0) const;
+    string_type dump(bool sort_keys = false, std::size_t indent = 0) const;
     void dump(std::string& str, bool sort_keys = false,
               std::size_t indent = 0) const;
 
@@ -208,7 +210,7 @@ private:
         data(bool value);
         data(long long value);
         data(long double value);
-        data(const istring& value);
+        data(const string_type& value);
         data(const array& value);
         data(array&& value);
         data(const object& value);
@@ -224,25 +226,28 @@ private:
         bool _bool;
         long long _int;
         long double _double;
-        istring _string;
+        string_type _string;
         array _array;
         object _object;
     } _data;
 };
 
-// Initialize by parsing JSON from the given source.
-template <typename IStream>
-any parse_stream(IStream& istr);
+using any = basic_any<istring>;
 
-template <typename String>
-typename std::enable_if<is_string_class<String>::value, any>::type
+// Initialize by parsing JSON from the given source.
+template <typename String, typename IStream>
+basic_any<String> parse_stream(IStream& istr);
+
+template <typename String = istring>
+typename std::enable_if<is_string_class<String>::value, basic_any<String>>::type
 parse(const String& str);
 
-template <typename Ch>
-any parse(const Ch* str, std::size_t length);
+template <typename String = istring, typename Ch = typename String::char_type>
+basic_any<String> parse(const Ch* str, std::size_t length);
 
-template <typename Ch, std::size_t Size>
-any parse(const Ch (&str)[Size]);
+template <typename String = istring, typename Ch = typename String::char_type,
+          std::size_t Size>
+basic_any<String> parse(const Ch (&str)[Size]);
 
 } // namespace json
 } // namespace native

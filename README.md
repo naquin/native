@@ -21,8 +21,9 @@ Dependencies
 Install
 -------
 
-Right now Native only consists of header files, so all that is needed is to
-reference the ./include in the include paths for your project.
+For JSON use, just add src/double-conversion.cpp to your project.
+
+The rest of the library is header-only, so just reference the ./include in the include paths for your project.
 
 Requirements
 ------------

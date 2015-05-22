@@ -75,7 +75,7 @@ TEST(json_parser_test, integers_should_parse)
     EXPECT_EQ(-4200, parse_integer<int>("-4200"));
     EXPECT_EQ(-420000, parse_integer<int>("-420000"));
 
-    typedef numeric_handler<long long> Handler;
+    using Handler = numeric_handler<long long>;
     Handler handler;
     std::string str = "3808159498143417627]";
     auto parser =
@@ -190,11 +190,11 @@ TEST(json_parser_test, parse_string_transcoding)
 {
     const std::string x = "\"Hello\"";
     const std::u16string expected = u"Hello";
-    typedef string_handler<char16_t> Handler;
+    using Handler = string_handler<char16_t>;
     Handler handler;
 
     std::istringstream istr(x);
-    typedef json::istream_stream<std::istringstream> stream_type;
+    using stream_type = json::istream_stream<std::istringstream>;
     auto stream = stream_type(istr);
 
     json::detail::parser_impl<stream_type, Handler, utf8, utf16> parser(
@@ -313,7 +313,7 @@ TEST(json_parser_test, parser_should_parse_empty_array)
 {
     const std::string str("[ ] ");
 
-    typedef numeric_array_handler<int, utf8> Handler;
+    using Handler = numeric_array_handler<int, utf8>;
     Handler handler;
     auto parser =
         json::detail::make_parser_impl(str.begin(), str.end(), handler);

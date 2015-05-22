@@ -24,54 +24,52 @@
 #include <sstream>
 
 template <typename T>
-struct numeric_handler:
-    native::json::handler<>
+struct numeric_handler : native::json::handler<>
 {
-    typedef T value_type;
-    
-    numeric_handler(): actual() {}
-    void value(T val)
+    using value_type = T;
+
+    numeric_handler()
+        : actual()
     {
-        actual = val;
     }
-    
+    void value(T val) { actual = val; }
+
     T actual;
 };
 
 template <typename Ch = char>
-struct string_handler:
-    native::json::handler<Ch>
+struct string_handler : native::json::handler<Ch>
 {
-    typedef Ch char_type;
-    
+    using char_type = Ch;
+
     void value(const char_type* val, std::size_t length)
     {
         actual.assign(val, length);
     }
-    
+
     std::basic_string<char_type> actual;
 };
-
 
 template <typename T>
 T parse_integer(const std::string& number)
 {
-    typedef numeric_handler<T> Handler;
+    using Handler = numeric_handler<T>;
     Handler handler;
     std::string str = number;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.template parse_integer<T>();
     return handler.actual;
 };
 
-
 bool parse_bool(const std::string& number, bool expected)
 {
-    typedef numeric_handler<bool> Handler;
+    using Handler = numeric_handler<bool>;
     Handler handler;
     std::string str = number;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
-    if ( expected )
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
+    if (expected)
     {
         parser.parse_true();
     }
@@ -84,25 +82,26 @@ bool parse_bool(const std::string& number, bool expected)
 
 void parse_null(const std::string& number)
 {
-    typedef numeric_handler<bool> Handler;
+    using Handler = numeric_handler<bool>;
     Handler handler;
     std::string str = number;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.parse_null();
-//    return handler.actual;
+    //    return handler.actual;
 }
 
 template <typename T>
 T parse_real(const std::string& number)
 {
-    typedef numeric_handler<T> Handler;
+    using Handler = numeric_handler<T>;
     Handler handler;
     std::string str = number;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.template parse_real<typename Handler::value_type>();
     return handler.actual;
 };
-
 
 template <typename T>
 void test_integer_limits()
@@ -114,145 +113,131 @@ void test_integer_limits()
     EXPECT_EQ(min, parse_integer<T>(std::to_string(min)));
 }
 
-
 template <typename Ch>
 std::basic_string<Ch> parse_string(const std::basic_string<Ch>& str)
 {
-    typedef typename native::encoding<Ch>::type Encoding;
-    typedef string_handler<Ch> Handler;
+    using Encoding = typename native::encoding<Ch>::type;
+    using Handler = string_handler<Ch>;
     Handler handler;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.parse_string();
     return handler.actual;
 }
 
-
 template <typename Ch, std::size_t Size>
 std::basic_string<Ch> parse_string(const Ch (&str)[Size])
 {
-    return parse_string(std::basic_string<Ch>(str, Size-1));
+    return parse_string(std::basic_string<Ch>(str, Size - 1));
 }
-
 
 template <typename Ch>
 void parse_any(const std::basic_string<Ch>& str)
 {
-    typedef typename native::encoding<Ch>::type Encoding;
-    typedef native::json::handler<Ch> Handler;
+    using Encoding = typename native::encoding<Ch>::type;
+    using Handler = native::json::handler<Ch>;
     Handler handler;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.parse();
 }
-
 
 template <typename Ch, std::size_t Size>
 void parse_any(const Ch (&str)[Size])
 {
-    return parse_any(std::basic_string<Ch>(str, Size-1));
+    return parse_any(std::basic_string<Ch>(str, Size - 1));
 }
 
-
 template <typename T, typename Encoding = native::utf8>
-struct numeric_array_handler:
-    native::json::handler<typename Encoding::char_type>
+struct numeric_array_handler
+    : native::json::handler<typename Encoding::char_type>
 {
-    typedef native::json::handler<typename Encoding::char_type> base_type;
-    typedef Encoding encoding_type;
-    typedef typename encoding_type::char_type char_type;
-    
-    numeric_array_handler():
-    start_count(), end_count(), actual()
-    { }
-    
+    using base_type = native::json::handler<typename Encoding::char_type>;
+    using encoding_type = Encoding;
+    using char_type = typename encoding_type::char_type;
+
+    numeric_array_handler()
+        : start_count()
+        , end_count()
+        , actual()
+    {
+    }
+
     native::json::data_type start_array()
     {
         ++start_count;
         return native::json::type_mapper<T>::value;
     }
-    
+
     native::json::data_type key(const char_type* key, std::size_t length)
     {
         return native::json::type_mapper<T>::value;
     }
-    
-    void end_array()
-    {
-        ++end_count;
-    }
-    
+
+    void end_array() { ++end_count; }
+
     using base_type::value;
-    
-    void value(T val)
-    {
-        actual.push_back(val);
-    }
-    
+
+    void value(T val) { actual.push_back(val); }
+
     std::size_t start_count, end_count;
     std::vector<T> actual;
 };
 
-
 template <typename T, std::size_t Size, typename Ch>
 std::vector<T> parse_array(const Ch (&raw_str)[Size])
 {
-    typedef typename native::encoding<Ch>::type Encoding;
-    typedef numeric_array_handler<T, Encoding> Handler;
-    std::string str(raw_str, Size-1);
+    using Encoding = typename native::encoding<Ch>::type;
+    using Handler = numeric_array_handler<T, Encoding>;
+    std::string str(raw_str, Size - 1);
     Handler handler;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.parse();
     return std::move(handler.actual);
 }
 
-
 template <typename Ch>
-struct object_handler:
-    native::json::handler<Ch>
+struct object_handler : native::json::handler<Ch>
 {
-    typedef Ch char_type;
-    typedef native::json::handler<char_type> base_type;
-    typedef std::basic_string<char_type> string_type;
-    
-    object_handler():
-        start_count(), end_count(), step()
-    { }
-    
-    void start_object()
+    using char_type = Ch;
+    using base_type = native::json::handler<char_type>;
+    using string_type = std::basic_string<char_type>;
+
+    object_handler()
+        : start_count()
+        , end_count()
+        , step()
     {
-        ++start_count;
     }
 
-    native::json::data_type start_array()
-    {
-        return native::json::type_int;
-    }
+    void start_object() { ++start_count; }
+
+    native::json::data_type start_array() { return native::json::type_int; }
 
     native::json::data_type key(const char_type* key, std::size_t length)
     {
         key_actual.push_back(key);
-        switch ( key[0] )
+        switch (key[0])
         {
-        case 'a':
-        case 'i':
-            return native::json::type_int;
-        default:
-            return native::json::type_unknown;
+            case 'a':
+            case 'i':
+                return native::json::type_int;
+            default:
+                return native::json::type_unknown;
         }
     }
 
-    void end_object()
-    {
-        ++end_count;
-    }
-    
+    void end_object() { ++end_count; }
+
     using base_type::value;
-    
+
     void value(std::nullptr_t)
     {
         ++step;
         nulls.emplace_back(step);
     }
-    
+
     void value(bool val)
     {
         ++step;
@@ -330,32 +315,32 @@ struct object_handler:
         ++step;
         strings.emplace_back(step, string_type(val, length));
     }
-    
-    std::size_t start_count, end_count, step;
-    std::vector<string_type>                                key_actual;
-    std::vector<std::size_t>                                nulls;
-    std::vector<std::pair<std::size_t, bool>>               bools;
-    std::vector<std::pair<std::size_t, short>>              shorts;
-    std::vector<std::pair<std::size_t, unsigned short>>     ushorts;
-    std::vector<std::pair<std::size_t, int>>                ints;
-    std::vector<std::pair<std::size_t, unsigned>>           uints;
-    std::vector<std::pair<std::size_t, long>>               longs;
-    std::vector<std::pair<std::size_t, unsigned long>>      ulongs;
-    std::vector<std::pair<std::size_t, long long>>          long_longs;
-    std::vector<std::pair<std::size_t, unsigned long long>> ulong_longs;
-    std::vector<std::pair<std::size_t, float>>              floats;
-    std::vector<std::pair<std::size_t, double>>             doubles;
-    std::vector<std::pair<std::size_t, long double>>        long_doubles;
-    std::vector<std::pair<std::size_t, string_type>>        strings;
-};
 
+    std::size_t start_count, end_count, step;
+    std::vector<string_type> key_actual;
+    std::vector<std::size_t> nulls;
+    std::vector<std::pair<std::size_t, bool>> bools;
+    std::vector<std::pair<std::size_t, short>> shorts;
+    std::vector<std::pair<std::size_t, unsigned short>> ushorts;
+    std::vector<std::pair<std::size_t, int>> ints;
+    std::vector<std::pair<std::size_t, unsigned>> uints;
+    std::vector<std::pair<std::size_t, long>> longs;
+    std::vector<std::pair<std::size_t, unsigned long>> ulongs;
+    std::vector<std::pair<std::size_t, long long>> long_longs;
+    std::vector<std::pair<std::size_t, unsigned long long>> ulong_longs;
+    std::vector<std::pair<std::size_t, float>> floats;
+    std::vector<std::pair<std::size_t, double>> doubles;
+    std::vector<std::pair<std::size_t, long double>> long_doubles;
+    std::vector<std::pair<std::size_t, string_type>> strings;
+};
 
 template <typename Ch>
 object_handler<Ch> parse_object(const std::basic_string<Ch>& str)
 {
-    typedef object_handler<Ch> Handler;
+    using Handler = object_handler<Ch>;
     Handler handler;
-    auto parser = native::json::detail::make_parser_impl(str.cbegin(), str.cend(), handler);
+    auto parser = native::json::detail::make_parser_impl(str.cbegin(),
+                                                         str.cend(), handler);
     parser.parse();
     return std::move(handler);
 }

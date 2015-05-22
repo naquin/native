@@ -20,6 +20,10 @@
 
 #include <boost/timer/timer.hpp>
 
+#if defined(RAPID_JSON)
+#include "rapidjson/reader.h"
+#endif
+
 #include <fstream>
 
 class json_parser_benchmark : public benchmark_test
@@ -94,3 +98,17 @@ BENCHMARK(json_parser_benchmark, parse_stream_empty_handler)
 
     benchmark("parse_stream_empty_handler", func);
 }
+
+#if defined(RAPID_JSON)
+BENCHMARK(json_parser_benchmark, rapidjson_parse_string_empty_handler)
+{
+    rapidjson::BaseReaderHandler<> h;
+    rapidjson::Reader reader;
+    auto func = [&]()
+    {
+        rapidjson::StringStream s(_text.c_str());
+        reader.Parse<0>(s, h);
+    };
+    benchmark("rapid_json_empty_handler", func);
+}
+#endif

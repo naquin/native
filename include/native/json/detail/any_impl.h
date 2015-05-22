@@ -17,17 +17,20 @@
 #include "native/json/writer.h"
 #include "native/json/parser.h"
 #include "native/string_builder.h"
+#include "native/detail/stream_type.h"
 
 namespace native
 {
 namespace json
 {
 
-struct any::object_key_iterator
+template <typename String>
+struct basic_any<String>::object_key_iterator
 {
-    using value_type = istring;
+    using value_type = String;
 
-    object_key_iterator(any::object::const_iterator element)
+    object_key_iterator(
+        typename basic_any<String>::object::const_iterator element)
         : _element{element}
     {
     }
@@ -59,14 +62,16 @@ struct any::object_key_iterator
     }
 
 private:
-    any::object::const_iterator _element;
+    typename basic_any<String>::object::const_iterator _element;
 };
 
-struct any::object_value_iterator
+template <typename String>
+struct basic_any<String>::object_value_iterator
 {
-    using value_type = any;
+    using value_type = basic_any;
 
-    object_value_iterator(any::object::const_iterator element)
+    object_value_iterator(
+        typename basic_any<String>::object::const_iterator element)
         : _element{element}
     {
     }
@@ -98,14 +103,16 @@ struct any::object_value_iterator
     }
 
 private:
-    any::object::const_iterator _element;
+    typename basic_any<String>::object::const_iterator _element;
 };
 
-struct any::object_item_iterator
+template <typename String>
+struct basic_any<String>::object_item_iterator
 {
-    using value_type = any::object::value_type;
+    using value_type = typename basic_any<String>::object::value_type;
 
-    object_item_iterator(any::object::const_iterator element)
+    object_item_iterator(
+        typename basic_any<String>::object::const_iterator element)
         : _element{element}
     {
     }
@@ -137,16 +144,17 @@ struct any::object_item_iterator
     }
 
 private:
-    any::object::const_iterator _element;
+    typename basic_any<String>::object::const_iterator _element;
 };
 
+template <typename String>
 template <typename Iterator>
-struct any::object_range
+struct basic_any<String>::object_range
 {
     using const_iterator = Iterator;
     using value_type = typename Iterator::value_type;
 
-    object_range(const any::object* object = nullptr)
+    object_range(const basic_any<String>::object* object = nullptr)
         : _object(object)
     {
     }
@@ -156,40 +164,47 @@ struct any::object_range
     Iterator end() const { return _object->end(); }
 
 private:
-    const any::object* _object;
+    const basic_any<String>::object* _object;
 };
 
-inline any::data::data(std::nullptr_t)
+template <typename String>
+inline basic_any<String>::data::data(std::nullptr_t)
     : _null{nullptr}
 {
 }
 
-inline any::data::data(bool value)
+template <typename String>
+inline basic_any<String>::data::data(bool value)
     : _bool{value}
 {
 }
 
-inline any::data::data(long long value)
+template <typename String>
+inline basic_any<String>::data::data(long long value)
     : _int{value}
 {
 }
 
-inline any::data::data(long double value)
+template <typename String>
+inline basic_any<String>::data::data(long double value)
     : _double{value}
 {
 }
 
-inline any::data::data(const istring& value)
+template <typename String>
+inline basic_any<String>::data::data(const String& value)
     : _string{value}
 {
 }
 
-inline any::data::data(const array& value)
+template <typename String>
+inline basic_any<String>::data::data(const array& value)
     : _array{value}
 {
 }
 
-inline any::data::data(array&& value)
+template <typename String>
+inline basic_any<String>::data::data(array&& value)
     : _array{}
 {
     _array.reserve(value.size());
@@ -199,27 +214,35 @@ inline any::data::data(array&& value)
     }
 }
 
-inline any::data::data(const object& value)
+template <typename String>
+inline basic_any<String>::data::data(const object& value)
     : _object{value}
 {
 }
 
-inline any::data::data(object&& value)
+template <typename String>
+inline basic_any<String>::data::data(object&& value)
     : _object{std::move(value)}
 {
 }
 
-inline any::data::data(element_type type, const any::data& right)
+template <typename String>
+inline basic_any<String>::data::data(element_type type,
+                                     const basic_any<String>::data& right)
 {
     assign(type, right);
 }
 
-inline any::data::data(element_type type, any::data&& right)
+template <typename String>
+inline basic_any<String>::data::data(element_type type,
+                                     basic_any<String>::data&& right)
 {
     assign(type, std::move(right));
 }
 
-inline void any::data::assign(element_type type, const any::data& right)
+template <typename String>
+void basic_any<String>::data::assign(element_type type,
+                                     const basic_any<String>::data& right)
 {
     switch (type)
     {
@@ -236,7 +259,7 @@ inline void any::data::assign(element_type type, const any::data& right)
             _double = right._double;
             break;
         case json_string:
-            new (&_string) istring{right._string};
+            new (&_string) string_type{right._string};
             break;
         case json_array:
             new (&_array) array;
@@ -248,7 +271,9 @@ inline void any::data::assign(element_type type, const any::data& right)
     }
 }
 
-inline void any::data::assign(element_type type, any::data&& right)
+template <typename String>
+void basic_any<String>::data::assign(element_type type,
+                                     basic_any<String>::data&& right)
 {
     switch (type)
     {
@@ -265,7 +290,7 @@ inline void any::data::assign(element_type type, any::data&& right)
             _double = right._double;
             break;
         case json_string:
-            new (&_string) istring{right._string};
+            new (&_string) string_type{right._string};
             break;
         case json_array:
             new (&_array) array;
@@ -281,11 +306,19 @@ inline void any::data::assign(element_type type, any::data&& right)
     }
 }
 
-any::data::~data() {}
+template <typename String>
+basic_any<String>::data::~data()
+{
+}
 
-inline any::any() noexcept : _type{json_null}, _data{nullptr} {}
+template <typename String>
+inline basic_any<String>::basic_any() noexcept : _type{json_null},
+                                                 _data{nullptr}
+{
+}
 
-inline any::any(element_type type)
+template <typename String>
+basic_any<String>::basic_any(element_type type)
     : _type{type}
     , _data{nullptr}
 {
@@ -304,7 +337,7 @@ inline any::any(element_type type)
             _data._double = 0.0;
             break;
         case json_string:
-            new (&_data._string) istring;
+            new (&_data._string) string_type;
             break;
         case json_array:
             new (&_data._array) array;
@@ -315,148 +348,173 @@ inline any::any(element_type type)
     }
 }
 
-inline any::any(std::nullptr_t) noexcept : _type{json_null}, _data{nullptr} {}
+template <typename String>
+inline basic_any<String>::basic_any(std::nullptr_t) noexcept : _type{json_null},
+                                                               _data{nullptr}
+{
+}
 
-inline any::any(bool value)
+template <typename String>
+inline basic_any<String>::basic_any(bool value)
     : _type(json_bool)
     , _data{value}
 {
 }
 
-inline any::any(short value)
+template <typename String>
+inline basic_any<String>::basic_any(short value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(unsigned short value)
+template <typename String>
+inline basic_any<String>::basic_any(unsigned short value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(int value)
+template <typename String>
+inline basic_any<String>::basic_any(int value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(unsigned value)
+template <typename String>
+inline basic_any<String>::basic_any(unsigned value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(long value)
+template <typename String>
+inline basic_any<String>::basic_any(long value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(unsigned long value)
+template <typename String>
+inline basic_any<String>::basic_any(unsigned long value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(long long value)
+template <typename String>
+inline basic_any<String>::basic_any(long long value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(unsigned long long value)
+template <typename String>
+inline basic_any<String>::basic_any(unsigned long long value)
     : _type(json_integer)
     , _data{static_cast<long long>(value)}
 {
 }
 
-inline any::any(float value)
+template <typename String>
+inline basic_any<String>::basic_any(float value)
     : _type{json_real}
     , _data{static_cast<long double>(value)}
 {
 }
 
-inline any::any(double value)
+template <typename String>
+inline basic_any<String>::basic_any(double value)
     : _type{json_real}
     , _data{static_cast<long double>(value)}
 {
 }
 
-inline any::any(long double value)
+template <typename String>
+inline basic_any<String>::basic_any(long double value)
     : _type{json_real}
     , _data{value}
 {
 }
 
-inline any::any(const char* value)
-    : any{istring{value}}
+template <typename String>
+inline basic_any<String>::basic_any(const char* value)
+    : basic_any{string_type{value}}
 {
 }
 
-inline any::any(const std::string& value)
-    : any{istring{value}}
-{
-}
-
-inline any::any(const istring& value)
+template <typename String>
+inline basic_any<String>::basic_any(const string_type& value)
     : _type{json_string}
     , _data{value}
 {
 }
 
-inline any::any(const array& value)
+template <typename String>
+inline basic_any<String>::basic_any(const array& value)
     : _type{json_array}
     , _data{value}
 {
 }
 
-inline any::any(array&& value)
+template <typename String>
+inline basic_any<String>::basic_any(array&& value)
     : _type{json_array}
     , _data{std::move(value)}
 {
 }
 
-inline any::any(const object& value)
+template <typename String>
+inline basic_any<String>::basic_any(const object& value)
     : _type{json_object}
     , _data{value}
 {
 }
 
-inline any::any(object&& value)
+template <typename String>
+inline basic_any<String>::basic_any(object&& value)
     : _type{json_object}
     , _data{std::move(value)}
 {
 }
 
-inline any::any(const any& right)
+template <typename String>
+inline basic_any<String>::basic_any(const basic_any<String>& right)
     : _type{right._type}
     , _data{right._type, right._data}
 {
 }
 
-inline any::any(any&& right) noexcept : _type{right._type},
-                                        _data{right._type, right._data}
+template <typename String>
+inline basic_any<String>::basic_any(basic_any<String>&& right) noexcept
+    : _type{right._type},
+      _data{right._type, right._data}
 {
 }
 
-inline any& any::operator=(const any& right)
+template <typename String>
+inline basic_any<String>& basic_any<String>::
+operator=(const basic_any<String>& right)
 {
-    this->~any();
+    this->~basic_any();
     _type = right._type;
     _data.assign(_type, right._data);
     return *this;
 }
 
-inline any& any::operator=(any&& right) noexcept
+template <typename String>
+inline basic_any<String>& basic_any<String>::
+operator=(basic_any<String>&& right) noexcept
 {
-    this->~any();
+    this->~basic_any();
     _type = right._type;
     _data.assign(_type, std::move(right._data));
     return *this;
 }
 
-inline any::~any()
+template <typename String>
+basic_any<String>::~basic_any()
 {
     switch (_type)
     {
@@ -466,7 +524,7 @@ inline any::~any()
         case json_real:
             break;
         case json_string:
-            _data._string.~istring();
+            _data._string.~string_type();
             break;
         case json_array:
             _data._array.~array();
@@ -477,38 +535,81 @@ inline any::~any()
     }
 }
 
-inline element_type any::type() const { return _type; }
+template <typename String>
+inline element_type basic_any<String>::type() const
+{
+    return _type;
+}
 
-inline bool any::is_null() const { return _type == json_null; }
-inline bool any::is_object() const { return _type == json_object; }
-inline bool any::is_array() const { return _type == json_array; }
-inline bool any::is_bool() const { return _type == json_bool; }
-inline bool any::is_double() const { return _type == json_real; }
-inline bool any::is_int() const { return _type == json_integer; }
-inline bool any::is_string() const { return _type == json_string; }
+template <typename String>
+inline bool basic_any<String>::is_null() const
+{
+    return _type == json_null;
+}
+template <typename String>
+inline bool basic_any<String>::is_object() const
+{
+    return _type == json_object;
+}
 
-inline bool any::is_number() const { return is_int() || is_double(); }
+template <typename String>
+inline bool basic_any<String>::is_array() const
+{
+    return _type == json_array;
+}
 
-inline istring any::string_value() const
+template <typename String>
+inline bool basic_any<String>::is_bool() const
+{
+    return _type == json_bool;
+}
+
+template <typename String>
+inline bool basic_any<String>::is_double() const
+{
+    return _type == json_real;
+}
+
+template <typename String>
+inline bool basic_any<String>::is_int() const
+{
+    return _type == json_integer;
+}
+
+template <typename String>
+inline bool basic_any<String>::is_string() const
+{
+    return _type == json_string;
+}
+
+template <typename String>
+inline bool basic_any<String>::is_number() const
+{
+    return is_int() || is_double();
+}
+
+template <typename String>
+String basic_any<String>::string_value() const
 {
     switch (_type)
     {
         case json_null:
         case json_object:
         case json_array:
-            return istring{};
+            return string_type{};
         case json_bool:
-            return to<istring>(_data._bool);
+            return to<string_type>(_data._bool);
         case json_real:
-            return to<istring>(_data._double);
+            return to<string_type>(_data._double);
         case json_integer:
-            return to<istring>(_data._int);
+            return to<string_type>(_data._int);
         case json_string:
             return _data._string;
     }
 }
 
-inline long double any::double_value() const
+template <typename String>
+long double basic_any<String>::double_value() const
 {
     switch (_type)
     {
@@ -529,7 +630,8 @@ inline long double any::double_value() const
     }
 }
 
-inline long long any::int_value() const
+template <typename String>
+long long basic_any<String>::int_value() const
 {
     switch (_type)
     {
@@ -550,7 +652,8 @@ inline long long any::int_value() const
     }
 }
 
-inline bool any::bool_value() const
+template <typename String>
+bool basic_any<String>::bool_value() const
 {
     switch (_type)
     {
@@ -571,7 +674,8 @@ inline bool any::bool_value() const
     }
 }
 
-inline bool any::empty() const
+template <typename String>
+bool basic_any<String>::empty() const
 {
     switch (_type)
     {
@@ -590,7 +694,8 @@ inline bool any::empty() const
     }
 }
 
-std::size_t any::size() const
+template <typename String>
+std::size_t basic_any<String>::size() const
 {
     switch (_type)
     {
@@ -611,7 +716,9 @@ std::size_t any::size() const
 //
 // array
 //
-inline any::const_iterator any::begin() const
+template <typename String>
+inline typename basic_any<String>::const_iterator
+basic_any<String>::begin() const
 {
     if (_type != json_array)
     {
@@ -620,7 +727,8 @@ inline any::const_iterator any::begin() const
     return _data._array.begin();
 }
 
-inline any::const_iterator any::end() const
+template <typename String>
+inline typename basic_any<String>::const_iterator basic_any<String>::end() const
 {
     if (_type != json_array)
     {
@@ -629,7 +737,8 @@ inline any::const_iterator any::end() const
     return _data._array.end();
 }
 
-any& any::front()
+template <typename String>
+basic_any<String>& basic_any<String>::front()
 {
     if (_type != json_array)
     {
@@ -638,7 +747,8 @@ any& any::front()
     return _data._array.front();
 }
 
-const any& any::front() const
+template <typename String>
+const basic_any<String>& basic_any<String>::front() const
 {
     if (_type != json_array)
     {
@@ -647,7 +757,8 @@ const any& any::front() const
     return _data._array.front();
 }
 
-any& any::back()
+template <typename String>
+basic_any<String>& basic_any<String>::back()
 {
     if (_type != json_array)
     {
@@ -656,7 +767,8 @@ any& any::back()
     return _data._array.back();
 }
 
-const any& any::back() const
+template <typename String>
+const basic_any<String>& basic_any<String>::back() const
 {
     if (_type != json_array)
     {
@@ -665,14 +777,21 @@ const any& any::back() const
     return _data._array.back();
 }
 
-inline any& any::operator[](std::size_t i) { return _data._array[i]; }
-
-inline const any& any::operator[](std::size_t i) const
+template <typename String>
+inline basic_any<String>& basic_any<String>::operator[](std::size_t i)
 {
     return _data._array[i];
 }
 
-inline void any::push_back(const any& value)
+template <typename String>
+inline const basic_any<String>& basic_any<String>::
+operator[](std::size_t i) const
+{
+    return _data._array[i];
+}
+
+template <typename String>
+void basic_any<String>::push_back(const basic_any<String>& value)
 {
     switch (_type)
     {
@@ -688,7 +807,8 @@ inline void any::push_back(const any& value)
     }
 }
 
-inline void any::emplace_back(any&& value)
+template <typename String>
+void basic_any<String>::emplace_back(basic_any<String>&& value)
 {
     switch (_type)
     {
@@ -704,7 +824,8 @@ inline void any::emplace_back(any&& value)
     }
 }
 
-void any::pop_back()
+template <typename String>
+void basic_any<String>::pop_back()
 {
     switch (_type)
     {
@@ -720,7 +841,9 @@ void any::pop_back()
     }
 }
 
-void any::resize(std::size_t n, const any& defaultValue)
+template <typename String>
+void basic_any<String>::resize(std::size_t n,
+                               const basic_any<String>& defaultValue)
 {
     switch (_type)
     {
@@ -736,7 +859,9 @@ void any::resize(std::size_t n, const any& defaultValue)
     }
 }
 
-any::const_iterator any::erase(const_iterator it)
+template <typename String>
+typename basic_any<String>::const_iterator
+basic_any<String>::erase(const_iterator it)
 {
     switch (_type)
     {
@@ -749,11 +874,13 @@ any::const_iterator any::erase(const_iterator it)
         case json_string:
         case json_object:
             _throw_invalid_type();
-            return any::const_iterator{};
+            return basic_any<String>::const_iterator{};
     }
 }
 
-any::const_iterator any::erase(const_iterator first, const_iterator last)
+template <typename String>
+typename basic_any<String>::const_iterator
+basic_any<String>::erase(const_iterator first, const_iterator last)
 {
     switch (_type)
     {
@@ -766,26 +893,34 @@ any::const_iterator any::erase(const_iterator first, const_iterator last)
         case json_string:
         case json_object:
             _throw_invalid_type();
-            return any::const_iterator{};
+            return basic_any<String>::const_iterator{};
     }
 }
 
 //
 // object access
 //
-inline any& any::operator[](const istring& key) { return _data._object[key]; }
+template <typename String>
+basic_any<String>& basic_any<String>::operator[](const String& key)
+{
+    return _data._object[key];
+}
 
-inline const any& any::operator[](const istring& key) const
+template <typename String>
+const basic_any<String>& basic_any<String>::operator[](const String& key) const
 {
     const auto it = _data._object.find(key);
     if (it == _data._object.end())
     {
-        throw std::out_of_range("any::operator[] key out of range");
+        throw std::out_of_range(
+            "basic_any<String>::operator[] key out of range");
     }
     return it->second;
 }
 
-any::object::const_iterator any::find(const istring& key) const
+template <typename String>
+typename basic_any<String>::object::const_iterator
+basic_any<String>::find(const String& key) const
 {
     switch (_type)
     {
@@ -803,12 +938,13 @@ any::object::const_iterator any::find(const istring& key) const
     auto it = _data._object.find(key);
     if (it == _data._object.end())
     {
-        return object::const_iterator{};
+        return typename object::const_iterator{};
     }
     return it;
 }
 
-std::size_t any::erase(const istring& key)
+template <typename String>
+std::size_t basic_any<String>::erase(const String& key)
 {
     switch (_type)
     {
@@ -824,7 +960,9 @@ std::size_t any::erase(const istring& key)
     }
 }
 
-any::object::const_iterator any::erase(object::const_iterator it)
+template <typename String>
+typename basic_any<String>::object::const_iterator
+basic_any<String>::erase(typename object::const_iterator it)
 {
     switch (_type)
     {
@@ -840,7 +978,9 @@ any::object::const_iterator any::erase(object::const_iterator it)
     }
 }
 
-any::object_range<any::object_key_iterator> any::keys() const
+template <typename String>
+basic_any<String>::object_range<typename basic_any<String>::object_key_iterator>
+basic_any<String>::keys() const
 {
     switch (_type)
     {
@@ -856,7 +996,10 @@ any::object_range<any::object_key_iterator> any::keys() const
     }
 }
 
-any::object_range<any::object_value_iterator> any::values() const
+template <typename String>
+basic_any<String>::object_range<
+    typename basic_any<String>::object_value_iterator>
+basic_any<String>::values() const
 {
     switch (_type)
     {
@@ -872,7 +1015,10 @@ any::object_range<any::object_value_iterator> any::values() const
     }
 }
 
-any::object_range<any::object_item_iterator> any::items() const
+template <typename String>
+basic_any<String>::object_range<
+    typename basic_any<String>::object_item_iterator>
+basic_any<String>::items() const
 {
     switch (_type)
     {
@@ -891,7 +1037,8 @@ any::object_range<any::object_item_iterator> any::items() const
 //
 // operators
 //
-inline bool any::operator==(const any& right) const
+template <typename String>
+bool basic_any<String>::operator==(const basic_any<String>& right) const
 {
     if (_type != right._type)
     {
@@ -916,9 +1063,14 @@ inline bool any::operator==(const any& right) const
     }
 }
 
-inline bool any::operator!=(const any& right) const { return *this != right; }
+template <typename String>
+inline bool basic_any<String>::operator!=(const basic_any<String>& right) const
+{
+    return *this != right;
+}
 
-inline bool any::operator<(const any& right) const
+template <typename String>
+bool basic_any<String>::operator<(const basic_any<String>& right) const
 {
     if (_type != right._type)
     {
@@ -944,19 +1096,33 @@ inline bool any::operator<(const any& right) const
     }
 }
 
-inline bool any::operator>(const any& right) const { return right < *this; }
+template <typename String>
+inline bool basic_any<String>::operator>(const basic_any<String>& right) const
+{
+    return right < *this;
+}
 
-inline bool any::operator<=(const any& right) const { return !(right < *this); }
+template <typename String>
+inline bool basic_any<String>::operator<=(const basic_any<String>& right) const
+{
+    return !(right < *this);
+}
 
-inline bool any::operator>=(const any& right) const { return !(*this < right); }
+template <typename String>
+inline bool basic_any<String>::operator>=(const basic_any<String>& right) const
+{
+    return !(*this < right);
+}
 
-void any::_throw_invalid_type() const
+template <typename String>
+void basic_any<String>::_throw_invalid_type() const
 {
     throw std::logic_error("invalid type");
 }
 
+template <typename String>
 template <typename Writer>
-void any::_dump(Writer& writer, bool sort_keys) const
+void basic_any<String>::_dump(Writer& writer, bool sort_keys) const
 {
     switch (_type)
     {
@@ -987,7 +1153,7 @@ void any::_dump(Writer& writer, bool sort_keys) const
             writer.open_object();
             if (sort_keys)
             {
-                std::vector<const object::value_type*> items;
+                std::vector<const typename object::value_type*> items;
                 items.reserve(_data._object.size());
                 for (const auto& element : _data._object)
                 {
@@ -995,8 +1161,8 @@ void any::_dump(Writer& writer, bool sort_keys) const
                 }
 
                 std::sort(items.begin(), items.end(),
-                          [](const object::value_type* left,
-                             const object::value_type* right)
+                          [](const typename object::value_type* left,
+                             const typename object::value_type* right)
                           {
                     return left->first < right->first;
                 });
@@ -1019,23 +1185,27 @@ void any::_dump(Writer& writer, bool sort_keys) const
     }
 }
 
-inline void any::dump(std::ostream& ostr, bool sort_keys,
-                      std::size_t indent) const
+template <typename String>
+void basic_any<String>::dump(std::ostream& ostr, bool sort_keys,
+                             std::size_t indent) const
 {
     writer<std::ostream> writer{ostr, indent};
     _dump(writer, sort_keys);
 }
 
-inline istring any::dump(bool sort_keys, std::size_t indent) const
+template <typename String>
+String basic_any<String>::dump(bool sort_keys, std::size_t indent) const
 {
-    string_builder ostr;
-    writer<string_builder> writer{ostr, indent};
+    using stream_type = typename ::native::detail::stream_type<String>::type;
+    stream_type ostr;
+    writer<stream_type> writer{ostr, indent};
     _dump(writer, sort_keys);
     return ostr.str();
 }
 
-inline void any::dump(std::string& str, bool sort_keys,
-                      std::size_t indent) const
+template <typename String>
+void basic_any<String>::dump(std::string& str, bool sort_keys,
+                             std::size_t indent) const
 {
     std::ostringstream ostr;
     writer<std::ostringstream> writer{ostr, indent};
@@ -1043,12 +1213,13 @@ inline void any::dump(std::string& str, bool sort_keys,
     str = ostr.str();
 }
 
-class any::handler
+template <typename String>
+class basic_any<String>::handler
 {
 public:
-    typedef char char_type;
+    using char_type = char;
 
-    handler(any& self)
+    handler(basic_any<String>& self)
         : _root{self}
     {
     }
@@ -1078,12 +1249,13 @@ public:
 
     void value(const char_type* val, std::size_t length)
     {
-        value(istring{val, length});
+        value(string_type{val, length});
     }
 
     data_type start_array()
     {
-        _stack.emplace_back(istring{_key, _key_length}, any{json_array});
+        _stack.emplace_back(string_type{_key, _key_length},
+                            basic_any{json_array});
         return type_unknown;
     }
 
@@ -1098,7 +1270,8 @@ public:
 
     void start_object()
     {
-        _stack.emplace_back(istring{_key, _key_length}, any{json_object});
+        _stack.emplace_back(string_type{_key, _key_length},
+                            basic_any{json_object});
     }
 
     void end_object() { end_array(); }
@@ -1111,45 +1284,45 @@ public:
     }
 
 private:
-    any& _root;
-    std::vector<std::pair<istring, any>> _stack;
+    basic_any<String>& _root;
+    std::vector<std::pair<string_type, basic_any<String>>> _stack;
     const char_type* _key = nullptr;
     std::size_t _key_length = 0;
 };
 
-template <typename IStream>
-any parse_stream(IStream& istr)
+template <typename String, typename IStream>
+basic_any<String> parse_stream(IStream& istr)
 {
-    any result;
-    any::handler handler{result};
+    basic_any<String> result;
+    typename basic_any<String>::handler handler{result};
     parser{}.parse_stream(istr, handler);
     return result;
 }
 
 template <typename String>
-typename std::enable_if<is_string_class<String>::value, any>::type
+typename std::enable_if<is_string_class<String>::value, basic_any<String>>::type
 parse(const String& str)
 {
-    any result;
-    any::handler handler{result};
+    basic_any<String> result;
+    typename basic_any<String>::handler handler{result};
     parser{}.parse(str, handler);
     return result;
 }
 
-template <typename Ch>
-any parse(const Ch* str, std::size_t length)
+template <typename String, typename Ch>
+basic_any<String> parse(const Ch* str, std::size_t length)
 {
-    any result;
-    any::handler handler{result};
+    basic_any<String> result;
+    typename basic_any<String>::handler handler{result};
     parser{}.parse(str, length, handler);
     return result;
 }
 
-template <typename Ch, std::size_t Size>
-any parse(const Ch (&str)[Size])
+template <typename String, typename Ch, std::size_t Size>
+basic_any<String> parse(const Ch (&str)[Size])
 {
-    any result;
-    any::handler handler{result};
+    basic_any<String> result;
+    typename basic_any<String>::handler handler{result};
     parser{}.parse(str, Size, handler);
     return result;
 }

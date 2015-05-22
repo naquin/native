@@ -35,9 +35,9 @@ namespace detail
 template <typename T>
 struct number_parse
 {
-    typedef T value_type;
+    using value_type = T;
 
-    typedef std::numeric_limits<T> numeric_limitis;
+    using numeric_limitis = std::numeric_limits<T>;
 
     constexpr static std::uint16_t max_significant_digits =
         2 + numeric_limitis::digits - numeric_limitis::min_exponent;
@@ -247,8 +247,9 @@ struct number_parse
         buffer[length] = '\0';
     }
 };
-}
-}
-} // namespace native::json::detail
+
+} // namespace detail
+} // namespace json
+} // namespace native
 
 #endif

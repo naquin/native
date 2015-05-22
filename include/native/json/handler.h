@@ -21,49 +21,98 @@
 
 #include "native/json/types.h"
 
+namespace native
+{
+namespace json
+{
 
-namespace native {
-namespace json {
-
+// When JSON input is parsed, the types are passed into the defined handler.
+//
+// When a key is parsed, the key() method will be called before the value
+// is parsed. This gives us the opportunity to check the key for an expected
+// data type. Here we can be smart about our type checking. If you expect a
+// uint16_t value, it's bounds are also checked.
+//
+// If the expected type is unknown, then the value will be parsed as either
+// a 32-bit integer first. If it's too big to fit as a 32-bit integer, then
+// a 64-bit integer is used. The same goes for floating point types.
+//
+// If a value cannot be converted, then a std::range_error is thrown.
+//
+// Note that a handler does not have to derive from this handler. This means
+// that we can use template methods to pull out the values.
+//
+//     struct simple_handler
+//     {
+//         using char_type = char;
+//
+//         data_type start_array() { return type_unknown; }
+//         void end_array() {}
+//
+//         void start_object() {}
+//         void end_object() {}
+//
+//         data_type key(const char_type* key, std::size_t length)
+//         {
+//             return type_unknown;
+//         }
+//
+//         void value(const char_type* val, std::size_t length) {}
+//         void value(std::nullptr_t) {}
+//         void value(bool val) {}
+//
+//         // parse any integer
+//         template <typename T>
+//         std::enable_if<std::is_integral<T>::value, void>::type
+//         value(T val) {}
+//
+//         // parse any floating point
+//         template <typename T>
+//         std::enable_if<std::is_floating_point<T>::value, void>::type
+//         value(T val) {}
+//     };
 template <typename Ch = char>
-class handler {
+class handler
+{
 public:
-    typedef Ch char_type;
+    using char_type = Ch;
 
-    handler() { }
+    handler() = default;
 
-    // Return expected data type or type_unknown if not known
+    // Return expected data type or type_unknown if not known.
     data_type start_array() { return type_unknown; }
-    void end_array() { }
+    void end_array() {}
 
-    void start_object() { }
-    void end_object() { }
+    void start_object() {}
+    void end_object() {}
 
     // This method is called when a key is parsed.
     //
-    // The character pointer to key will remain valid until the next key is parsed.
-    // This means that it is safe to store for data types, but not object types!
+    // The character pointer to key will remain valid until the next key is
+    // parsed. This means that it is safe to store for data types, but not
+    // object types!
     data_type key(const char_type* key, std::size_t length)
     {
         return type_unknown; // return the expected type
     }
 
-    void value(const char_type* val, std::size_t length) { }
-    void value(std::nullptr_t)         { }
-    void value(bool val)               { }
-    void value(short val)              { }
-    void value(unsigned short val)     { }
-    void value(int val)                { }
-    void value(unsigned val)           { }
-    void value(long val)               { }
-    void value(unsigned long val)      { }
-    void value(long long val)          { }
-    void value(unsigned long long val) { }
-    void value(float val)              { }
-    void value(double val)             { }
-    void value(long double val)        { }
+    void value(const char_type* val, std::size_t length) {}
+    void value(std::nullptr_t) {}
+    void value(bool val) {}
+    void value(short val) {}
+    void value(unsigned short val) {}
+    void value(int val) {}
+    void value(unsigned val) {}
+    void value(long val) {}
+    void value(unsigned long val) {}
+    void value(long long val) {}
+    void value(unsigned long long val) {}
+    void value(float val) {}
+    void value(double val) {}
+    void value(long double val) {}
 };
 
-} } // namespace native::json
+} // namespace json
+} // namespace native
 
 #endif

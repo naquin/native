@@ -36,7 +36,7 @@ namespace native
 // 31 U+4000000 U+7FFFFFFF 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 struct utf8
 {
-    typedef char char_type;
+    using char_type = char;
 
     template <typename OStream>
     static void encode(OStream& ostr, char32_t codepoint)
@@ -145,7 +145,7 @@ struct utf8
 // http://tools.ietf.org/html/rfc2781
 struct utf16
 {
-    typedef char16_t char_type;
+    using char_type = char16_t;
 
     static_assert(sizeof(char_type) >= 2,
                   "UTF-16 needs at least 2 byte character");
@@ -200,7 +200,7 @@ struct utf16
 // UTF-32 encoding.
 struct utf32
 {
-    typedef char32_t char_type;
+    using char_type = char32_t;
 
     template <typename OStream>
     static void encode(OStream& ostr, char32_t codepoint)

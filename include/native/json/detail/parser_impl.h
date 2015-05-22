@@ -107,25 +107,26 @@ struct codepoint_converter<Encoding, Encoding>
 template <typename Stream, typename Handler,
           typename SourceEncoding =
               typename encoding<typename Handler::char_type>::type,
-          typename TargetEncoding = SourceEncoding>
+          typename TargetEncoding = SourceEncoding,
+          std::size_t InitalBufferSize = 1024>
 class parser_impl
 {
 public:
-    typedef Stream stream_type;
-    typedef Handler handler_type;
-    typedef SourceEncoding source_encoding_type;
-    typedef TargetEncoding target_encoding_type;
+    using stream_type = Stream;
+    using handler_type = Handler;
+    using source_encoding_type = SourceEncoding;
+    using target_encoding_type = TargetEncoding;
 
-    typedef typename target_encoding_type::char_type char_type;
-    typedef std::vector<char_type> buffer_type;
+    using char_type = typename target_encoding_type::char_type;
+    using buffer_type = std::vector<char_type>;
 
     parser_impl(stream_type&& stream, handler_type& handler)
         : stream(std::move(stream))
         , handler(handler)
         , expected_type(type_unknown)
     {
-        key_buffer.reserve(1024);
-        string_buffer.reserve(1024);
+        key_buffer.reserve(InitalBufferSize);
+        string_buffer.reserve(InitalBufferSize);
     }
 
     // parse the first object or array without checking for trailing characters
@@ -378,7 +379,15 @@ public:
                                      (codepoint2 - 0xdc00)) +
                                     0x10000;
                     }
-                    target_encoding_type::encode(buffer_stream, codepoint);
+                    try
+                    {
+                        target_encoding_type::encode(buffer_stream, codepoint);
+                    }
+                    catch (const std::runtime_error& e)
+                    {
+                        throw invalid_encoding(e.what(), stream.line(),
+                                               stream.column());
+                    }
                 }
                 else
                 {
@@ -404,9 +413,18 @@ public:
             }
             else
             {
-                codepoint_converter<
-                    source_encoding_type,
-                    target_encoding_type>::convert_next(stream, buffer_stream);
+                try
+                {
+                    codepoint_converter<
+                        source_encoding_type,
+                        target_encoding_type>::convert_next(stream,
+                                                            buffer_stream);
+                }
+                catch (const std::runtime_error& e)
+                {
+                    throw invalid_encoding(e.what(), stream.line(),
+                                           stream.column());
+                }
             }
         }
     }
@@ -653,13 +671,13 @@ parser_impl<iterator_stream<Iterator>, Handler,
             typename encoding<typename Handler::char_type>::type>
 make_parser_impl(Iterator first, Iterator last, Handler& handler)
 {
-    typedef Iterator iterator_type;
-    typedef iterator_stream<iterator_type> stream_type;
-    typedef typename encoding<typename Handler::char_type>::type
-        source_encoding;
-    typedef source_encoding target_encoding;
-    typedef parser_impl<stream_type, Handler, source_encoding, target_encoding>
-        impl_type;
+    using iterator_type = Iterator;
+    using stream_type = iterator_stream<iterator_type>;
+    using source_encoding =
+        typename encoding<typename Handler::char_type>::type;
+    using target_encoding = source_encoding;
+    using impl_type =
+        parser_impl<stream_type, Handler, source_encoding, target_encoding>;
     stream_type stream(first, last);
     return std::move(impl_type(std::move(stream), handler));
 }
@@ -670,12 +688,12 @@ parser_impl<Stream, Handler,
             typename encoding<typename Handler::char_type>::type>
 make_parser_impl(Stream&& stream, Handler& handler)
 {
-    typedef Stream stream_type;
-    typedef typename encoding<typename Handler::char_type>::type
-        source_encoding;
-    typedef source_encoding target_encoding;
-    typedef parser_impl<stream_type, Handler, source_encoding, target_encoding>
-        impl_type;
+    using stream_type = Stream;
+    using source_encoding =
+        typename encoding<typename Handler::char_type>::type;
+    using target_encoding = source_encoding;
+    using impl_type =
+        parser_impl<stream_type, Handler, source_encoding, target_encoding>;
     return std::move(impl_type(std::move(stream), handler));
 }
 
@@ -686,13 +704,13 @@ std::shared_ptr<
                 typename encoding<typename Handler::char_type>::type>>
 make_shared_parser_impl(Iterator first, Iterator last, Handler& handler)
 {
-    typedef Iterator iterator_type;
-    typedef iterator_stream<iterator_type> stream_type;
-    typedef typename encoding<typename Handler::char_type>::type
-        source_encoding;
-    typedef source_encoding target_encoding;
-    typedef parser_impl<stream_type, Handler, source_encoding, target_encoding>
-        impl_type;
+    using iterator_type = Iterator;
+    using stream_type = iterator_stream<iterator_type>;
+    using source_encoding =
+        typename encoding<typename Handler::char_type>::type;
+    using target_encoding = source_encoding;
+    using impl_type =
+        parser_impl<stream_type, Handler, source_encoding, target_encoding>;
     stream_type stream(first, last);
     return std::make_shared<impl_type>(std::move(stream), handler);
 }

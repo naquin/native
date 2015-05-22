@@ -31,7 +31,7 @@ template <typename Ch>
 class input_stream
 {
 public:
-    typedef Ch char_type;
+    using char_type = Ch;
 
     // Return the current line number.
     inline std::size_t line() const;
@@ -62,9 +62,9 @@ template <typename Iterator>
 class iterator_stream
 {
 public:
-    typedef Iterator iterator_type;
-    typedef typename std::remove_cv<typename std::remove_reference<
-        decltype(*iterator_type())>::type>::type char_type;
+    using iterator_type = Iterator;
+    using char_type = typename std::remove_cv<
+        typename std::remove_reference<decltype(*iterator_type())>::type>::type;
 
     iterator_stream(iterator_type first, iterator_type last)
         : _head(first)
@@ -118,9 +118,9 @@ template <typename IStream>
 class istream_stream
 {
 public:
-    typedef IStream istream_type;
-    typedef typename istream_type::char_type char_type;
-    typedef typename istream_type::pos_type pos_type;
+    using istream_type = IStream;
+    using char_type = typename istream_type::char_type;
+    using pos_type = typename istream_type::pos_type;
 
     istream_stream(istream_type& istr)
         : _istr(istr)

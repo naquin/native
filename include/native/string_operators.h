@@ -361,39 +361,6 @@ bool operator>=(const std::basic_string<Ch>& lhs, const basic_string_builder<Ch>
     return detail::string_common<std::basic_string<Ch>>::ge(lhs, rhs);
 }
 
-//
-// compare std::basic_string to std::basic_string
-//
-template <typename Ch>
-bool operator==(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
-{
-    return detail::string_common<std::basic_string<Ch>>::eq(lhs, rhs);
-}
-template <typename Ch>
-bool operator!=(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
-{
-    return detail::string_common<std::basic_string<Ch>>::ne(lhs, rhs);
-}
-template <typename Ch>
-bool operator<(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
-{
-    return detail::string_common<std::basic_string<Ch>>::lt(lhs, rhs);
-}
-template <typename Ch>
-bool operator<=(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
-{
-    return detail::string_common<std::basic_string<Ch>>::le(lhs, rhs);
-}
-template <typename Ch>
-bool operator>(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
-{
-    return detail::string_common<std::basic_string<Ch>>::gt(lhs, rhs);
-}
-template <typename Ch>
-bool operator>=(const std::basic_string<Ch>& lhs, const std::basic_string<Ch>& rhs)
-{
-    return detail::string_common<std::basic_string<Ch>>::ge(lhs, rhs);
-}
 
 //
 // compare basic_istring to Ch*
