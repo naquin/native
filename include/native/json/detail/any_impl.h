@@ -1290,39 +1290,38 @@ private:
     std::size_t _key_length = 0;
 };
 
-template <typename String, typename IStream>
-basic_any<String> parse_stream(IStream& istr)
+template <typename any_type, typename IStream>
+any_type parse_stream(IStream& istr)
 {
-    basic_any<String> result;
-    typename basic_any<String>::handler handler{result};
+    any_type result;
+    typename any_type::handler handler{result};
     parser{}.parse_stream(istr, handler);
     return result;
 }
 
-template <typename String>
-typename std::enable_if<is_string_class<String>::value, basic_any<String>>::type
-parse(const String& str)
+template <typename any_type>
+any_type parse(const typename any_type::string_type& str)
 {
-    basic_any<String> result;
-    typename basic_any<String>::handler handler{result};
+    any_type result;
+    typename any_type::handler handler{result};
     parser{}.parse(str, handler);
     return result;
 }
 
-template <typename String, typename Ch>
-basic_any<String> parse(const Ch* str, std::size_t length)
+template <typename any_type, typename Ch>
+any_type parse(const Ch* str, std::size_t length)
 {
-    basic_any<String> result;
-    typename basic_any<String>::handler handler{result};
+    any_type result;
+    typename any_type::handler handler{result};
     parser{}.parse(str, length, handler);
     return result;
 }
 
-template <typename String, typename Ch, std::size_t Size>
-basic_any<String> parse(const Ch (&str)[Size])
+template <typename any_type, typename Ch, std::size_t Size>
+any_type parse(const Ch (&str)[Size])
 {
-    basic_any<String> result;
-    typename basic_any<String>::handler handler{result};
+    any_type result;
+    typename any_type::handler handler{result};
     parser{}.parse(str, Size, handler);
     return result;
 }

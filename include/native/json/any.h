@@ -235,19 +235,17 @@ private:
 using any = basic_any<istring>;
 
 // Initialize by parsing JSON from the given source.
-template <typename String, typename IStream>
-basic_any<String> parse_stream(IStream& istr);
+template <typename any_type = any, typename IStream>
+any_type parse_stream(IStream& istr);
 
-template <typename String = istring>
-typename std::enable_if<is_string_class<String>::value, basic_any<String>>::type
-parse(const String& str);
+template <typename any_type = any>
+any_type parse(const typename any_type::string_type& str);
 
-template <typename String = istring, typename Ch = typename String::char_type>
-basic_any<String> parse(const Ch* str, std::size_t length);
+template <typename any_type = any, typename Ch>
+any_type parse(const Ch* str, std::size_t length);
 
-template <typename String = istring, typename Ch = typename String::char_type,
-          std::size_t Size>
-basic_any<String> parse(const Ch (&str)[Size]);
+template <typename any_type = any, typename Ch, std::size_t Size>
+any parse(const Ch (&str)[Size]);
 
 } // namespace json
 } // namespace native
