@@ -50,7 +50,6 @@ public:
 
     std::string _filename = "sample.json";
     std::string _text;
-    std::string _whitespace;
 };
 
 BENCHMARK(json_parser_benchmark, parse_string_empty_handler)
