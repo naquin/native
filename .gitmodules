@@ -1,3 +1,0 @@
-[submodule "deps/double-conversion/submodule"]
-	path = deps/double-conversion/submodule
-	url = https://code.google.com/p/double-conversion/
